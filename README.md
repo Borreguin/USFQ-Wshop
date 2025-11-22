@@ -7,9 +7,9 @@
 
     • Pedro Peña
 
-    • xxxxx
+    • Gustavo Naranjo
 
-    • xxxxx
+    • Juan Endara
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
