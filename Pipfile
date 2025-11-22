@@ -17,6 +17,7 @@ python-dotenv = "==0.19.2"
 safety = "*"
 requests = "*"
 jsonschema = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.12"
