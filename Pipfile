@@ -13,10 +13,6 @@ coverage = "*"
 autopep8 = "*"
 
 [packages]
-python-dotenv = "==0.19.2"
-safety = "*"
-requests = "*"
-jsonschema = "*"
 matplotlib = "*"
 
 [requires]

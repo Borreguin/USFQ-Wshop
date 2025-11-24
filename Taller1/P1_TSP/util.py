@@ -48,7 +48,7 @@ def plotear_ruta(ciudades, ruta, mostrar_anotaciones=True):
     plt.scatter(coordenadas_x, coordenadas_y, color='blue', label='Ciudades')
 
     # Trama del mejor camino encontrado
-    plt.plot(coordenadas_x, coordenadas_y, linestyle='-', marker='o', color='red', label='Mejor Ruta')
+    plt.plot(coordenadas_x, coordenadas_y, linestyle='-', color='green', label='Mejor Ruta')
 
     if mostrar_anotaciones:
         # Anotar las letras de las ciudades
