@@ -80,8 +80,5 @@ print("Solución encontrada:")
 for paso in solucion:
     print(" -", paso)
 
-
-
-
 if __name__ == '__main__':
     print("Problema resuelto")
