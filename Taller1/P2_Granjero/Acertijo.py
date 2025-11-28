@@ -1,6 +1,6 @@
 from collections import deque
 
-# Cada estado es una tupla: (granjero, lobo, cabra, col)
+# Cada elemento es una tupla: (granjero, lobo, cabra, col)
 # Valores posibles: 'L' (izquierda), 'R' (derecha)
 
 def es_estado_valido(estado):
