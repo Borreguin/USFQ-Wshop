@@ -34,9 +34,9 @@ ningún riesgo.
   - P3: La torre de Hanoi
 El objetivo es mover una pila completa de discos desde la posición de origen (primera
 torre) a la posición de destino (tercera torre). Se siguen tres reglas simples:
-1. Solo se puede mover un disco a la vez.
-2. Cada movimiento consiste en tomar el disco superior de una de las pilas y
-colocarlo encima de otra pila. En otras palabras, un disco solo se puede mover si es
-el disco superior de una pila.
-3. No se puede colocar un disco más grande encima de un disco más pequeño.
+    1. Solo se puede mover un disco a la vez.
+    2. Cada movimiento consiste en tomar el disco superior de una de las pilas y
+    colocarlo encima de otra pila. En otras palabras, un disco solo se puede mover si es
+    el disco superior de una pila.
+    3. No se puede colocar un disco más grande encima de un disco más pequeño.
 
