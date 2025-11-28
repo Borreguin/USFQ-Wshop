@@ -34,9 +34,7 @@ def generar_estados(n, movimientos, origen=0):
 
 
 def animar_hanoi(n, estados):
-    """
-    Anima los estados con matplotlib.
-    """
+
     fig, ax = plt.subplots(figsize=(8, 4))
 
     # posiciones x de las 3 torres
@@ -75,7 +73,7 @@ def animar_hanoi(n, estados):
 
 
 if __name__ == "__main__":
-    n = 3
+    n = 4
     print(f"Resolviendo Torres de Hanoi para {n} discos:")
 
     movimientos = []
