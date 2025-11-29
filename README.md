@@ -40,3 +40,4 @@ torre) a la posición de destino (tercera torre). Se siguen tres reglas simples:
     el disco superior de una pila.
     3. No se puede colocar un disco más grande encima de un disco más pequeño.
 
+Link de Notion: https://www.notion.so/37e17ba2e2ec4b8ab8d09e3a390b3031?v=96967f433282469ead3e8a09bddd861d&source=copy_link
