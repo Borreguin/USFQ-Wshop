@@ -1,4 +1,5 @@
-![USFQ-LOGO](/Taller1/images/usfq-red.png)
+<img src="/Taller1/images/usfq-red.png" alt="Alt Text" width="400">
+
 # WorkShop-USFQ
 ## Inteligencia artificial
 
@@ -8,18 +9,29 @@
   - Juan Pazmino (ej 1)
   - Wilson Lopez (ej 2)
 
-### Resumen
-- [Taller 1](/Taller1/README.md)
-  -  **TSP Travelling salesman problem – Problema del vendedor viajante**
-        
-        El 2-OPT es un algoritmo de búsqueda local el cual optimiza rutas a través de intercambios iterativos. La principal idea es tomar una ruta que cruce sobre sí misma y luego reordenarlas hasta que dejen de hacerlo. Este algoritmo compara todas las posibles combinaciones válidas. 
-        
-        El problema central del TSP radica en el tiempo que toma encontrar la ruta más corta para un gran número de ciudades. En nuestro caso tenemos un máximo de 100 ciudades, por lo cual verificar la mejor ruta tomaría mucho tiempo. Esto se debe a que el TSP es un problema NP-duro (NP-hard).
+## Resumen
+### Taller 1
 
-      
-  - **P2 El acertijo del granjero y el bote**
+### TSP Travelling salesman problem – Problema del vendedor viajante
 
-  - **P3 La torre de Hanoi**
+- **Algoritmo Principal:** 2-OPT.
+- **Concepto:** El 2-OPT es un algoritmo de búsqueda local diseñado para optimizar rutas. Funciona mediante intercambios iterativos de aristas, buscando eliminar cruces en la ruta hasta alcanzar una solución localmente óptima (heurística).
+- **Desafío del TSP:** Encontrar la ruta más corta (solución globalmente óptima) se vuelve computacionalmente inviable a medida que el número de ciudades aumenta (ej. hasta 100 ciudades), justificando el uso de heurísticas como 2-OPT.
+    
+    ### Funcionamiento del Algoritmo 2-Opt
+    El 2-Opt optimiza rutas a través de **intercambios iterativos**, eliminando cruces y desorden en el camino.
+
+  1.  **Comenzar:** Se inicia con una ruta inicial arbitraria.
+  2.  **Buscar Cruces:** Se escanea la ruta en busca de dos segmentos ($A \rightarrow B$ y $C \rightarrow D$) que puedan ser intercambiados.
+  3.  **Verificar:** Se comprueba si reemplazar las conexiones por ($A \rightarrow C$ y $B \rightarrow D$) resulta en una distancia total más corta.
+  4.  **Invertir:** Si se encuentra una mejora, se **invierte el segmento** del camino entre los dos puntos de intercambio para acortar la ruta.
+  5.  **Repetir:** El proceso se repite hasta que no se encuentra ningún intercambio adicional que mejore la ruta, alcanzando un **óptimo local**.
+
+
+### **P2 El acertijo del granjero y el bote**
+
+### **P3 La torre de Hanoi**
+
 
 ### Planificación del proyecto
 
