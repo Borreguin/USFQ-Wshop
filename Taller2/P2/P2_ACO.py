@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
-    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15):
+    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.8, beta=8):
+        #Beta: beta controla cuánto caso le hacen a la heurística (la distancia recta al final). Con un valor de 15, las hormigas son
+        # "codiciosas" (greedy); casi ignoran las feromonas y solo quieren ir en línea recta hacia el final.
+        #Alpha (0.1) es muy bajo: alpha controla cuánto caso le hacen a las feromonas.
         self.start = start
         self.end = end
         self.obstacles = obstacles
@@ -49,31 +52,74 @@ class AntColonyOptimization:
         for position in path:
             self.pheromones[position[1], position[0]] += 1
 
+    def _calculate_path_distance(self, path):
+        distance = 0
+        for i in range(len(path) - 1):
+            p1 = np.array(path[i])
+            p2 = np.array(path[i + 1])
+            # Sumamos la distancia euclidiana entre cada paso
+            distance += np.linalg.norm(p1 - p2)
+        return distance
+
     def find_best_path(self, num_iterations):
         for _ in range(num_iterations):
             all_paths = []
             for _ in range(self.num_ants):
                 current_position = self.start
                 path = [current_position]
+
+
                 while current_position != self.end:
+                    #En bucle while, si una hormiga se queda atrapada (no tiene vecinos válidos), hace break. Esto termina el camino,
+                    # pero la hormiga no ha llegado al final.
                     next_position = self._select_next_position(current_position, path)
                     if next_position is None:
                         break
                     path.append(next_position)
                     current_position = next_position
-                all_paths.append(path)
+                # Verificamos si realmente llegó al final antes de agregarla
+                if current_position == self.end:
+                    all_paths.append(path)
+            # Si ninguna hormiga llegó en esta iteración, pasamos a la siguiente
+            if not all_paths:
+                self._evaporate_pheromones()
+                continue
 
-            # Escoger el mejor camino por su tamaño?
-            # --------------------------
-            all_paths.sort(key=lambda x: len(x))
-            best_path = all_paths[0]
+            # Ordenamos usando la función de distancia que creamos
+            all_paths.sort(key=lambda x: self._calculate_path_distance(x))
+
+            # El mejor de esta ronda
+            current_best_path = all_paths[0]
+
+            # Actualizamos el mejor camino HISTÓRICO comparando distancias
+            if self.best_path is None:
+                self.best_path = current_best_path
+            else:
+                # Comparamos la distancia del nuevo vs el antiguo
+                dist_new = self._calculate_path_distance(current_best_path)
+                dist_old = self._calculate_path_distance(self.best_path)
+                if dist_new < dist_old:
+                    self.best_path = current_best_path
 
             self._evaporate_pheromones()
-            self._deposit_pheromones(best_path)
+            self._deposit_pheromones(current_best_path)
 
-            if self.best_path is None or len(best_path) <= len(self.best_path):
-                self.best_path = best_path
+
+
+
+
+
+            # Escoger el mejor camino por su tamaño?
+
+            #clasificar por len() es incorrecto porque: 1) Ignora que los movimientos diagonales son más largos que los rectos, y 2) Premia caminos incompletos muy cortos.
+            # La solución es clasificar por la suma de las distancias euclidianas de los pasos."
             # --------------------------
+
+            #El problema: Si una hormiga se queda atrapada al principio (un camino muy corto, digamos de 2 pasos), tu código pensará que es el "mejor camino"
+            # porque su longitud (len) es la más pequeña. Estás optimizando para que las hormigas se queden atrapadas rápido o tomen el camino más corto completado.
+            #La Solución: Debes filtrar solo los caminos que realmente llegaron a self.end.
+
+
 
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
@@ -96,6 +142,7 @@ class AntColonyOptimization:
 
 def study_case_1():
     print("Start of Ant Colony Optimization - First Study Case")
+    np.random.seed(42)
     start = (0, 0)
     end = (4, 7)
     obstacles = [(1, 2), (2, 2), (3, 2)]
@@ -107,6 +154,7 @@ def study_case_1():
 
 def study_case_2():
     print("Start of Ant Colony Optimization - Second Study Case")
+    np.random.seed(43)
     start = (0, 0)
     end = (4, 7)
     obstacles = [(0, 2), (1, 2), (2, 2), (3, 2)]
@@ -118,7 +166,6 @@ def study_case_2():
 
 if __name__ == '__main__':
     study_case_1()
-    # study_case_2()
-
+    study_case_2()
 
 
