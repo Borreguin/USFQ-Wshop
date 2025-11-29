@@ -2,14 +2,17 @@
 # WorkShop-USFQ
 ## Inteligencia artificial
 
-- **Nombre del grupo**: Grupo #
+- **Nombre del grupo**: Grupo # 6
 - **Integrantes del grupo**:
 
-    • Carla Parra
+    • Santiago Acosta
 
-    • xxxxx
+    • Juan Rodríguez 
 
-    • xxxxx
+    • Fernando Rodríguez
+  
+    • Danilo Serrano 
+      
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
