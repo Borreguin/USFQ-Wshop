@@ -11,19 +11,20 @@
 ### Resumen
 - [Taller 1](/Taller1/README.md)
   -  **TSP Travelling salesman problem – Problema del vendedor viajante**
-  
-      El algoritmo 2-Opt es una buena alternativa para resolver este problema donde se tiene un numero considerable de ciudades (100 en nuestro caso). 
-      El problema con TSP es el tiempo que puede tomar encontrar el mejor camino, por esta razón se escogio un algoritmo heuristico. Este algoritmo no garantiza la mejor respuesta, pero es capaz de entregar una respuesta de forma rapida.
-      En pocas palabras tiene un buen balance entre rapidez y calidad. 
-    
-      
-  - **P2** El acertijo del granjero y el bote
-  - **P3** La torre de Hanoi
+        
+        El 2-OPT es un algoritmo de búsqueda local el cual optimiza rutas a través de intercambios iterativos. La principal idea es tomar una ruta que cruce sobre sí misma y luego reordenarlas hasta que dejen de hacerlo. Este algoritmo compara todas las posibles combinaciones válidas. 
+        
+        El problema central del TSP radica en el tiempo que toma encontrar la ruta más corta para un gran número de ciudades. En nuestro caso tenemos un máximo de 100 ciudades, por lo cual verificar la mejor ruta tomaría mucho tiempo. Esto se debe a que el TSP es un problema NP-duro (NP-hard).
 
-Notas
-En el informe agrego lo que cada uno ha hecho
-PDF con el resumen y explicacion de lo que hice, Link del repo, Link de Notion con la planificacion
-Y en otro documento un ensayo
+      
+  - **P2 El acertijo del granjero y el bote**
+
+  - **P3 La torre de Hanoi**
+
+### Planificación del proyecto
+
+La planificación del proyecto se encuentra siguiendo el [Link a Notion](https://www.notion.so/juanpin/2babb7e62c6e808faae8cf13f1051af5?v=2babb7e62c6e81c0b7c1000c4df51a33&source=copy_link)
+
 
 
 
