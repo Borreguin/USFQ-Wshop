@@ -1,13 +1,16 @@
 <img src="/Taller1/images/usfq-red.png" alt="Alt Text" width="400">
 
 # WorkShop-USFQ
-## Inteligencia artificial
+## Inteligencia artificial - Grupo 3
 
-- **Nombre del grupo**: Grupo 3
 - **Integrantes del grupo**:
-  - Cristian Calderon (ej 3)
-  - Juan Pazmino (ej 1)
-  - Wilson Lopez (ej 2)
+
+| Integrante | Ejercicio Resuelto                 | 
+|:----:|:-----------------------------------|
+|Juan Pazmino| P1 TSP Travelling salesman problem |
+|Wilson Lopez|P2 El acertijo del granjero y el bote|
+|Cristian Calderon| P3 La torre de Hanoi               |
+
 
 ## Resumen
 ### Taller 1
@@ -48,7 +51,7 @@ Un estado es **inválido** (desastre) si:
 1.  El lobo y la cabra están juntos, y el granjero no está en esa orilla (`granjero != lobo and lobo == cabra`).
 2.  La cabra y la col están juntas, y el granjero no está en esa orilla (`granjero != cabra and cabra == col`).
 
-## 2. El algoritmo BFS
+### 2. El algoritmo BFS
 
 La función `bfs_resolver` utiliza BFS para garantizar que la solución encontrada sea el camino con la menor cantidad de cruces.
 
@@ -72,6 +75,8 @@ La secuencia de movimientos más corta para resolver el acertijo es:
 | 5    | Cruza **con la col** | **('R', 'R', 'L', 'R')** |
 | 6    | Cruza **solo** | **('L', 'R', 'L', 'R')** |
 | 7    | Cruza **con la cabra** | **('R', 'R', 'R', 'R')** (META) |
+
+---
 
 ### **P3 La torre de Hanoi**
 
