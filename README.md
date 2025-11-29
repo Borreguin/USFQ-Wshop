@@ -15,7 +15,7 @@
 ## Resumen
 ### Taller 1
 
-### TSP Travelling salesman problem – Problema del vendedor viajante
+## TSP Travelling salesman problem – Problema del vendedor viajante
 
 - **Algoritmo Principal:** 2-OPT.
 - **Concepto:** El 2-OPT es un algoritmo de búsqueda local diseñado para optimizar rutas. Funciona mediante intercambios iterativos de aristas, buscando eliminar cruces en la ruta hasta alcanzar una solución localmente óptima (heurística).
@@ -32,7 +32,7 @@
 
 ---
 
-### **P2 El acertijo del granjero y el bote**
+## **P2 El acertijo del granjero y el bote**
 
 ### 1. Representacion del estado
 
@@ -78,10 +78,46 @@ La secuencia de movimientos más corta para resolver el acertijo es:
 
 ---
 
-### **P3 La torre de Hanoi**
+## **P3 La torre de Hanoi**
+
+### 1. Estructura del algoritmo (`torre_de_hanoi`)
+
+La función `torre_de_hanoi(n, origen, auxiliar, destino)` es el núcleo de la solución. La estrategia principal fue dividir el problema en subproblemas más sencillos: para mover una pila de discos de una torre a otra, el algoritmo solo necesita saber la torre de destino, origen y un pivote (auxiliar) para mover discos.
+
+### A. División (3 Pasos)
+El **Paso Clave** de cada llamada recursiva se enfoca en el disco más grande ($N$) que está en la pila actual. Para mover $N$ discos de A (Origen) a C (Destino), el proceso es siempre:
+
+1.  **Llamada Recursiva 1:** Mover los $N-1$ discos superiores del Origen (A) al Auxiliar (B).
+2.  **Movimiento Directo:** Mover el disco $N$ del Origen (A) al Destino (C).
+3.  **Llamada Recursiva 2:** Mover los $N-1$ discos del Auxiliar (B) al Destino (C).
+
+### B. Finalización (Caso Base)
+La recursividad se detiene cuando la función detecta que $n = 1$, donde $n$ es el número de discos. En este caso, se realiza un movimiento directo, se incrementa el contador global (`paso_global`), y la rama de ejecución finaliza (`return`).
+
+### 2. Implementacion y visualizacion
+
+### Contador Global
+Se utiliza la variable `paso_global` (declarada con `global`) para rastrear y asegurar que todos los movimientos se cuenten de forma secuencial y única, a pesar de las múltiples llamadas recursivas. Esta variable es clave para el desempeño y verificación del algoritmo.
+
+### Visualización
+Se implementó una visualización en consola que muestra la secuencia de movimientos final (ej: "Paso 1: Mover disco 1 de A a C"). El caso de estudio por defecto para $N=3$ discos genera $2^3 - 1 = 7$ movimientos, que es la solución óptima.
+
+### 3. Ventajas de recursividad
+
+La metodología recursiva es la forma más eficiente y elegante de resolver la Torre de Hanói por las siguientes razones:
+
+### 1. Simpleza Lógica y Elegancia Matemática
+El problema de Hanói es inherentemente recursivo. La única forma de resolver este problema para $N$ discos es asumiendo que ya se sabe resolver para $N-1$ discos. La recursividad permite traducir esta definición matemática directamente al código, sin necesidad de complejos bucles.
+
+### 2. Garantía de Optimización y Eficiencia
+El algoritmo recursivo genera la secuencia **mínima** de movimientos garantizada para cualquier número de discos. El número de movimientos es siempre $2^N - 1$. Un enfoque iterativo para este problema sería significativamente más complejo de diseñar y mantener.
+
+### 3. Manejo de Pilas (Stack)
+La recursividad utiliza la pila de llamadas del sistema (Call Stack) de Python para gestionar automáticamente las tareas pendientes (los subproblemas). Cuando la función llama a `torre_de_hanoi(n - 1, ...)` en el paso 1, la función de tamaño $N$ se pausa y espera a que el subproblema de tamaño $N-1$ se resuelva. Esto asegura que el subproblema se resuelva antes de hacer el movimiento del disco $N$.
 
 
-### Planificación del proyecto
+
+## Planificación del proyecto
 
 La planificación del proyecto se encuentra siguiendo el [Link a Notion](https://www.notion.so/juanpin/2babb7e62c6e808faae8cf13f1051af5?v=2babb7e62c6e81c0b7c1000c4df51a33&source=copy_link)
 
