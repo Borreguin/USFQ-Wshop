@@ -8,3 +8,7 @@ def define_color(cell):
         return 'green'
     elif cell == 'S':   # Salida
         return 'red'
+    elif cell == 'X':   # Nodos explorados (búsqueda)
+        return 'lightblue'
+    elif cell == 'P':   # Camino solución
+        return 'yellow'

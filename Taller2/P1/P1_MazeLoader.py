@@ -2,13 +2,15 @@ import matplotlib.pyplot as plt
 import os, sys
 project_path = os.path.dirname(__file__)
 sys.path.append(project_path)
-from Taller2.P1.P1_util import define_color
+from P1_util import define_color
 
 
 class MazeLoader:
     def __init__(self, filename):
         self.filename = filename
         self.maze = None
+        self.start = None
+        self.end = None
 
     def load_Maze(self):
         _maze = []
@@ -18,6 +20,12 @@ class MazeLoader:
             for line in file:
                 _maze.append(list(line.strip()))
         self.maze = _maze
+        for y in range(len(self.maze)):
+           for x in range(len(self.maze[0])):
+               if self.maze[y][x] == 'E':
+                   self.start = (x, y)
+               elif self.maze[y][x] == 'S':
+                   self.end = (x, y)
         return self
 
     def plot_maze(self):
@@ -39,7 +47,29 @@ class MazeLoader:
         fig.tight_layout()
         plt.show()
         return self
+    
 
-    def get_graph(self):
-        # Implementar la creación del grafo a partir del laberinto
-        return None
+    def get_graph(self, cost=1):
+
+        graph = {}
+        height = len(self.maze)
+        width = len(self.maze[0])
+        
+        # Direcciones: arriba, abajo, izquierda, derecha
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        
+        for y in range(height):
+            for x in range(width):
+                if self.maze[y][x] != '#':  # Si no es pared
+                    neighbors = []
+                    for dx, dy in directions:
+                        nx, ny = x + dx, y + dy
+                        # Verificar límites y que no sea pared
+                        if (0 <= nx < width and 0 <= ny < height and 
+                            self.maze[ny][nx] != '#'):
+                            neighbors.append(((nx, ny), cost))  # Costo uniforme de 1
+                    graph[(x, y)] = neighbors
+        
+        return graph,self.start, self.end
+    
+    
