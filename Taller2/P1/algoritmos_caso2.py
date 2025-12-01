@@ -18,11 +18,7 @@ import copy
 from P1_util import define_color
 
 def dfs(graph, start, end):
-    """
-    DFS - búsqueda en profundidad
-    
-    Explora lo más profundo posible antes de retroceder,usando una PILA (LIFO - Last In, First Out).
-    
+    """    
     Argumentos:
         graph (dict): grafo de adyacencias {nodo: [(vecino, costo), ...]}
         start (tuple): nodo inicial (x, y)
@@ -34,12 +30,12 @@ def dfs(graph, start, end):
                nodos_explorados: número de nodos visitados
 
     """
-    stack = [(start, [start])]  # (nodo_actual, camino_hasta_aquí)
+    stack = [(start, [start])]
     visited = set()
     nodes_explored = 0
     explored_list = [] 
     while stack:
-        node, path = stack.pop()  # LIFO: Saca el último
+        node, path = stack.pop()
         nodes_explored += 1
         
         if node in visited:
@@ -63,7 +59,7 @@ def dfs(graph, start, end):
 
 def a_star(graph, start, end):
     def heuristic(node, end):
-        """Distancia Manhattan (admisible para grids con movimiento 4-direccional)"""
+
         return abs(node[0] - end[0]) + abs(node[1] - end[1])
     
     # Heap: (f_n, contador, nodo, camino, g_n)
@@ -100,16 +96,13 @@ def a_star(graph, start, end):
     return None, nodes_explored, explored_list
 
 def plot_comparison(maze, dfs_data, astar_data, title_prefix="Laberinto"):
-    """
-    Visualiza DFS y A* lado a lado en una sola figura
-    
-    Args:
+    """    
+    Argumentos:
         maze: Laberinto (matriz 2D)
-        dfs_data: tuple (path, nodes_explored, explored_list) de DFS
-        astar_data: tuple (path, nodes_explored, explored_list) de A*
+        dfs_data: tupla (path, nodes_explored, explored_list) de DFS
+        astar_data: tupla (path, nodes_explored, explored_list) de A*
         title_prefix: Prefijo para los títulos
     """
-
     
     height = len(maze)
     width = len(maze[0])
@@ -143,11 +136,11 @@ def plot_comparison(maze, dfs_data, astar_data, title_prefix="Laberinto"):
         ax.set_xticks([])
         ax.set_yticks([])
     
-    # Dibujar DFS
+  
     dfs_path, dfs_nodes, dfs_explored = dfs_data
     draw_maze(ax1, dfs_explored, dfs_path, f"{title_prefix} - DFS")
     
-    # Dibujar A*
+
     astar_path, astar_nodes, astar_explored = astar_data
     draw_maze(ax2, astar_explored, astar_path, f"{title_prefix} - A*")
     
