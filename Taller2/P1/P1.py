@@ -103,7 +103,7 @@ def ejecutar_menu():
             opcion = input("\nSeleccione el laberinto que desea resolver (0-3): ").strip()
             
             if opcion == '0':
-                print("\n¡Hasta luego!")
+                print("\nSaliendo")
                 break
             elif opcion == '1':
                 study_case_1()
