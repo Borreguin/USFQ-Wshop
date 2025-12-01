@@ -1,10 +1,14 @@
 # WorkShop-USFQ
 ## Taller 2 de inteligencia artificial
 
-- **Nombre del grupo**: xxxxxx
+- **Nombre del grupo**: GRUPO 6
 - **Integrantes del grupo**:
-  * Estudiante 1
-  * Estudiante 2
+  * Santiago Acosta
+  * Juan Rodríguez
+  * Fernando Rodríguez
+  * Danilo Serrano 
+
+
 
 El objetivo de esta tarea es utilizar cualquier algoritmo de búsqueda para resolver los 3 laberintos propuestos, 
 el reto es poder visualizar/representar los resultados, adicionalmente poder comparar al menos 2 algoritmos de búsqueda 
