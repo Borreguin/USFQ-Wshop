@@ -6,7 +6,7 @@ Este módulo contiene implementaciones de los principales algoritmos de búsqued
 utilizados para resolver laberintos:
 
 1. DFS (Depth First Search) - búsqueda en profundidad
-2. A* (A-Star) - búsqueda heurística
+2. A* (A-Estrella) - búsqueda heurística
 
 """
 
