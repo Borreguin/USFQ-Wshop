@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
-    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15):
+    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=2):
         self.start = start
         self.end = end
         self.obstacles = obstacles
@@ -12,8 +12,10 @@ class AntColonyOptimization:
         self.evaporation_rate = evaporation_rate
         self.alpha = alpha
         self.beta = beta
-        self.pheromones = np.ones(grid_size)
+        # Inicializar feromonas con un valor pequeño, no 1, para evitar sesgo inicial
+        self.pheromones = np.ones(grid_size) * 0.1
         self.best_path = None
+        self.best_path_length = float('inf')
 
     def _get_neighbors(self, position):
         pos_x, pos_y = position
@@ -45,35 +47,49 @@ class AntColonyOptimization:
     def _evaporate_pheromones(self):
         self.pheromones *= (1 - self.evaporation_rate)
 
-    def _deposit_pheromones(self, path):
-        for position in path:
-            self.pheromones[position[1], position[0]] += 1
+    def _deposit_pheromones(self, path, path_length):
+        # Depósito inversamente proporcional a la longitud del camino
+        # Cuanto más corto sea el camino, más feromona se deposita
+        if path_length > 0:
+            pheromone_deposit = 1.0 / path_length  # Puedes ajustar este factor
+            for position in path:
+                self.pheromones[position[1], position[0]] += pheromone_deposit
 
     def find_best_path(self, num_iterations):
-        for _ in range(num_iterations):
+        for iteration in range(num_iterations):
             all_paths = []
-            for _ in range(self.num_ants):
+            for ant in range(self.num_ants):
                 current_position = self.start
                 path = [current_position]
                 while current_position != self.end:
                     next_position = self._select_next_position(current_position, path)
                     if next_position is None:
-                        break
+                        break  # Hormiga atascada
                     path.append(next_position)
                     current_position = next_position
-                all_paths.append(path)
+                # Solo agregar el camino si llegó al destino
+                if current_position == self.end:
+                    all_paths.append(path)
 
-            # Escoger el mejor camino por su tamaño?
-            # --------------------------
-            all_paths.sort(key=lambda x: len(x))
-            best_path = all_paths[0]
+            # Actualizar mejor camino global
+            if all_paths:
+                # Encontrar el camino más corto entre los válidos
+                best_path_this_iter = min(all_paths, key=len)
+                best_path_length_this_iter = len(best_path_this_iter)
 
-            self._evaporate_pheromones()
-            self._deposit_pheromones(best_path)
+                # Actualizar el mejor camino global si este es mejor
+                if best_path_length_this_iter < self.best_path_length:
+                    self.best_path = best_path_this_iter
+                    self.best_path_length = best_path_length_this_iter
 
-            if self.best_path is None or len(best_path) <= len(self.best_path):
-                self.best_path = best_path
-            # --------------------------
+                # Evaporar y depositar feromonas basadas en el mejor camino de esta iteración
+                self._evaporate_pheromones()
+                self._deposit_pheromones(best_path_this_iter, best_path_length_this_iter)
+            else:
+                # Si ninguna hormiga llegó al destino, solo evaporar
+                self._evaporate_pheromones()
+
+            print(f"Iteration {iteration + 1}: Best path length so far: {self.best_path_length}")
 
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
@@ -104,6 +120,7 @@ def study_case_1():
     aco.plot()
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
+    print("Length of best path: ", aco.best_path_length)
 
 def study_case_2():
     print("Start of Ant Colony Optimization - Second Study Case")
@@ -115,10 +132,8 @@ def study_case_2():
     aco.plot()
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
+    print("Length of best path: ", aco.best_path_length)
 
 if __name__ == '__main__':
     study_case_1()
-    # study_case_2()
-
-
-
+    #study_case_2()
