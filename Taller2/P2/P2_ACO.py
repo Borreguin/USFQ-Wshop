@@ -75,6 +75,39 @@ class AntColonyOptimization:
                 self.best_path = best_path
             # --------------------------
 
+    # Corrección de la función find_best_path        
+    def find_best_path2(self, num_iterations):
+        for _ in range(num_iterations):
+            all_paths = []
+            for _ in range(self.num_ants):
+                current_position = self.start
+                path = [current_position]
+                while current_position != self.end:
+                    next_position = self._select_next_position(current_position, path)
+                    if next_position is None:
+                        break
+                    path.append(next_position)
+                    current_position = next_position
+                
+                # CORRECCIÓN: Solo guardar el camino si llegó al final
+                if current_position == self.end:
+                    all_paths.append(path)
+
+            # Si ninguna hormiga llegó en esta iteración, saltamos a la siguiente
+            if not all_paths:
+                self._evaporate_pheromones() # Aún evaporamos para limpiar rastros viejos
+                continue 
+
+            # Ahora sí es seguro ordenar, porque todos son caminos exitosos
+            all_paths.sort(key=lambda x: len(x))
+            best_path = all_paths[0]
+
+            self._evaporate_pheromones()
+            self._deposit_pheromones(best_path)
+
+            if self.best_path is None or len(best_path) <= len(self.best_path):
+                self.best_path = best_path
+
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
         plt.figure(figsize=(8, 8))
@@ -100,7 +133,8 @@ def study_case_1():
     end = (4, 7)
     obstacles = [(1, 2), (2, 2), (3, 2)]
     aco = AntColonyOptimization(start, end, obstacles)
-    aco.find_best_path(100)
+    #aco.find_best_path(100)
+    aco.find_best_path2(100)  # Usar la versión corregida
     aco.plot()
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
@@ -111,14 +145,15 @@ def study_case_2():
     end = (4, 7)
     obstacles = [(0, 2), (1, 2), (2, 2), (3, 2)]
     aco = AntColonyOptimization(start, end, obstacles)
-    aco.find_best_path(100)
+    #aco.find_best_path(100)
+    aco.find_best_path2(100)  # Usar la versión corregida
     aco.plot()
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
 
 if __name__ == '__main__':
     study_case_1()
-    # study_case_2()
+    study_case_2()
 
 
 
