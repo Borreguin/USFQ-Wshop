@@ -5,12 +5,13 @@
 
 - **Integrantes del grupo**:
 
-| Integrante | Ejercicio Resuelto                 | 
-|:----:|:-----------------------------------|
-|Juan Pazmino| P1 TSP Travelling salesman problem |
-|Wilson Lopez|P2 El acertijo del granjero y el bote|
-|Cristian Calderon| P3 La torre de Hanoi               |
+| Integrante | Ejercicio Resuelto                 | Tareas                                                  |
+|:----:|:-----------------------------------|:--------------------------------------------------------|
+|Juan Pazmino| P1 TSP Travelling salesman problem | Resolucion, resumen funcionamiento, Colaboracion ensayo |
+|Wilson Lopez|P2 El acertijo del granjero y el bote| Resolucion, resumen funcionamiento, Colaboracion ensayo |
+|Cristian Calderon| P3 La torre de Hanoi | Resolucion, resumen funcionamiento, Colaboracion ensayo |
 
+---
 
 ## Resumen
 ### Taller 1
