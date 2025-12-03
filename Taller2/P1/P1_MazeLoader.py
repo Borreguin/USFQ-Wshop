@@ -3,7 +3,7 @@ import os, sys
 project_path = os.path.dirname(__file__)
 sys.path.append(project_path)
 from P1_util import define_color
-
+import networkx as nx
 
 class MazeLoader:
     def __init__(self, filename):
@@ -40,6 +40,30 @@ class MazeLoader:
         plt.show()
         return self
 
+
     def get_graph(self):
-        # Implementar la creación del grafo a partir del laberinto
-        return None
+        """
+        Crea un grafo donde cada celda libre (' ', 'E', 'S') es un nodo,
+        y se conectan celdas adyacentes arriba/abajo/izquierda/derecha.
+        """
+        G = nx.Graph()
+        height = len(self.maze)
+        width = len(self.maze[0])
+
+        for y in range(height):
+            for x in range(width):
+                cell = self.maze[y][x]
+
+                if cell in [' ', 'E', 'S']:  # Espacios transitables
+                    G.add_node((x, y))
+
+                    # Vecinos posibles
+                    for dx, dy in [(1,0), (-1,0), (0,1), (0,-1)]:
+                        nx_x, nx_y = x + dx, y + dy
+
+                        # Validación de límites
+                        if 0 <= nx_x < width and 0 <= nx_y < height:
+                            if self.maze[nx_y][nx_x] in [' ', 'E', 'S']:
+                                G.add_edge((x, y), (nx_x, nx_y))
+
+        return G
