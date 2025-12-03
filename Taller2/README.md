@@ -18,7 +18,6 @@ y mirar cómo se comportan para cada laberinto
 ### Laberinto 1
 
 ### Laberinto 2
-LABERINTO 2
 ![Maze1](/Taller2/images/Figure_1.png) 
 
 ### Laberinto 3
