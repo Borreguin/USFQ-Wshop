@@ -22,6 +22,8 @@ y mirar cómo se comportan para cada laberinto
 
 ### Laberinto 3
 
+
+### Algortimo ACO Colonia de Hormigas
 P2: Resolución del problema de laberintos
 
 A continuación se presentan las imágenes de las soluciones generadas por el algoritmo.
