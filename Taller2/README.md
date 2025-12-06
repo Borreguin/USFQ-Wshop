@@ -198,3 +198,122 @@ A* muestra su verdadero potencial cuando:
 | `solve_maze_astar()` | Implementación de A* |
 | `solve_maze_bfs()` | Implementación de BFS |
 | `reconstruct_path()` | Reconstruye camino desde `came_from` |
+
+---
+
+# Análisis de Ant Colony Optimization (ACO) para Pathfinding
+
+## Diferencias Principales
+
+| Aspecto | P2_ACO.py `study_case_2()`                         | Col_A.py `run()`                              |
+|---------|--------------------------------------|----------------------------------------|
+| Almacenamiento de obstáculos | `list` → O(n) por búsqueda           | `set` → O(1) por búsqueda              |
+| Validación de caminos | No verifica si llega al destino      | Solo acepta caminos completos          |
+| Límite de pasos | Sin límite (riesgo de loop infinito) | `max_steps=200`                        |
+| Depósito de feromonas | Puede duplicar en misma celda        | Usa `set(path)` para evitar duplicados |
+| Algoritmo adicional | —                                    | Incluye A* para comparación            |
+
+---
+
+## Errores Identificados en P2_ACO.py `study_case_2()`
+
+### 1. Error 1: Selección de Caminos Incompletos
+Un camino que se quedó atascado (no llegó al destino) será más corto que uno que completó el recorrido. El algoritmo premia caminos fallidos.
+
+
+**Código problemático:**
+```python
+all_paths.sort(key=lambda x: len(x))
+best_path = all_paths[0]
+```
+
+**Solución en Col_A.py:**
+```python
+if path[-1] == self.end:
+    paths.append(path)  # Solo considera caminos que llegaron al destino
+```
+
+### 2. Depósito de Feromonas Redundante
+
+**Código problemático:**
+```python
+def _deposit_pheromones(self, path):
+    for position in path:
+        self.pheromones[position[1], position[0]] += 1
+```
+
+**Solución:**
+```python
+for pos in set(path):  # Actualización solo en posiciones únicas
+```
+
+### 3. Posible Loop Infinito
+
+Sin límite de pasos, una hormiga podría quedarse en un ciclo indefinido.
+
+**Solución:**
+```python
+while pos != self.end and len(path) < max_steps:
+```
+
+---
+
+## Análisis del Study Case 2
+
+### Pregunta 1: ¿Es suficiente elegir el camino con menor tamaño?
+
+**Respuesta: NO**
+
+La condición faltante es verificar que el camino llegue al destino:
+```python
+path[-1] == self.end
+```
+
+Sin esta validación, caminos atascados de longitud 3-4 son seleccionados sobre caminos completos de longitud 12+.
+
+### Pregunta 2: Ajuste de Parámetros
+
+| Parámetro | Valor Original | Valor Corregido | Justificación                                          |
+|-----------|----------------|--------------|--------------------------------------------------------|
+| `alpha` | 0.1 | **0.5** | Mayor influencia de feromonas                          |
+| `beta` | 15 | **7** | Menos greedy, permite exploración                      |
+| `num_ants` | 10 | 10 | Lo mantengo porque mantiene la exploración del espacio |
+| `evaporation_rate` | 0.1 | 0.1-0.3 | Es un valor razonable                                  |
+
+**Explicación de `alpha` y `beta`:**
+- **Alpha:** Controla influencia de feromonas. Con 0.1, las hormigas ignoran rastros anteriores.
+- **Beta:** Controla influencia de la heurística. Con 15, las hormigas van directo al objetivo sin explorar alternativas, chocando contra la barrera.
+
+---
+
+## Comparación Visual de Resultados
+
+### Implementación Incorrecta
+- El camino se atasca en la esquina superior
+- NO conecta origen con destino
+- Feromonas concentradas en zona de "atasco"
+- Camino incompleto seleccionado como "mejor"
+
+![ACO01](/Taller2/images/ACO01.png) 
+
+### Implementación Corregida
+- El camino rodea la barrera correctamente
+- Conecta exitosamente start → end
+- Feromonas distribuidas a lo largo del camino válido
+- Resultado funcional y óptimo
+
+![ACO02](/Taller2/images/ACO02.png) 
+
+---
+
+## Conclusiones
+
+1. Una correcta validacion es muy importante ya que una solución inválida nunca debe competir con soluciones válidas, sin importar su "costo" aparente.
+
+2. Un correcto balance de los valores de alpha y beta deben permitir tanto explotación (seguir feromonas) como exploración (buscar alternativas).
+
+3. **Estructuras de datos:** Usar `set` para obstáculos mejora significativamente el rendimiento en búsquedas.
+
+4. **Límites de seguridad:** Siempre incluir `max_steps` para prevenir loops infinitos.
+
+---
