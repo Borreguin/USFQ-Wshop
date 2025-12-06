@@ -6,7 +6,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
     def __init__(self, start, end, obstacles, grid_size=(10, 10),
-                 num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15):
+                 num_ants=10, evaporation_rate=0.1, alpha=0.5, beta=7):
         self.start = start
         self.end = end
         self.obstacles = set(obstacles)
@@ -111,7 +111,7 @@ class AntColonyOptimization:
                     came[nxt] = cur
 
         if self.end not in came:
-            print("⚠️ No se encontró camino con A*")
+            print("No se encontró camino con A*")
             return None
 
         path = []
