@@ -21,20 +21,16 @@ def plot_solution(path, fig, ax, algorithm_name, show=True):
     # Excluir inicio y fin para que 'E' y 'S' sigan siendo verdes y rojos
     solution_points = path[1:-1]
 
-    # Asigna color y marcador según el algoritmo
     styles = {
         'A*': ('blue', '*', 15),
         'BFS': ('orange', 'o', 4),
     }
     color, marker, size = styles.get(algorithm_name, ('cyan', 'd', 6))
 
-
     # Graficar los puntos de la solución en los ejes 'ax' que recibimos
     if solution_points:
         y_coords = [y + 0.5 for y, x in solution_points]
         x_coords = [x + 0.5 for y, x in solution_points]
-
-        # zorder_map = {'A*': 3, 'BFS': 2}
 
         ax.plot(x_coords, y_coords,
                 marker=marker,
@@ -42,11 +38,9 @@ def plot_solution(path, fig, ax, algorithm_name, show=True):
                 color=color,
                 markersize=size,
                 alpha=0.8,
-                # zorder=zorder_map.get(algorithm_name, 1),
                 label=f'{algorithm_name} (Pasos: {len(path) - 1})') # Añadir etiqueta
 
-    # Asegúrate de que solo se llame a plt.show() al final de la visualización
-    ax.legend(loc='lower right') # Mostrar leyenda
+    ax.legend(loc='lower right')
     fig.tight_layout()
     if show:
         plt.show()
@@ -148,6 +142,7 @@ def compare_every_case():
     files = ['laberinto1.txt', 'laberinto2.txt', 'laberinto3.txt']
     for maze_file in files:
         study_case_comparison(maze_file)
+
 
 if __name__ == '__main__':
     # study_case_3()
