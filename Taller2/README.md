@@ -306,14 +306,126 @@ Sin esta validación, caminos atascados de longitud 3-4 son seleccionados sobre 
 
 ---
 
+## Descripción de Parámetros del Modelo
+
+### Parámetros de Configuración del Entorno
+
+| Parámetro   | Tipo                 | Descripción                                               |
+|-------------|----------------------|-----------------------------------------------------------|
+| `start`     | `tuple (x, y)`       | Coordenadas del punto de inicio en la grilla              |
+| `end`       | `tuple (x, y)`       | Coordenadas del punto destino/objetivo                    |
+| `obstacles` | `list/set`           | Conjunto de coordenadas que representan celdas bloqueadas |
+| `grid_size` | `tuple (rows, cols)` | Dimensiones de la grilla de búsqueda                      |
+
+### Parámetros del Algoritmo ACO
+
+| Parámetro          | Tipo    | Default | Rango Típico  |
+|--------------------|---------|---------|---------------|
+| `num_ants`         | `int`   | 10      | 10 - 100      |
+| `evaporation_rate` | `float` | 0.1     | 0.01 - 0.5    |
+| `alpha`            | `float` | 0.5     | 0.5 - 2.0     |
+| `beta`             | `float` | 7       | 2.0 - 10.0    |
+| `iterations`       | `int`   | 150     | 50 - 500      |
+| `max_steps`        | `int`   | 200     | grid_size * 2 |
+
+## Propósito de Cada Parámetro
+
+### `num_ants` — Número de Hormigas
+Define cuántas hormigas exploran el espacio en cada iteración.
+
+- Más hormigas = mayor exploración del espacio de soluciones
+- Menos hormigas = convergencia más rápida pero posible estancamiento en óptimos locales
+- **Trade-off:** Calidad de solución vs. tiempo de cómputo
+
+### `evaporation_rate` — Tasa de Evaporación
+Controla qué tan rápido se "olvidan" los caminos antiguos.
+
+```python
+self.pheromones *= (1 - evaporation_rate)
+```
+
+- **Valor alto (0.3-0.5):** Feromonas desaparecen rápido → favorece exploración de nuevas rutas
+- **Valor bajo (0.01-0.1):** Feromonas persisten → refuerza caminos conocidos
+- **Analogía:** Como el olor de las hormigas reales que se desvanece con el tiempo
+
+### `alpha` — Influencia de Feromonas
+**Propósito:** Determina qué tanto peso tienen las feromonas en la decisión de movimiento.
+
+- **`alpha= 0`:** Ignora completamente las feromonas (búsqueda puramente heurística)
+- **`alpha -> alto`:** Las hormigas siguen fuertemente los rastros de las anteriores
+- **Efecto:** Controla la **explotación** del conocimiento colectivo
+
+### `beta`— Influencia de la Heurística
+Determina qué tanto peso tiene la distancia al objetivo en la decisión.
+
+- **`beta = 0`:** Ignora la distancia (movimiento aleatorio guiado solo por feromonas)
+- **`beta alto`:** Comportamiento "greedy", siempre intenta acercarse al destino
+- **Efecto:** Controla la **explotación** de información heurística
+
+### Balance alpha/beta
+
+| Configuración            | Comportamiento                     | Cuándo Usar                               |
+|--------------------------|------------------------------------|-------------------------------------------|
+| `alpha bajo, beta alto`  | Muy greedy, poca memoria colectiva | Espacios simples sin obstáculos           |
+| `alpha alto, beta bajo`  | Sigue rastros, ignora destino      | Problemas donde la experiencia es crucial |
+| `alpha ≈ beta`           | Equilibrado                        | Caso general, recomendado                 |
+
+### `iterations` — Número de Iteraciones
+Cuántas veces se repite el ciclo completo de exploración.
+
+- Más iteraciones = mejor convergencia hacia el óptimo
+- El algoritmo puede converger antes si encuentra un camino estable
+- **Criterio de parada alternativo:** Detectar cuando `best_path` no mejora en N iteraciones
+
+### `max_steps` — Máximo de Pasos por Hormiga
+Límite de seguridad para evitar loops infinitos.
+
+- Previene que una hormiga atrapada consuma recursos indefinidamente
+- Debe ser mayor que la longitud esperada del camino óptimo
+- **Regla práctica:** `max_steps ≥ rows × cols` para garantizar cobertura
+
+---
+
 ## Conclusiones
 
 1. Una correcta validacion es muy importante ya que una solución inválida nunca debe competir con soluciones válidas, sin importar su "costo" aparente.
-
 2. Un correcto balance de los valores de alpha y beta deben permitir tanto explotación (seguir feromonas) como exploración (buscar alternativas).
-
 3. **Estructuras de datos:** Usar `set` para obstáculos mejora significativamente el rendimiento en búsquedas.
-
 4. **Límites de seguridad:** Siempre incluir `max_steps` para prevenir loops infinitos.
 
 ---
+
+## Pregunta de investigacion - Aplicación de ACO al Travelling Salesman Problem (TSP)
+
+### ¿Es posible utilizar ACO para resolver el TSP?
+
+**Sí.** El algoritmo ACO fue diseñado para resolver el TSP por Marco Dorigo en 1992. El problema de pathfinding en grilla (como el implementado en los archivos analizados) es una adaptación posterior del algoritmo original.
+
+El TSP es un problema de optimización combinatoria donde se busca el recorrido más corto que visite todas las ciudades exactamente una vez y regrese al punto de origen.
+
+### Diferencias: Pathfinding vs TSP
+
+| Aspecto     | Pathfinding (Grilla)             | TSP                                            |
+|-------------|----------------------------------|------------------------------------------------|
+| Objetivo    | Ir de A a B                      | Visitar todas las ciudades y volver            |
+| Grafo       | Grilla regular con vecinos fijos | Grafo completo (todas las ciudades conectadas) |
+| Restricción | Evitar obstáculos                | Visitar cada ciudad exactamente una vez        |
+| Heurística  | Distancia al destino             | Distancia entre ciudades                       |
+| Solución    | Secuencia de celdas              | Permutación de ciudades                        |
+
+### Pasos para Implementar ACO en TSP
+
+1. Representación del Problema 
+   - Crear matrices de distancias y feromonas
+2. Calcular Matriz de Distancias 
+   - Distancia euclidiana entre pares de ciudades
+3. Construir Tour 
+   - Cada hormiga visita todas las ciudades una vez
+4. Selección Probabilística 
+   - Elegir siguiente ciudad según feromonas y distancia
+5. Calcular Longitud del Tour 
+   - Sumar distancias de todas las aristas
+6. Actualización de Feromonas 
+   - Evaporación + depósito proporcional a calidad del tour
+7. Iteración y Convergencia 
+   - Repetir hasta encontrar buena solución
