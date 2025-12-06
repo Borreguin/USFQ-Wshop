@@ -70,7 +70,7 @@ def reconstruct_path(came_from, current):
     Reconstruye el camino desde el nodo final hasta el inicio.
     """
     total_path = [current]
-    while current in came_from:
+    while current in came_from and came_from[current] is not None:
         current = came_from[current]
         total_path.append(current)
     # El camino se reconstruye desde el final al inicio, por lo que lo invertimos.

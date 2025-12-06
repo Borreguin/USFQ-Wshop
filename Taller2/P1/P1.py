@@ -45,8 +45,8 @@ def run_solver(solver_func, graph, start_node, end_node):
     
     runtime = (end_time - start_time) * 1000 # Tiempo en milisegundos
     steps = len(path) - 1 if path else 0
-    
     return path, runtime, steps
+
 
 def study_case_1():
     print("This is study case 1")
@@ -60,12 +60,12 @@ def study_case_1():
     path = solve_maze_astar(graph, start_node, end_node)
     
     # 3. Graficar laberinto y solución
-    maze.plot_maze() # Esto mostrará el laberinto.
+    _, fig, ax = maze.plot_maze() # Esto mostrará el laberinto.
     
     if path:
-        print(f" ¡Solución encontrada! Pasos: {len(path) - 1}")
+        print(f"¡Solución encontrada! Pasos: {len(path) - 1}")
         # Llama a la función auxiliar para dibujar el camino en el plot existente
-        plot_solution(maze, path)
+        plot_solution(path, fig, ax, algorithm_name='A*')
     else:
         print(" No se encontró una solución para el laberinto.")
 
@@ -73,21 +73,15 @@ def study_case_1():
 def study_case_2():
     print("This is study case 2")
     maze_file = 'laberinto2.txt'
+
     maze = MazeLoader(maze_file).load_Maze()
-    
-    # 1. Obtener el grafo, inicio y fin
     graph, start_node, end_node = maze.get_graph()
-    
-    # 2. Aplicar el algoritmo A*
     path = solve_maze_astar(graph, start_node, end_node)
-    
-    # 3. Graficar laberinto y solución
-    maze.plot_maze() # Esto mostrará el laberinto.
+    _, fig, ax = maze.plot_maze()
     
     if path:
         print(f" ¡Solución encontrada! Pasos: {len(path) - 1}")
-        # Llama a la función auxiliar para dibujar el camino en el plot existente
-        plot_solution(maze, path)
+        plot_solution(path, fig, ax, algorithm_name='A*')
     else:
         print(" No se encontró una solución para el laberinto.")
 
@@ -95,21 +89,16 @@ def study_case_2():
 def study_case_3():
     print("This is study case 3")
     maze_file = 'laberinto3.txt'
+
     maze = MazeLoader(maze_file).load_Maze()
-    
-    # 1. Obtener el grafo, inicio y fin
     graph, start_node, end_node = maze.get_graph()
-    
-    # 2. Aplicar el algoritmo A*
     path = solve_maze_astar(graph, start_node, end_node)
-    
-    # 3. Graficar laberinto y solución
-    maze.plot_maze() # Esto mostrará el laberinto.
+    _, fig, ax = maze.plot_maze()
     
     if path:
         print(f" ¡Solución encontrada! Pasos: {len(path) - 1}")
         # Llama a la función auxiliar para dibujar el camino en el plot existente
-        plot_solution(maze, path)
+        plot_solution(path, fig, ax, algorithm_name='A*')
     else:
         print(" No se encontró una solución para el laberinto.")
 
@@ -150,5 +139,5 @@ def study_case_comparison():
     # plot_solution(path_bfs, fig, ax, algorithm_name='BFS')
 
 if __name__ == '__main__':
-    #study_case_3()
-    study_case_comparison()
+    study_case_3()
+    # study_case_comparison()

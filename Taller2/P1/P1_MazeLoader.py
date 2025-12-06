@@ -62,7 +62,7 @@ class MazeLoader:
         
         # Direcciones de movimiento (arriba, abajo, izquierda, derecha)
         # la tupla de 2 posiciones permite combinaciones necesarias para modelar cada
-        # movimiento, los valroes negativos indican sentido (abajo, derecha)
+        # movimiento, los valores negativos indican sentido (abajo, derecha)
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
         for y in range(height):
@@ -95,4 +95,3 @@ class MazeLoader:
              
         self.graph = graph
         return graph, self.start_node, self.end_node
-        return None
