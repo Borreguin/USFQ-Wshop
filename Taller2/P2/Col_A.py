@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import heapq
+from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
     def __init__(self, start, end, obstacles, grid_size=(10, 10),
@@ -123,33 +124,35 @@ class AntColonyOptimization:
 
     def plot(self):
         """Plot corregido"""
-        plt.figure(figsize=(6,6))
-        plt.imshow(self.pheromones, interpolation="nearest")
-        plt.scatter(self.start[0], self.start[1], c="green", s=100, label="Start")
-        plt.scatter(self.end[0], self.end[1], c="red", s=100, label="End")
+        cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
+        plt.figure(figsize=(8, 8))
+        plt.imshow(self.pheromones, cmap=cmap, vmin=np.min(self.pheromones), vmax=np.max(self.pheromones), interpolation="nearest")
+        plt.colorbar(label='Pheromone intensity')
+        plt.scatter(self.start[0], self.start[1], color='orange', label='Start', s=100)
+        plt.scatter(self.end[0], self.end[1], color='magenta', label='End', s=100)
 
-        for x, y in self.obstacles:
-            plt.scatter(x, y, c="black", marker="s", s=300)
+        for obstacle in self.obstacles:
+            plt.scatter(obstacle[0], obstacle[1], color='gray', s=900, marker='s')
 
         if self.best_path:
-            px = [n[0] for n in self.best_path]
-            py = [n[1] for n in self.best_path]
-            plt.plot(px, py, c="blue", linewidth=3, label="ACO Path")
+            path_x, path_y = zip(*self.best_path)
+            plt.plot(path_x, path_y, color='blue', label='ACO Path', linewidth=3)
 
+        plt.xlabel('Column')
+        plt.ylabel('Row')
+        plt.title('CORREGIDO - Ant Colony Optimization')
         plt.legend()
         plt.grid(True)
         plt.show()
 
 
 def run():
+    # study_case_2 -> Corregido
     print(" Iniciando solving A* + ACO integrado")
-
     start = (0, 0)
     end = (4, 7)
-    obstacles = [(1,2),(2,2),(3,2),(2,1),(3,3)]
-
+    obstacles = [(0, 2), (1, 2), (2, 2), (3, 2)]
     aco = AntColonyOptimization(start, end, obstacles)
-
     best_aco = aco.find_best_path(iterations=150)
     print(" Mejor camino ACO:", best_aco)
 

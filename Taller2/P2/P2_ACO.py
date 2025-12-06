@@ -117,8 +117,8 @@ def study_case_2():
     print("Best path: ", aco.best_path)
 
 if __name__ == '__main__':
-    study_case_1()
-    # study_case_2()
+    # study_case_1()
+    study_case_2()
 
 
 
