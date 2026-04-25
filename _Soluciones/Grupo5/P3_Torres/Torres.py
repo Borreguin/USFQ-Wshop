@@ -1,6 +1,6 @@
 """
-Torre de Hanoi – solución recursiva
-Visualización: animación de cada movimiento con matplotlib
+Torre Anohi – Solución Recursiva con Visualización
+Autor: Grupo 5 – USFQ Workshop
 """
 
 import matplotlib.pyplot as plt
@@ -9,6 +9,8 @@ import matplotlib.animation as animation
 
 # ── Lógica recursiva ─────────────────────────────────────────────────────────
 
+#Creo una función recursiva para resolver el problema de la Torre de Hanoi, 
+# que genera una lista de movimientos (origen → destino) para n discos.
 def hanoi(n: int, origen: str, destino: str, auxiliar: str, moves: list):
     if n == 1:
         moves.append((origen, destino))
