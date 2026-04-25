@@ -7,18 +7,10 @@ import os
 # Lista global para guardar los pasos
 pasos = []
 
-
-def limpiar():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
 # Visualización de torres
-def imprimir_torres(torres):
+def imprimir_torres(total, torres):
     print("\nEstado actual de las torres:\n")
-    
-    altura = max(len(t) for t in torres.values())
-    
-    for i in range(altura, 0, -1):
+    for i in range(total, 0, -1):
         fila = ""
         for torre in ['A', 'B', 'C']:
             if len(torres[torre]) >= i:
@@ -27,13 +19,12 @@ def imprimir_torres(torres):
             else:
                 fila += "  |  "
         print(fila)
-    
     print(" A   B   C ")
     print("-" * 20)
 
 
 # Función recursiva
-def hanoi(n, origen, auxiliar, destino, torres, contador):
+def hanoi(total, n, origen, auxiliar, destino, torres, contador):
     if n == 1:
         disco = torres[origen].pop()
         torres[destino].append(disco)
@@ -43,11 +34,11 @@ def hanoi(n, origen, auxiliar, destino, torres, contador):
         pasos.append(paso_texto)
 
         print(paso_texto)
-        imprimir_torres(torres)
+        imprimir_torres(total, torres)
         time.sleep(0.3)
         return
 
-    hanoi(n-1, origen, destino, auxiliar, torres, contador)
+    hanoi(total, n-1, origen, destino, auxiliar, torres, contador)
 
     disco = torres[origen].pop()
     torres[destino].append(disco)
@@ -57,10 +48,10 @@ def hanoi(n, origen, auxiliar, destino, torres, contador):
     pasos.append(paso_texto)
 
     print(paso_texto)
-    imprimir_torres(torres)
+    imprimir_torres(total, torres)
     time.sleep(0.3)
 
-    hanoi(n-1, auxiliar, origen, destino, torres, contador)
+    hanoi(total, n-1, auxiliar, origen, destino, torres, contador)
 
 
 def main():
@@ -75,10 +66,10 @@ def main():
     contador = [0]
 
     print("\nEstado inicial:")
-    imprimir_torres(torres)
+    imprimir_torres(n, torres)
 
     print("\nResolviendo Torre de Hanoi...\n")
-    hanoi(n, 'A', 'B', 'C', torres, contador)
+    hanoi(n, n, 'A', 'B', 'C', torres, contador)
 
     print("\n ¡Problema resuelto!")
 

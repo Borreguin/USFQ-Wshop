@@ -1,4 +1,4 @@
-from Taller1.P1_TSP.TSP import study_case_1
+from Taller1.P1_TSP.TSP import study_case_1, study_case_2
 from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 
