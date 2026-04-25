@@ -88,7 +88,3 @@ def main():
 
     print(f"\nTotal de movimientos: {len(pasos)}")
     print(f"Movimientos esperados: {2**n - 1}")
-
-
-if __name__ == "__main__":
-    main()
