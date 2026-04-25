@@ -77,3 +77,5 @@ python Taller1/P1_TSP/TSP.py
 python Taller1/P2_Granjero/Acertijo.py
 python Taller1/P3_Torres/Torres.py
 ```
+
+## Notion Link:
