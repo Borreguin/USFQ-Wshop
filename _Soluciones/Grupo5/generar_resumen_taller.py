@@ -14,9 +14,11 @@ from reportlab.platypus import (
 )
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_LEFT, TA_RIGHT
 
-BASE    = os.path.dirname(__file__)
-IMG_DIR = os.path.join(BASE, "images")
-OUTPUT  = os.path.join(BASE, "resumen_taller1_grupo5.pdf")
+BASE         = os.path.dirname(__file__)
+TSP_DIR      = os.path.join(BASE, "P1_TSP",      "imagenes")
+GRANJERO_DIR = os.path.join(BASE, "P2_Granjero", "imagenes")
+HANOI_DIR    = os.path.join(BASE, "P3_Torres",   "imagenes")
+OUTPUT       = os.path.join(BASE, "resumen_taller1_grupo5.pdf")
 
 W, H = A4
 
@@ -71,7 +73,14 @@ def make_styles():
 
 
 def img(fname, width=None, height=None):
-    path = os.path.join(IMG_DIR, fname)
+    # Busca la imagen en la carpeta del problema correspondiente
+    if fname.startswith("tsp_"):
+        base_dir = TSP_DIR
+    elif fname.startswith("granjero_"):
+        base_dir = GRANJERO_DIR
+    else:
+        base_dir = HANOI_DIR
+    path = os.path.join(base_dir, fname)
     if not os.path.exists(path):
         return Spacer(1, 0.1*cm)
     i = Image(path)
