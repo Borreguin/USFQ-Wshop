@@ -1,4 +1,11 @@
 
+# Programa para resolver el problema de las Torres de Hanoi - GRUPO 1 - TALLER 1 - P3
+
+import time
+import os
+
+# Lista global para guardar los pasos
+pasos = []
 
 # Visualización de torres
 def imprimir_torres(total, torres):
@@ -72,7 +79,3 @@ def main():
 
     print(f"\nTotal de movimientos: {len(pasos)}")
     print(f"Movimientos esperados: {2**n - 1}")
-
-
-if __name__ == "__main__":
-    main()
