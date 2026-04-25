@@ -78,17 +78,19 @@ en la IA moderna: chips de memristores, eficiencia energética, futuro híbrido 
 ```
 _Soluciones/Grupo5/
 ├── P1_TSP/
-│   └── TSP.py                     # Entrada: corre TSP con 24 ciudades
+│   ├── TSP.py                     # Entrada: corre TSP con 24 ciudades
+│   └── imagenes/                  # 5 PNG: comparativa, convergencia, feromonas, estadísticas, heatmap
 ├── P2_Granjero/
 │   ├── Acertijo.py                # Entrada: BFS + visualizaciones
-│   └── solucion_granjero.txt      # Solución impresa con estados
+│   ├── solucion_granjero.txt      # Solución impresa con estados
+│   └── imagenes/                  # 2 PNG: pasos de solución, grafo de transiciones
 ├── P3_Torres/
-│   └── Torres.py                  # Entrada: Hanoi recursivo
+│   ├── Torres.py                  # Entrada: Hanoi recursivo
+│   └── imagenes/                  # 3 PNG: estado final, movimientos, curva de complejidad
 ├── src/
 │   ├── tsp.py                     # OOP: City, ACO, TSPVisualizer…
 │   ├── granjero.py                # OOP: State, FarmerPuzzle…
 │   └── hanoi.py                   # OOP: Disk, Tower, HanoiSolver…
-├── images/                        # 10 PNG generadas (5 TSP + 2 Granjero + 3 Hanoi)
 ├── generar_imagenes.py            # Regenera las 10 imágenes (headless)
 ├── generar_resumen_taller.py      # Regenera el PDF resumen
 ├── resumen_taller1_grupo5.pdf     # Informe completo del taller
