@@ -188,8 +188,8 @@ python Torres.py
 ```
 Python >= 3.8
 matplotlib
-tkinter (incluido en la instalación estándar de Python)
-jupyter (opcional, para P1_TSP/TSP_Notebook.ipynb)
+tkinter
+jupyter
 ```
 
 Instalación de dependencias:
