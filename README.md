@@ -5,11 +5,11 @@
 - **Nombre del grupo**: Grupo #
 - **Integrantes del grupo**:
 
-    • Carla Parra
+    • Anderson Alvarez
 
-    • xxxxx
+    • Maximo Pinta
 
-    • xxxxx
+    • Steeven Quezada
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
