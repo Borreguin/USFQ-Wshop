@@ -345,18 +345,22 @@ class TSPVisualizer:
 
     def plot_heatmap(self) -> plt.Figure:
         n, dist = self._dm.n, self._dm.matrix
-        fig, ax = plt.subplots(figsize=(8, 6.5))
+        size = max(8, n * 0.4)
+        fig, ax = plt.subplots(figsize=(size, size * 0.85))
         im = ax.imshow(dist, cmap="YlOrRd", aspect="auto")
+        fs = max(5, 9 - n // 5)
         ax.set_xticks(range(n)); ax.set_yticks(range(n))
-        ax.set_xticklabels(self._names, rotation=45, ha="right", fontsize=8)
-        ax.set_yticklabels(self._names, fontsize=8)
+        ax.set_xticklabels(self._names, rotation=45, ha="right", fontsize=fs)
+        ax.set_yticklabels(self._names, fontsize=fs)
         plt.colorbar(im, ax=ax, label="Distancia (km)")
-        for i in range(n):
-            for j in range(n):
-                ax.text(j, i, f"{dist[i][j]:.0f}", ha="center", va="center",
-                        fontsize=6.5,
-                        color="black" if dist[i][j] < dist.max()*0.6 else "white")
-        ax.set_title("Mapa de Calor – Distancias (km)", fontweight="bold")
+        if n <= 15:  # solo mostrar valores numericos para instancias pequenas
+            for i in range(n):
+                for j in range(n):
+                    ax.text(j, i, f"{dist[i][j]:.0f}", ha="center", va="center",
+                            fontsize=5.5,
+                            color="black" if dist[i][j] < dist.max()*0.6 else "white")
+        ax.set_title(f"Mapa de Calor – Distancias entre {n} ciudades (km)",
+                     fontweight="bold")
         plt.tight_layout()
         return fig
 
@@ -372,24 +376,43 @@ class TSPVisualizer:
 # ── Orquestador ──────────────────────────────────────────────────────────────
 
 class TSPSolver:
-    """Punto de entrada: instancia todo, ejecuta algoritmos y visualiza."""
+    """
+    Punto de entrada: instancia todo, ejecuta algoritmos y visualiza.
+    Soporta n ciudades arbitrarias via parametro cities_data.
+    Por defecto usa las 24 capitales de provincia del Ecuador.
+    """
 
+    # 24 capitales de provincia del Ecuador (lon, lat)
     CITIES_DATA = {
-        "Quito":       (-78.5249, -0.2295),
-        "Guayaquil":   (-79.9000, -2.1894),
-        "Cuenca":      (-79.0059, -2.9001),
-        "Manta":       (-80.7089, -0.9677),
-        "Ambato":      (-78.6197, -1.2491),
-        "Loja":        (-79.2045, -3.9931),
-        "Esmeraldas":  (-79.7000,  0.9592),
-        "Riobamba":    (-78.6464, -1.6635),
-        "Ibarra":      (-78.1228,  0.3517),
-        "Latacunga":   (-78.6165, -0.9319),
+        "Quito":          (-78.5249, -0.2295),
+        "Guayaquil":      (-79.9000, -2.1894),
+        "Cuenca":         (-79.0059, -2.9001),
+        "Manta":          (-80.7089, -0.9677),
+        "Ambato":         (-78.6197, -1.2491),
+        "Loja":           (-79.2045, -3.9931),
+        "Esmeraldas":     (-79.7000,  0.9592),
+        "Riobamba":       (-78.6464, -1.6635),
+        "Ibarra":         (-78.1228,  0.3517),
+        "Latacunga":      (-78.6165, -0.9319),
+        "Machala":        (-79.9605, -3.2581),
+        "Portoviejo":     (-80.4549, -1.0546),
+        "Sto. Domingo":   (-79.1719, -0.2543),
+        "Babahoyo":       (-79.5347, -1.8017),
+        "Tulcan":         (-77.7176,  0.8117),
+        "Guaranda":       (-78.9954, -1.5933),
+        "Azogues":        (-78.8465, -2.7391),
+        "Macas":          (-78.1158, -2.3069),
+        "Zamora":         (-78.9582, -4.0671),
+        "Tena":           (-77.8153, -0.9943),
+        "Puyo":           (-77.9997, -1.4888),
+        "Nueva Loja":     (-76.9972,  0.0839),
+        "Puerto F. de Orellana": (-76.9868, -0.4642),
+        "Santa Rosa":     (-79.9613, -3.4493),
     }
 
-    def __init__(self, n_runs: int = 20):
-        self.cities     = [City(n, lo, la)
-                           for n, (lo, la) in self.CITIES_DATA.items()]
+    def __init__(self, cities_data: Optional[dict] = None, n_runs: int = 20):
+        data            = cities_data if cities_data is not None else self.CITIES_DATA
+        self.cities     = [City(n, lo, la) for n, (lo, la) in data.items()]
         self.dm         = DistanceMatrix(self.cities)
         self.visualizer = TSPVisualizer(self.dm)
         self.n_runs     = n_runs
