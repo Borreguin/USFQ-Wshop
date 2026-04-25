@@ -293,9 +293,13 @@ def build_pdf():
     # Fig 1 – comparativa rutas (ancho completo)
     story.append(img("tsp_01_comparativa_rutas.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 1 — Comparativa de rutas para las 24 capitales provinciales: "
-        "Nearest Neighbor (rojo, ★=inicio en Quito) vs ACO (azul) vs ACO+2opt (verde). "
-        "Se observa cómo ACO+2opt elimina cruces innecesarios que el greedy introduce.", s["caption"]))
+        "Fig. 1 — Comparativa de rutas para las 24 capitales provinciales del Ecuador: "
+        "Nearest Neighbor (rojo, ★=Quito) = 2146.62 km vs ACO+2opt (verde) = 2003.89 km. "
+        "Mejora del 6.6% sobre el baseline greedy. "
+        "Ruta óptima: Ibarra → Tulcán → Nueva Loja → Orellana → Tena → Puyo → Latacunga "
+        "→ Ambato → Guaranda → Riobamba → Macas → Azogues → Cuenca → Zamora → Loja "
+        "→ Santa Rosa → Machala → Guayaquil → Babahoyo → Portoviejo → Manta "
+        "→ Esmeraldas → Sto. Domingo → Quito → Ibarra.", s["caption"]))
 
     # Fig 2 y 3 en dos columnas
     w2 = full_w * 0.495
@@ -319,11 +323,11 @@ def build_pdf():
                                ("VALIGN",(0,0),(-1,-1),"TOP")]))
     story.append(row2)
     story.append(Paragraph(
-        "Fig. 4 (izq.) — Análisis estadístico de 20 ejecuciones independientes: histograma, "
-        "boxplot y línea de media. Una desviación estándar pequeña confirma que ACO+2opt "
-        "converge de forma consistente al mismo óptimo local. "
-        "Fig. 5 (der.) — Mapa de calor de la matriz de distancias entre las 24 ciudades; "
-        "los bloques de baja distancia revelan la agrupación geográfica regional.", s["caption"]))
+        "Fig. 4 (izq.) — Análisis estadístico de 20 ejecuciones independientes sobre las "
+        "24 capitales provinciales: media = 2010.50 km, desv.est. = 10.73 km. "
+        "La baja dispersión confirma que ACO+2opt converge de forma consistente. "
+        "Fig. 5 (der.) — Mapa de calor de la matriz de distancias Haversine entre las 24 ciudades; "
+        "los bloques de baja distancia revelan la agrupación geográfica regional del Ecuador.", s["caption"]))
 
     story.append(Paragraph("Conclusión — TSP", s["subsection"]))
     story.append(Paragraph(
@@ -426,14 +430,14 @@ def build_pdf():
     story.append(Paragraph("Paso 5 — Solución encontrada (7 movimientos óptimos)", s["subsection"]))
     sol_data = [
         ["Paso", "Acción", "Estado (F, L, G, C)"],
-        ["0", "Inicio", "(0, 0, 0, 0) — todos en orilla izquierda"],
-        ["1", "Granjero -> (Cabra)", "(1, 0, 1, 0) — granjero lleva cabra"],
-        ["2", "Granjero <- (solo)", "(0, 0, 1, 0) — regresa solo"],
-        ["3", "Granjero -> (Lobo)", "(1, 1, 1, 0) — lleva el lobo"],
-        ["4", "Granjero <- (Cabra)", "(0, 0, 0, 0)* — regresa con cabra para proteger col"],
-        ["5", "Granjero -> (Col)", "(1, 0, 0, 1) — lleva la col"],
-        ["6", "Granjero <- (solo)", "(0, 0, 0, 1) — regresa solo"],
-        ["7", "Granjero -> (Cabra)", "(1, 1, 1, 1) — objetivo alcanzado"],
+        ["0", "Inicio", "(0, 0, 0, 0) — Izq: Granjero, Lobo, Cabra, Col  |  Der: vacía"],
+        ["1", "Granjero -> con Cabra", "(1, 0, 1, 0) — Izq: Lobo, Col  |  Der: Granjero, Cabra"],
+        ["2", "Granjero <- solo", "(0, 0, 1, 0) — Izq: Granjero, Lobo, Col  |  Der: Cabra"],
+        ["3", "Granjero -> con Lobo", "(1, 1, 1, 0) — Izq: Col  |  Der: Granjero, Lobo, Cabra"],
+        ["4", "Granjero <- con Cabra *", "(0, 1, 0, 0) — Izq: Granjero, Cabra, Col  |  Der: Lobo"],
+        ["5", "Granjero -> con Col", "(1, 1, 0, 1) — Izq: Cabra  |  Der: Granjero, Lobo, Col"],
+        ["6", "Granjero <- solo", "(0, 1, 0, 1) — Izq: Granjero, Cabra  |  Der: Lobo, Col"],
+        ["7", "Granjero -> con Cabra", "(1, 1, 1, 1) — Izq: vacía  |  Der: Granjero, Lobo, Cabra, Col"],
     ]
     sol_tbl = Table(sol_data, colWidths=[full_w*0.10, full_w*0.35, full_w*0.55])
     sol_tbl.setStyle(TableStyle([
@@ -458,19 +462,28 @@ def build_pdf():
     story.append(sol_tbl)
     story.append(Spacer(1, 0.2*cm))
     story.append(Paragraph(
-        "* En el paso 4, el granjero regresa con la cabra porque si la dejara con el lobo "
-        "en la orilla derecha, el lobo la devoraría. Este es el movimiento contraintuitivo "
-        "que hace al acertijo interesante: hay que 'retroceder' para avanzar.", s["body"]))
+        "* Paso 4 — movimiento contraintuitivo: tras el paso 3, el estado (1,1,1,0) tiene "
+        "a lobo y cabra juntos en la orilla derecha. Si el granjero regresara solo, dejaría "
+        "al lobo con la cabra sin supervisión (estado inválido). La única opción válida es "
+        "regresar con la cabra, produciendo (0,1,0,0). Hay que 'retroceder' para avanzar.", s["body"]))
 
     story.append(Paragraph("Diseño OOP — clases implementadas", s["subsection"]))
     farm_oop = [
-        ["Clase", "Responsabilidad", "Métodos clave"],
-        ["State", "Dataclass inmutable: (farmer, wolf, goat, cabbage). "
-         "Hashable para usarse en conjuntos.", "is_valid(), successors(), label()"],
-        ["FarmerPuzzle", "Resuelve con BFS. Construye el grafo completo de estados.", "solve(), build_graph()"],
-        ["PuzzleVisualizer", "Genera figura de pasos y grafo de transiciones de estados.", "plot_steps(), plot_graph(), save_all()"],
+        ["Función / Módulo", "Responsabilidad", "Detalle"],
+        ["is_valid(state)", "Valida que el estado no viole las restricciones.",
+         "Descarta lobo+cabra o cabra+col solos."],
+        ["successors(state)", "Genera los estados alcanzables desde el estado actual.",
+         "Hasta 4 acciones: cruzar solo o con lobo/cabra/col."],
+        ["bfs()", "Búsqueda en anchura desde START hasta GOAL.",
+         "Cola FIFO; retorna path y actions."],
+        ["build_graph()", "Construye el grafo dirigido completo de estados válidos.",
+         "Usa NetworkX DiGraph con aristas etiquetadas."],
+        ["visualize_steps()", "Genera imagen con los 8 paneles de la secuencia.",
+         "Guarda granjero_01_pasos.png (150 dpi)."],
+        ["visualize_graph()", "Dibuja el grafo de estados con el camino destacado.",
+         "Guarda granjero_02_grafo.png (150 dpi)."],
     ]
-    farm_tbl = Table(farm_oop, colWidths=[full_w*0.22, full_w*0.48, full_w*0.30])
+    farm_tbl = Table(farm_oop, colWidths=[full_w*0.28, full_w*0.42, full_w*0.30])
     farm_tbl.setStyle(TableStyle([
         ("BACKGROUND",  (0,0), (-1,0), C_SECONDARY),
         ("TEXTCOLOR",   (0,0), (-1,0), colors.white),
@@ -492,20 +505,22 @@ def build_pdf():
 
     story.append(img("granjero_01_pasos.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 6 — Secuencia completa de los 7 pasos de la solución óptima encontrada por BFS. "
-        "Cada panel muestra las dos orillas del río, la posición de cada elemento (G=granjero, "
-        "W=lobo, A=cabra, C=col) y la barca. Se puede observar el movimiento contraintuitivo "
-        "del paso 4: el granjero regresa con la cabra para evitar que el lobo la ataque.", s["caption"]))
+        "Fig. 6 — Secuencia de solución BFS: 8 paneles (Paso 0 al Paso 7). "
+        "Cada panel muestra la orilla izquierda (verde), el río (azul) y la orilla derecha (verde). "
+        "Los elementos se identifican con etiquetas: G-Granjero, L-Lobo, C-Cabra, V-Col. "
+        "La barca aparece junto al granjero en cada paso. "
+        "El paso 4 (Granjero regresa con Cabra) es el movimiento contraintuitivo "
+        "que evita dejar al lobo con la cabra sin supervisión.", s["caption"]))
 
     story.append(img("granjero_02_grafo.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 7 — Grafo completo de transiciones del espacio de estados. "
-        "Cada nodo es un estado válido (10 de 16 posibles). "
-        "Verde = estado inicial (0,0,0,0), Rojo = estado objetivo (1,1,1,1), "
-        "Azul = nodos en la solución BFS óptima, Gris = estados explorados pero no usados. "
-        "La ruta óptima de 7 pasos se resalta en naranja. El grafo visualiza por qué "
-        "ciertas transiciones no existen: los 6 estados inválidos fueron descartados "
-        "por la función is_valid().", s["caption"]))
+        "Fig. 7 — Grafo de estados del acertijo construido por BFS. "
+        "Cada nodo muestra la distribución de actores por orilla (I=izquierda, D=derecha; "
+        "Ø=vacía). De los 16 estados matemáticamente posibles, 10 son válidos. "
+        "Verde = estado inicial I:G,L,C,V / D:Ø. "
+        "Rojo = estado objetivo I:Ø / D:G,L,C,V. "
+        "Azul = estados del camino óptimo. Gris = estados válidos no usados. "
+        "Naranja = aristas del camino solución de 7 pasos.", s["caption"]))
 
     story.append(Paragraph("Conclusión — Granjero", s["subsection"]))
     story.append(Paragraph(
