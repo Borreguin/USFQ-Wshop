@@ -34,7 +34,7 @@ Solución con tres algoritmos en cadena aplicados a las **24 capitales de provin
 - `tsp_05_heatmap_distancias.png` – Mapa de calor de distancias Haversine
 
 ### B. El acertijo del granjero y el bote
-**Archivos:** `P2_Granjero/Acertijo.py` · `src/granjero.py` (OOP)
+**Archivo:** `P2_Granjero/Acertijo.py`
 
 Solución con **BFS (Búsqueda en Anchura)** sobre espacio de estados.
 Estado: `(granjero, lobo, cabra, col)` donde `0`=orilla izquierda, `1`=orilla derecha.
@@ -89,7 +89,6 @@ _Soluciones/Grupo5/
 │   └── imagenes/                  # 3 PNG: estado final, movimientos, curva de complejidad
 ├── src/
 │   ├── tsp.py                     # OOP: City, ACO, TSPVisualizer…
-│   ├── granjero.py                # OOP: State, FarmerPuzzle…
 │   └── hanoi.py                   # OOP: Disk, Tower, HanoiSolver…
 ├── generar_imagenes.py            # Regenera las 10 imágenes (headless)
 ├── generar_resumen_taller.py      # Regenera el PDF resumen
