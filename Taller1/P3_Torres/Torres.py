@@ -54,7 +54,7 @@ def draw_state(ax, state_dict, move_info, step, total, n):
     src, dst = move_info if move_info else (None, None)
     title = f"Movimiento {step}/{total}"
     if src and dst:
-        title += f"  |  Torre {src} → Torre {dst}"
+        title += f"  |  Torre {src} -> Torre {dst}"
     ax.set_title(title, color="white", fontsize=11, fontweight="bold")
 
     # Base
@@ -89,16 +89,17 @@ def draw_state(ax, state_dict, move_info, step, total, n):
                     ha="center", va="center", fontsize=9, color="white", fontweight="bold")
 
 
-def main():
-    n = int(input("Número de discos (recomendado 3-5): ") or "4")
+def main(save_dir=None, n=None):
+    if n is None:
+        n = int(input("Número de discos (recomendado 3-5): ") or "4")
     n = max(1, min(n, MAX_DISKS))
 
     moves = []
     hanoi(n, "A", "C", "B", moves)
     total_moves = 2**n - 1
-    print(f"\nTorre de Hanoi con {n} discos → {total_moves} movimientos\n")
+    print(f"\nTorre de Hanoi con {n} discos -> {total_moves} movimientos\n")
     for i, (s, d) in enumerate(moves, 1):
-        print(f"  Movimiento {i:3d}: Torre {s} → Torre {d}")
+        print(f"  Movimiento {i:3d}: Torre {s} -> Torre {d}")
 
     states, move_list = build_states(n)
     total = len(move_list)
@@ -112,7 +113,7 @@ def main():
         draw_state(ax, state_dict, (src, dst) if src else None,
                    frame, total, n)
 
-    interval = max(200, 1200 - n * 80)   # más discos → más rápido
+    interval = max(200, 1200 - n * 80)   # más discos -> más rápido
     ani = animation.FuncAnimation(
         fig, animate, frames=len(states),
         interval=interval, repeat=True
@@ -156,8 +157,22 @@ def main():
     ax3.fill_between(list(ns), costs, alpha=0.1, color="darkorange")
 
     plt.tight_layout()
-    plt.show()
+
+    if save_dir:
+        import os
+        os.makedirs(save_dir, exist_ok=True)
+        # Guardar frame final de la animación (estado resuelto)
+        state_dict, src, dst = states[-1]
+        draw_state(ax, state_dict, None, total, total, n)
+        fig.savefig(f"{save_dir}/hanoi_01_estado_final.png",  dpi=150, bbox_inches="tight")
+        fig2.savefig(f"{save_dir}/hanoi_02_movimientos.png",  dpi=150, bbox_inches="tight")
+        fig3.savefig(f"{save_dir}/hanoi_03_complejidad.png",  dpi=150, bbox_inches="tight")
+        print(f"  Imágenes guardadas en: {save_dir}/")
+        plt.close("all")
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(save_dir=sys.argv[1] if len(sys.argv) > 1 else None)
