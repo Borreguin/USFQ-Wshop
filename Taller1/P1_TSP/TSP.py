@@ -132,9 +132,19 @@ class TSP:
         self.ultima_distancia = distancia  # Guardar para referencia
         return ruta
 
-    def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
-        """Visualiza la ruta encontrada"""
-        plotear_ruta(self.ciudades, ruta, mostrar_anotaciones)
+    def plotear_resultado(
+            self,
+            ruta: List[str],
+            mostrar_anotaciones: bool = True,
+            save_path: str = None
+    ):
+        """Visualiza la ruta encontrada y opcionalmente la guarda"""
+        plotear_ruta(
+            self.ciudades,
+            ruta,
+            mostrar_anotaciones,
+            save_path
+        )
 
 
 def study_case_1():
@@ -153,7 +163,10 @@ def study_case_1():
     print(f"\nRuta óptima encontrada: {' → '.join(ruta)} → {ruta[0]}")
     print(f"Distancia total: {tsp.ultima_distancia:.2f} unidades")
 
-    tsp.plotear_resultado(ruta)
+    tsp.plotear_resultado(
+        ruta,
+        save_path="../images/tsp_10_ciudades.png" )
+
 
 def study_case_2():
     """Caso de prueba 2: 100 ciudades"""
@@ -172,7 +185,11 @@ def study_case_2():
     print(f"\nRuta encontrada (primeras 10): {' → '.join(ruta[:10])} → ...")
     print(f"Distancia total: {tsp.ultima_distancia:.2f} unidades")
 
-    tsp.plotear_resultado(ruta, False)
+    tsp.plotear_resultado(
+        ruta,
+        mostrar_anotaciones=False,
+        save_path="../images/tsp_100_ciudades.png"
+    )
 
 
 if __name__ == "__main__":
