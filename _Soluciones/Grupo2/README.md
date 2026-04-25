@@ -13,6 +13,8 @@
 Este taller aborda tres problemas de Inteligencia Artificial: optimización combinatoria, búsqueda en espacios de estados y resolución recursiva de puzzles. Cada problema fue implementado en Python con visualización interactiva.
 
 ---
+Enlace Notion: https://woolly-peripheral-d6d.notion.site/Proyecto-de-Planificaci-n-Torres-de-Hanoi-559bbb2919d048928ce2b91fe948b144
+---
 
 ## Índice
 
