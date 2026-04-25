@@ -172,57 +172,130 @@ def build_pdf():
 
     story.append(Paragraph("Descripción del problema", s["subsection"]))
     story.append(Paragraph(
-        "Dada una lista de ciudades y las distancias entre cada par de ellas, ¿cuál es la ruta "
-        "más corta posible que visita cada ciudad exactamente una vez y regresa al origen? "
-        "Se trabajó con 10 ciudades del Ecuador: Quito, Guayaquil, Cuenca, Manta, Ambato, "
-        "Loja, Esmeraldas, Riobamba, Ibarra y Latacunga.", s["body"]))
+        "El <b>Problema del Viajante de Comercio (TSP)</b> es uno de los problemas de optimización "
+        "combinatoria más estudiados en Ciencias de la Computación e Inteligencia Artificial. "
+        "Dado un conjunto de ciudades y las distancias entre cada par, el objetivo es encontrar "
+        "la ruta más corta que visite cada ciudad exactamente una vez y regrese al origen. "
+        "Es formalmente <b>NP-difícil</b>: no existe ningún algoritmo conocido que lo resuelva "
+        "de forma exacta en tiempo polinomial para instancias grandes. Para este taller se trabajó "
+        "con las <b>24 capitales de provincia del Ecuador</b>, desde Quito hasta Galápagos, "
+        "utilizando distancias en kilómetros entre coordenadas geográficas reales.", s["body"]))
 
-    story.append(Paragraph("Representación del problema", s["subsection"]))
+    story.append(Paragraph("Paso 1 — Modelado del problema", s["subsection"]))
     story.append(Paragraph(
-        "El TSP se representa como un <b>grafo completo ponderado</b> G = (V, E) donde V son las "
-        "ciudades y cada arista (i,j) ∈ E tiene peso igual a la distancia en km. "
-        "El objetivo es encontrar el ciclo hamiltoniano de menor peso total.", s["body"]))
+        "El TSP se representó como un <b>grafo completo ponderado G = (V, E)</b>, donde:", s["body"]))
+    for item in [
+        "<b>V</b> = conjunto de 24 ciudades (nodos), cada una con nombre, latitud y longitud.",
+        "<b>E</b> = aristas que conectan cada par de ciudades; su peso es la distancia en km "
+        "calculada con la fórmula de Haversine (distancia sobre la esfera terrestre).",
+        "<b>Objetivo:</b> encontrar el ciclo hamiltoniano (recorrido que visita todos los nodos "
+        "exactamente una vez y cierra el ciclo) de menor peso total.",
+    ]:
+        story.append(Paragraph(f"&#8226; {item}", s["bullet"]))
+    story.append(Paragraph(
+        "Se implementó la clase <b>DistanceMatrix</b> que precalcula y almacena en memoria las "
+        "24×24 = 576 distancias, y la clase <b>Route</b> que calcula su costo total como propiedad "
+        "con acceso O(1). Este diseño evita recalcular distancias en cada iteración del ACO.", s["body"]))
 
-    story.append(Paragraph("Algoritmos implementados", s["subsection"]))
-    algo_data = [
-        ["Algoritmo", "Descripción", "Complejidad"],
-        ["Nearest Neighbor", "Greedy: parte de Quito y siempre salta al vecino más cercano no visitado.", "O(n²)"],
-        ["ACO", "Colonia de hormigas: 25 hormigas × 150 iteraciones con feromonas, evaporación ρ=0.15 y élite.", "O(iter·n²)"],
-        ["2-opt", "Post-proceso: invierte segmentos de la ruta ACO hasta que no haya mejora posible.", "O(n²)/iter"],
+    story.append(Paragraph("Paso 2 — Vecino más cercano (solución inicial)", s["subsection"]))
+    story.append(Paragraph(
+        "El algoritmo <b>Nearest Neighbor (NN)</b> construye una ruta greedy como punto de partida. "
+        "Su lógica paso a paso:", s["body"]))
+    for p in [
+        "Comenzar en Quito (ciudad 0). Marcarla como visitada.",
+        "En cada paso: de la ciudad actual, saltar a la ciudad no visitada más cercana "
+        "(menor distancia en la DistanceMatrix).",
+        "Repetir hasta haber visitado las 24 ciudades.",
+        "Cerrar el ciclo regresando a Quito.",
+    ]:
+        story.append(Paragraph(f"&#8226; {p}", s["bullet"]))
+    story.append(Paragraph(
+        "NN es O(n²) y produce una solución de calidad razonable en microsegundos, "
+        "pero no es óptima: puede quedar atrapada eligiendo decisiones localmente buenas "
+        "que resultan globalmente malas (el conocido problema del 'pasado nocivo').", s["body"]))
+
+    story.append(Paragraph("Paso 3 — Optimización con Colonia de Hormigas (ACO)", s["subsection"]))
+    story.append(Paragraph(
+        "El <b>Ant Colony Optimization (ACO)</b> es un algoritmo metaheurístico bioinspirado "
+        "en el comportamiento de las hormigas reales al buscar caminos al alimento: depositan "
+        "feromonas en los caminos que recorren, y las demás hormigas prefieren seguir caminos "
+        "con más feromonas, creando un ciclo de retroalimentación positiva. Se ejecutaron "
+        "<b>25 hormigas × 150 iteraciones</b>, más 3 hormigas élite que refuerzan la mejor "
+        "ruta global.", s["body"]))
+    story.append(Paragraph("El proceso por iteración sigue estos pasos:", s["body"]))
+    for p in [
+        "<b>Inicialización:</b> matriz de feromonas τ(i,j) = 1.0 para todos los pares; "
+        "heurística η(i,j) = 1 / dist(i,j).",
+        "<b>Construcción de rutas:</b> cada hormiga parte de una ciudad aleatoria y elige "
+        "el siguiente destino j con probabilidad probabilística (ruleta sesgada):",
+        "<b>Actualización de feromonas:</b> evaporación global τ ← (1−ρ)·τ con ρ=0.15; "
+        "luego cada hormiga deposita Δτ = Q/longitud_ruta sobre los arcos que recorrió.",
+        "<b>Hormigas élite:</b> la mejor ruta global recibe un depósito adicional de "
+        "feromonas multiplicado por 3, lo que acelera la convergencia.",
+        "<b>Registro:</b> se guarda el mejor costo de la iteración para graficar la "
+        "curva de convergencia.",
+    ]:
+        story.append(Paragraph(f"&#8226; {p}", s["bullet"]))
+    story.append(Paragraph(
+        "p(i→j) = [ τ(i,j)^α · η(i,j)^β ] / Σk∈no_visitados [ τ(i,k)^α · η(i,k)^β ]", s["code"]))
+    story.append(Paragraph(
+        "donde <b>α=1.2</b> controla cuánto pesan las feromonas (explotación de la memoria "
+        "colectiva) y <b>β=2.5</b> controla cuánto pesa la heurística de distancia (exploración "
+        "de caminos cortos). El balance α/β determina si el algoritmo explora o explota.", s["body"]))
+
+    story.append(Paragraph("Paso 4 — Mejora local con 2-opt", s["subsection"]))
+    story.append(Paragraph(
+        "Tras cada ejecución del ACO se aplica <b>2-opt</b> como post-proceso de refinamiento local. "
+        "El algoritmo examina todos los pares de aristas (i,i+1) y (j,j+1) en la ruta: si "
+        "invertir el segmento entre i+1 y j reduce la longitud total, se acepta el intercambio. "
+        "Se repite hasta que no haya más mejoras posibles (convergencia local). "
+        "2-opt es O(n²) por pasada y típicamente reduce la ruta del ACO entre un 2% y 8%.", s["body"]))
+
+    story.append(Paragraph("Paso 5 — Análisis estadístico (20 ejecuciones)", s["subsection"]))
+    story.append(Paragraph(
+        "Para medir la robustez del algoritmo se ejecutaron <b>20 corridas independientes</b>, "
+        "cada una con semillas aleatorias distintas. Se calcularon: media, desviación estándar, "
+        "mínimo y máximo de la longitud óptima encontrada. Una desviación estándar baja indica "
+        "que ACO+2opt converge de forma consistente al mismo óptimo, demostrando estabilidad "
+        "del método para esta instancia.", s["body"]))
+
+    story.append(Paragraph("Diseño OOP — clases implementadas", s["subsection"]))
+    tsp_oop = [
+        ["Clase", "Responsabilidad"],
+        ["City", "Entidad ciudad: nombre, lat, lon. Método distance_to() con Haversine."],
+        ["DistanceMatrix", "Matriz precalculada n×n de distancias. Acceso O(1)."],
+        ["Route", "Lista de ciudades con propiedad cost (costo total del ciclo)."],
+        ["NearestNeighborSolver", "Construye la ruta greedy como solución inicial."],
+        ["AntColonyOptimizer", "ACO: 25 hormigas × 150 iter, feromonas, élite, evaporación."],
+        ["TwoOptSolver", "Post-proceso local: invierte segmentos hasta convergencia."],
+        ["TSPVisualizer", "Genera las 5 figuras: rutas, convergencia, feromonas, stats, heatmap."],
+        ["TSPSolver", "Orquestador: corre n_runs, compara algoritmos, llama visualizador."],
     ]
-    tbl2 = Table(algo_data, colWidths=[full_w*0.22, full_w*0.56, full_w*0.22])
-    tbl2.setStyle(TableStyle([
-        ("BACKGROUND",    (0,0), (-1,0), C_SECONDARY),
-        ("TEXTCOLOR",     (0,0), (-1,0), colors.white),
-        ("FONTNAME",      (0,0), (-1,0), "Helvetica-Bold"),
-        ("FONTSIZE",      (0,0), (-1,-1), 9),
-        ("ROWBACKGROUNDS",(0,1), (-1,-1), [C_LIGHT, colors.white]),
-        ("GRID",          (0,0), (-1,-1), 0.4, colors.HexColor("#9fa8da")),
-        ("ALIGN",         (0,0), (-1,-1), "LEFT"),
-        ("VALIGN",        (0,0), (-1,-1), "MIDDLE"),
-        ("LEFTPADDING",   (0,0), (-1,-1), 6),
-        ("TOPPADDING",    (0,0), (-1,-1), 5),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+    tsp_tbl = Table(tsp_oop, colWidths=[full_w*0.30, full_w*0.70])
+    tsp_tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0,0), (-1,0), C_SECONDARY),
+        ("TEXTCOLOR",   (0,0), (-1,0), colors.white),
+        ("FONTNAME",    (0,0), (-1,0), "Helvetica-Bold"),
+        ("FONTNAME",    (0,1), (0,-1), "Helvetica-Bold"),
+        ("FONTSIZE",    (0,0), (-1,-1), 8),
+        ("ALIGN",       (0,0), (-1,-1), "LEFT"),
+        ("VALIGN",      (0,0), (-1,-1), "MIDDLE"),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, C_LIGHT]),
+        ("GRID",        (0,0), (-1,-1), 0.5, C_GRAY),
+        ("TOPPADDING",  (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING",(0,0),(-1,-1), 4),
+        ("LEFTPADDING", (0,0), (-1,-1), 6),
     ]))
-    story += [tbl2, Spacer(1, 0.4*cm)]
-
-    story.append(Paragraph("Fórmula de transición ACO", s["subsection"]))
-    story.append(Paragraph(
-        "Cada hormiga elige el siguiente nodo j desde el nodo i con probabilidad:", s["body"]))
-    story.append(Paragraph(
-        "p(i→j) = [ τ(i,j)^α · η(i,j)^β ] / Σk [ τ(i,k)^α · η(i,k)^β ]", s["code"]))
-    story.append(Paragraph(
-        "donde τ son las feromonas (memoria colectiva), η = 1/dist (heurística de distancia), "
-        "α=1.2 pondera la explotación y β=2.5 la exploración. Tras cada iteración se evapora: "
-        "τ ← (1−ρ)·τ y las 3 hormigas élite refuerzan la mejor ruta global.", s["body"]))
+    story += [tsp_tbl, Spacer(1, 0.3*cm)]
 
     story.append(Paragraph("Visualizaciones — TSP", s["subsection"]))
 
     # Fig 1 – comparativa rutas (ancho completo)
     story.append(img("tsp_01_comparativa_rutas.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 1 — Comparativa de rutas: Nearest Neighbor (rojo, ★=inicio) vs ACO (azul) "
-        "vs ACO+2opt (verde). La mejora sobre el baseline greedy es del 5.2%.", s["caption"]))
+        "Fig. 1 — Comparativa de rutas para las 24 capitales provinciales: "
+        "Nearest Neighbor (rojo, ★=inicio en Quito) vs ACO (azul) vs ACO+2opt (verde). "
+        "Se observa cómo ACO+2opt elimina cruces innecesarios que el greedy introduce.", s["caption"]))
 
     # Fig 2 y 3 en dos columnas
     w2 = full_w * 0.495
@@ -233,9 +306,10 @@ def build_pdf():
                               ("VALIGN",(0,0),(-1,-1),"TOP")]))
     story.append(row)
     story.append(Paragraph(
-        "Fig. 2 (izq.) — Convergencia: mejor global y promedio por iteración. "
-        "Fig. 3 (der.) — Feromonas τ(i,j) en escala logarítmica en 4 momentos del algoritmo "
-        "(el algoritmo aprende qué arcos son buenos).", s["caption"]))
+        "Fig. 2 (izq.) — Curva de convergencia: mejor ruta global y promedio por iteración. "
+        "La brecha se reduce conforme las feromonas concentran el comportamiento colectivo. "
+        "Fig. 3 (der.) — Evolución de feromonas τ(i,j) en escala logarítmica en 4 momentos "
+        "(iter. 1, 50, 100, 150): el algoritmo aprende cuáles arcos son más prometedores.", s["caption"]))
 
     # Fig 4 y 5 en dos columnas
     row2 = Table([[img("tsp_04_estadisticas.png",      width=w2),
@@ -245,17 +319,21 @@ def build_pdf():
                                ("VALIGN",(0,0),(-1,-1),"TOP")]))
     story.append(row2)
     story.append(Paragraph(
-        "Fig. 4 (izq.) — Análisis estadístico de 20 ejecuciones independientes: "
-        "media=1307.93 km, desv.est.=0 (el algoritmo converge siempre al mismo óptimo). "
-        "Fig. 5 (der.) — Mapa de calor de distancias entre ciudades.", s["caption"]))
+        "Fig. 4 (izq.) — Análisis estadístico de 20 ejecuciones independientes: histograma, "
+        "boxplot y línea de media. Una desviación estándar pequeña confirma que ACO+2opt "
+        "converge de forma consistente al mismo óptimo local. "
+        "Fig. 5 (der.) — Mapa de calor de la matriz de distancias entre las 24 ciudades; "
+        "los bloques de baja distancia revelan la agrupación geográfica regional.", s["caption"]))
 
     story.append(Paragraph("Conclusión — TSP", s["subsection"]))
     story.append(Paragraph(
-        "El TSP es el problema más complejo del taller: es NP-difícil, sin solución exacta "
-        "eficiente para n grande. ACO lo resuelve como metaheurística bioinspirada, "
-        "combinando memoria colectiva (feromonas) con exploración local (2-opt). "
-        "La desviación estándar de 0 en 20 corridas demuestra que la instancia de 10 ciudades "
-        "tiene un óptimo muy bien definido y ACO lo encuentra de forma consistente.", s["conclusion"]))
+        "El TSP es NP-difícil: no existe solución exacta eficiente para n grande. "
+        "La estrategia de tres capas —Nearest Neighbor como solución inicial, ACO como "
+        "exploración metaheurística bioinspirada y 2-opt como refinamiento local— permite "
+        "obtener soluciones de alta calidad en segundos. Las feromonas acumulan la experiencia "
+        "colectiva de 25 hormigas iteración a iteración, lo que hace que el algoritmo aprenda "
+        "progresivamente qué rutas son buenas, sin explorar los (n−1)!/2 ≈ 10²³ circuitos "
+        "posibles de las 24 ciudades.", s["conclusion"]))
 
     story.append(PageBreak())
 
@@ -267,49 +345,177 @@ def build_pdf():
     story.append(Paragraph("Descripción del problema", s["subsection"]))
     story.append(Paragraph(
         "Un granjero debe cruzar un río con un lobo, una cabra y una col. "
-        "La barca solo admite al granjero y un ítem. "
-        "Restricciones: lobo y cabra no pueden quedarse solos (el lobo come la cabra), "
-        "ni cabra y col (la cabra come la col).", s["body"]))
+        "Su barca solo tiene capacidad para él y un ítem a la vez. "
+        "El problema impone dos restricciones de seguridad: (1) el lobo y la cabra "
+        "no pueden quedarse solos en la misma orilla sin el granjero (el lobo devora la cabra); "
+        "(2) la cabra y la col tampoco pueden quedarse solos (la cabra come la col). "
+        "¿En qué orden debe cruzar el granjero para llevar todo al otro lado sin pérdidas?", s["body"]))
 
-    story.append(Paragraph("Representación como espacio de estados", s["subsection"]))
+    story.append(Paragraph("Paso 1 — Modelado como espacio de estados", s["subsection"]))
     story.append(Paragraph(
-        "Cada situación se codifica como una tupla de 4 bits:", s["body"]))
+        "El problema fue modelado como un <b>problema de búsqueda en el espacio de estados</b>, "
+        "donde cada estado representa de forma unívoca la ubicación del granjero, el lobo, "
+        "la cabra y la col en las dos orillas del río. Cada actor se codifica con un bit "
+        "(0 = orilla izquierda, 1 = orilla derecha), formando una tupla de 4 elementos:", s["body"]))
     story.append(Paragraph(
-        "estado = (granjero, lobo, cabra, col)   donde 0 = orilla izquierda, 1 = derecha", s["code"]))
+        "estado = (granjero, lobo, cabra, col)   con valores en {0, 1}\n"
+        "Estado inicial:  (0, 0, 0, 0)  — todos en la orilla izquierda\n"
+        "Estado objetivo: (1, 1, 1, 1)  — todos en la orilla derecha", s["code"]))
     story.append(Paragraph(
-        "Estado inicial: (0,0,0,0)  →  Estado objetivo: (1,1,1,1) "
-        "El espacio total tiene 2⁴=16 estados posibles; solo 10 son válidos tras descartar "
-        "los que violan las restricciones.", s["body"]))
+        "El espacio de estados total contiene <b>2⁴ = 16 combinaciones posibles</b>. "
+        "Sin embargo, muchas de ellas son inválidas porque violan las restricciones "
+        "de seguridad. Al aplicar la función de validez, solo quedan <b>10 estados "
+        "seguros</b> que el algoritmo puede usar.", s["body"]))
 
-    story.append(Paragraph("Algoritmo: BFS (Búsqueda en Anchura)", s["subsection"]))
+    story.append(Paragraph("Paso 2 — Función de validez del estado", s["subsection"]))
     story.append(Paragraph(
-        "BFS explora el grafo de estados nivel por nivel, garantizando encontrar "
-        "la solución con el menor número de pasos. Desde cada estado, el granjero "
-        "puede cruzar solo o llevando uno de los tres ítems que estén en su mismo lado; "
-        "solo se encolan los estados válidos.", s["body"]))
+        "Antes de encolar cualquier estado nuevo, se verifica que no sea peligroso. "
+        "Un estado es <b>inválido</b> si se cumple alguna de estas condiciones:", s["body"]))
+    for cond in [
+        "El lobo y la cabra están en la misma orilla <b>Y</b> el granjero no está con ellos "
+        "(lobo come la cabra).",
+        "La cabra y la col están en la misma orilla <b>Y</b> el granjero no está con ellos "
+        "(cabra come la col).",
+    ]:
+        story.append(Paragraph(f"&#8226; {cond}", s["bullet"]))
+    story.append(Paragraph(
+        "Esta validación se implementó en el método <b>State.is_valid()</b> del dataclass "
+        "inmutable (frozen=True). Al ser inmutable y hashable, cada estado puede almacenarse "
+        "en un conjunto de visitados sin colisiones, lo que es fundamental para la eficiencia "
+        "del BFS.", s["body"]))
+
+    story.append(Paragraph("Paso 3 — Generación de sucesores", s["subsection"]))
+    story.append(Paragraph(
+        "Desde cualquier estado válido, el granjero puede realizar hasta 4 acciones: "
+        "cruzar solo, o llevar consigo el lobo, la cabra o la col (siempre que el ítem "
+        "elegido esté en su misma orilla). El método <b>State.successors()</b> genera "
+        "todos los estados alcanzables y filtra los inválidos antes de devolverlos:", s["body"]))
+    story.append(Paragraph(
+        "para cada accion en [solo, lobo, cabra, col]:\n"
+        "    si el item esta en el mismo lado que el granjero:\n"
+        "        nuevo_estado = mover granjero + item al otro lado\n"
+        "        si nuevo_estado.is_valid():\n"
+        "            agregar (nuevo_estado, etiqueta_accion) a resultados", s["code"]))
+
+    story.append(Paragraph("Paso 4 — Algoritmo BFS (Búsqueda en Anchura)", s["subsection"]))
+    story.append(Paragraph(
+        "Para resolver el problema se utilizó el algoritmo <b>BFS (Breadth-First Search — "
+        "Búsqueda en Anchura)</b>, un algoritmo fundamental de Inteligencia Artificial que "
+        "sirve para explorar todos los posibles estados de un problema <i>nivel por nivel</i>, "
+        "garantizando encontrar la solución con el <b>menor número de pasos posible</b> "
+        "(solución óptima en longitud de camino).", s["body"]))
+    story.append(Paragraph("El funcionamiento paso a paso del BFS es:", s["body"]))
+    for p in [
+        "<b>Inicializar:</b> encolar el estado inicial (0,0,0,0) con su camino [(inicio, 'Inicio')]. "
+        "Crear un conjunto de visitados = {(0,0,0,0)}.",
+        "<b>Desencolar:</b> tomar el primer elemento de la cola (FIFO). Si es el estado objetivo "
+        "(1,1,1,1), devolver el camino completo — se encontró la solución óptima.",
+        "<b>Expandir:</b> llamar a State.successors() para obtener todos los estados válidos "
+        "alcanzables desde el estado actual.",
+        "<b>Filtrar y encolar:</b> para cada sucesor no visitado: marcarlo como visitado y "
+        "encolarlo junto con el camino extendido (camino_actual + [(sucesor, acción)]).",
+        "<b>Repetir</b> desde el paso 2 hasta encontrar el objetivo o agotar la cola.",
+    ]:
+        story.append(Paragraph(f"&#8226; {p}", s["bullet"]))
+    story.append(Paragraph(
+        "BFS garantiza la optimalidad porque explora todos los caminos de longitud 1 antes "
+        "de los de longitud 2, todos los de longitud 2 antes de los de longitud 3, y así "
+        "sucesivamente. El primer camino que llega al estado objetivo es necesariamente el "
+        "más corto. En este problema, BFS encuentra la solución en <b>exactamente 7 pasos</b>.", s["body"]))
+
+    story.append(Paragraph("Paso 5 — Solución encontrada (7 movimientos óptimos)", s["subsection"]))
+    sol_data = [
+        ["Paso", "Acción", "Estado (F, L, G, C)"],
+        ["0", "Inicio", "(0, 0, 0, 0) — todos en orilla izquierda"],
+        ["1", "Granjero -> (Cabra)", "(1, 0, 1, 0) — granjero lleva cabra"],
+        ["2", "Granjero <- (solo)", "(0, 0, 1, 0) — regresa solo"],
+        ["3", "Granjero -> (Lobo)", "(1, 1, 1, 0) — lleva el lobo"],
+        ["4", "Granjero <- (Cabra)", "(0, 0, 0, 0)* — regresa con cabra para proteger col"],
+        ["5", "Granjero -> (Col)", "(1, 0, 0, 1) — lleva la col"],
+        ["6", "Granjero <- (solo)", "(0, 0, 0, 1) — regresa solo"],
+        ["7", "Granjero -> (Cabra)", "(1, 1, 1, 1) — objetivo alcanzado"],
+    ]
+    sol_tbl = Table(sol_data, colWidths=[full_w*0.10, full_w*0.35, full_w*0.55])
+    sol_tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0,0), (-1,0), C_PRIMARY),
+        ("TEXTCOLOR",   (0,0), (-1,0), colors.white),
+        ("FONTNAME",    (0,0), (-1,0), "Helvetica-Bold"),
+        ("BACKGROUND",  (0,7), (-1,7), colors.HexColor("#e8f5e9")),
+        ("FONTNAME",    (0,7), (-1,7), "Helvetica-Bold"),
+        ("TEXTCOLOR",   (0,8), (-1,8), C_GREEN),
+        ("FONTNAME",    (0,8), (-1,8), "Helvetica-Bold"),
+        ("BACKGROUND",  (0,8), (-1,8), colors.HexColor("#c8e6c9")),
+        ("FONTSIZE",    (0,0), (-1,-1), 8),
+        ("ALIGN",       (0,0), (0,-1), "CENTER"),
+        ("ALIGN",       (1,0), (-1,-1), "LEFT"),
+        ("VALIGN",      (0,0), (-1,-1), "MIDDLE"),
+        ("ROWBACKGROUNDS", (0,1), (-1,7), [colors.white, C_LIGHT]),
+        ("GRID",        (0,0), (-1,-1), 0.5, C_GRAY),
+        ("TOPPADDING",  (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING",(0,0),(-1,-1), 4),
+        ("LEFTPADDING", (0,0), (-1,-1), 5),
+    ]))
+    story.append(sol_tbl)
+    story.append(Spacer(1, 0.2*cm))
+    story.append(Paragraph(
+        "* En el paso 4, el granjero regresa con la cabra porque si la dejara con el lobo "
+        "en la orilla derecha, el lobo la devoraría. Este es el movimiento contraintuitivo "
+        "que hace al acertijo interesante: hay que 'retroceder' para avanzar.", s["body"]))
+
+    story.append(Paragraph("Diseño OOP — clases implementadas", s["subsection"]))
+    farm_oop = [
+        ["Clase", "Responsabilidad", "Métodos clave"],
+        ["State", "Dataclass inmutable: (farmer, wolf, goat, cabbage). "
+         "Hashable para usarse en conjuntos.", "is_valid(), successors(), label()"],
+        ["FarmerPuzzle", "Resuelve con BFS. Construye el grafo completo de estados.", "solve(), build_graph()"],
+        ["PuzzleVisualizer", "Genera figura de pasos y grafo de transiciones de estados.", "plot_steps(), plot_graph(), save_all()"],
+    ]
+    farm_tbl = Table(farm_oop, colWidths=[full_w*0.22, full_w*0.48, full_w*0.30])
+    farm_tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0,0), (-1,0), C_SECONDARY),
+        ("TEXTCOLOR",   (0,0), (-1,0), colors.white),
+        ("FONTNAME",    (0,0), (-1,0), "Helvetica-Bold"),
+        ("FONTNAME",    (0,1), (0,-1), "Helvetica-Bold"),
+        ("FONTSIZE",    (0,0), (-1,-1), 8),
+        ("ALIGN",       (0,0), (-1,-1), "LEFT"),
+        ("VALIGN",      (0,0), (-1,-1), "MIDDLE"),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, C_LIGHT]),
+        ("GRID",        (0,0), (-1,-1), 0.5, C_GRAY),
+        ("TOPPADDING",  (0,0), (-1,-1), 4),
+        ("BOTTOMPADDING",(0,0),(-1,-1), 4),
+        ("LEFTPADDING", (0,0), (-1,-1), 6),
+    ]))
+    story.append(farm_tbl)
+    story.append(Spacer(1, 0.2*cm))
 
     story.append(Paragraph("Visualizaciones — Granjero", s["subsection"]))
 
     story.append(img("granjero_01_pasos.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 6 — Secuencia completa de 7 pasos de la solución óptima. "
-        "Cada panel muestra las dos orillas, la posición de cada elemento y la barca. "
-        "Solución: llevar cabra | regresar solo | llevar lobo | regresar con cabra | "
-        "llevar col | regresar solo | llevar cabra.", s["caption"]))
+        "Fig. 6 — Secuencia completa de los 7 pasos de la solución óptima encontrada por BFS. "
+        "Cada panel muestra las dos orillas del río, la posición de cada elemento (G=granjero, "
+        "W=lobo, A=cabra, C=col) y la barca. Se puede observar el movimiento contraintuitivo "
+        "del paso 4: el granjero regresa con la cabra para evitar que el lobo la ataque.", s["caption"]))
 
     story.append(img("granjero_02_grafo.png", width=full_w))
     story.append(Paragraph(
-        "Fig. 7 — Grafo completo de transiciones de estados. "
-        "Verde = estado inicial, rojo = estado objetivo, azul = nodos en la solución, "
-        "gris = estados explorados pero no usados. La ruta óptima se resalta en naranja.", s["caption"]))
+        "Fig. 7 — Grafo completo de transiciones del espacio de estados. "
+        "Cada nodo es un estado válido (10 de 16 posibles). "
+        "Verde = estado inicial (0,0,0,0), Rojo = estado objetivo (1,1,1,1), "
+        "Azul = nodos en la solución BFS óptima, Gris = estados explorados pero no usados. "
+        "La ruta óptima de 7 pasos se resalta en naranja. El grafo visualiza por qué "
+        "ciertas transiciones no existen: los 6 estados inválidos fueron descartados "
+        "por la función is_valid().", s["caption"]))
 
     story.append(Paragraph("Conclusión — Granjero", s["subsection"]))
     story.append(Paragraph(
-        "El acertijo del granjero es el problema más elegante del taller para ilustrar "
-        "búsqueda en espacios de estados. Con solo 10 estados válidos, BFS garantiza "
-        "la solución óptima en exactamente 7 movimientos. La clave del modelado es "
-        "definir correctamente la función de validez del estado, que descarta "
-        "situaciones peligrosas antes de encolarlas.", s["conclusion"]))
+        "El acertijo del granjero demuestra cómo un problema que parece informal puede "
+        "formalizarse rigurosamente como búsqueda en espacio de estados. El modelado con "
+        "una tupla de 4 bits captura completamente la situación; BFS garantiza la solución "
+        "óptima de 7 movimientos; y la función is_valid() actúa como filtro que elimina "
+        "estados peligrosos antes de explorarlos. Este enfoque es generalizable a cualquier "
+        "problema de planificación con restricciones: modelar el estado, definir las "
+        "transiciones válidas, y aplicar BFS para encontrar el camino más corto.", s["conclusion"]))
 
     story.append(PageBreak())
 
@@ -494,6 +700,68 @@ def build_pdf():
     story.append(Paragraph(
         "Fig. 10 — Curva de complejidad O(2ⁿ − 1). Con 4 discos se necesitan 15 movimientos; "
         "con 10 discos serían 1023; con 20 discos más de 1 millón.", s["caption"]))
+
+    # ── Interpretación del espacio de estados ────────────────────────────────
+    story.append(Paragraph(
+        "El espacio completo de estados de la Torre de Hanoi", s["subsection"]))
+    story.append(Paragraph(
+        "El problema puede también analizarse desde la perspectiva de teoría de grafos. "
+        "Para <b>4 discos</b>, el espacio completo de soluciones se puede representar como "
+        "un grafo donde cada nodo es una configuración posible de los discos en las tres "
+        "torres y cada arista es un movimiento legal entre dos configuraciones.", s["body"]))
+    story.append(Paragraph(
+        "Las dimensiones de este grafo son:", s["body"]))
+    for item in [
+        "<b>81 nodos</b> — corresponden a todas las configuraciones posibles de los 4 discos "
+        "en las tres torres. Cada disco puede estar en cualquiera de las 3 torres "
+        "independientemente, lo que da 3⁴ = 81 estados totales.",
+        "<b>120 aristas</b> — representan los movimientos legales entre configuraciones "
+        "(solo se puede mover el disco del tope de una torre al tope de otra, siempre que "
+        "sea más pequeño).",
+        "<b>Nodo verde</b> = estado inicial: todos los discos apilados en la Torre A "
+        "en orden decreciente (disco 4 abajo, disco 1 arriba).",
+        "<b>Nodo rojo</b> = estado final: todos los discos apilados en la Torre C "
+        "en el mismo orden correcto.",
+        "<b>Camino naranja</b> = solución óptima de 15 movimientos generada por el "
+        "algoritmo recursivo de divide y vencerás.",
+    ]:
+        story.append(Paragraph(f"&#8226; {item}", s["bullet"]))
+    story.append(Paragraph(
+        "Aunque el problema tiene 81 configuraciones posibles y 120 movimientos legales, "
+        "el algoritmo recursivo <b>no explora todo el grafo</b>. A diferencia del BFS "
+        "(que sí recorre el grafo completo nivel por nivel), la estrategia de "
+        "<b>divide y vencerás</b> sigue un camino directo y determinístico: en cada nivel "
+        "de recursión sabe exactamente qué disco mover y hacia dónde, sin necesidad de "
+        "explorar alternativas. Esto garantiza llegar al objetivo en el <b>mínimo número "
+        "de movimientos: 15 para 4 discos</b>, con una profundidad de pila de recursión "
+        "de solo n niveles.", s["body"]))
+
+    # Tabla comparativa: BFS vs Recursión para Hanoi
+    comp_data = [
+        ["Criterio", "BFS sobre el grafo", "Recursión (Divide y vencerás)"],
+        ["Nodos visitados", "Hasta 81 (todos alcanzables)", "Solo los 15 del camino óptimo"],
+        ["Garantía de óptimo", "Sí (primero en llegar)", "Sí (demostrado matemáticamente)"],
+        ["Memoria requerida", "O(3^n) — todos los estados", "O(n) — pila de recursión"],
+        ["Tiempo de cómputo", "O(3^n) — explora el grafo", "O(2^n) — solo los movimientos"],
+        ["Aplicable a n grande", "No (explosión exponencial)", "Sí (eficiente en memoria)"],
+    ]
+    comp_tbl = Table(comp_data, colWidths=[full_w*0.32, full_w*0.34, full_w*0.34])
+    comp_tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0, 0), (-1, 0), C_SECONDARY),
+        ("TEXTCOLOR",   (0, 0), (-1, 0), colors.white),
+        ("FONTNAME",    (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME",    (0, 1), (0, -1), "Helvetica-Bold"),
+        ("FONTSIZE",    (0, 0), (-1, -1), 8),
+        ("ALIGN",       (0, 0), (-1, -1), "LEFT"),
+        ("VALIGN",      (0, 0), (-1, -1), "MIDDLE"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, C_LIGHT]),
+        ("GRID",        (0, 0), (-1, -1), 0.5, C_GRAY),
+        ("TOPPADDING",  (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    story.append(comp_tbl)
+    story.append(Spacer(1, 0.2*cm))
 
     # ── Conclusión ───────────────────────────────────────────────────────────
     story.append(Paragraph("Conclusión — Hanoi", s["subsection"]))
