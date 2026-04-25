@@ -318,32 +318,163 @@ def build_pdf():
     # ════════════════════════════════════════════════════════════
     story.append(section_header("C. La Torre de Hanoi", s))
 
+    # ── Descripción ──────────────────────────────────────────────────────────
     story.append(Paragraph("Descripción del problema", s["subsection"]))
     story.append(Paragraph(
-        "Mover n discos de la Torre A a la Torre C usando B como auxiliar, "
-        "sin colocar nunca un disco más grande sobre uno más pequeño, moviendo un disco a la vez.", s["body"]))
+        "La Torre de Hanoi es un clásico de la informática teórica. Se tienen <b>n discos</b> de "
+        "distintos tamaños apilados en la Torre A (el más grande abajo), y dos torres vacías B y C. "
+        "El objetivo es trasladar <i>todos</i> los discos a la Torre C siguiendo dos reglas: "
+        "(1) solo se mueve un disco a la vez, y (2) nunca se coloca un disco más grande "
+        "sobre uno más pequeño. El problema fue formulado por Édouard Lucas en 1883 y sigue "
+        "siendo referencia obligatoria en cursos de algoritmos porque exhibe una estructura "
+        "recursiva perfectamente simétrica.", s["body"]))
 
-    story.append(Paragraph("Solución recursiva", s["subsection"]))
+    # ── Divide y Vencerás ────────────────────────────────────────────────────
+    story.append(Paragraph("Estrategia: Divide y Vencerás", s["subsection"]))
     story.append(Paragraph(
-        "La recursión se basa en una observación fundamental: para mover n discos de A a C:", s["body"]))
+        "La clave es reconocer que mover n discos de A a C es equivalente a tres subproblemas "
+        "independientes. Esta descomposición es posible porque el disco más grande es "
+        "completamente independiente de los n−1 discos que están encima de él:", s["body"]))
     for paso in [
-        "1. Mover los n−1 discos superiores de A a B (usando C como auxiliar)",
-        "2. Mover el disco más grande de A a C",
-        "3. Mover los n−1 discos de B a C (usando A como auxiliar)",
+        "<b>Paso 1:</b> Mover los n−1 discos superiores de A hacia B, usando C como auxiliar.",
+        "<b>Paso 2:</b> Mover el disco más grande (disco n) directamente de A hacia C (un solo movimiento).",
+        "<b>Paso 3:</b> Mover los n−1 discos de B hacia C, usando A como auxiliar.",
     ]:
         story.append(Paragraph(f"&#8226; {paso}", s["bullet"]))
     story.append(Paragraph(
-        "El caso base es n=1: mover directamente de origen a destino. "
-        "La solución siempre requiere exactamente <b>2ⁿ − 1 movimientos</b>, "
-        "que es también el mínimo posible.", s["body"]))
-    story.append(Paragraph(
-        "hanoi(n, origen, destino, auxiliar):\n"
-        "    if n == 1: mover origen -> destino\n"
-        "    else:\n"
-        "        hanoi(n-1, origen, auxiliar, destino)\n"
-        "        mover origen -> destino\n"
-        "        hanoi(n-1, auxiliar, destino, origen)", s["code"]))
+        "Los pasos 1 y 3 son instancias del <i>mismo problema</i> con n−1 discos, lo que permite "
+        "aplicar la misma estrategia recursivamente. El caso base es trivial: con n=1 disco, "
+        "se mueve directamente de origen a destino sin ninguna complejidad.", s["body"]))
 
+    # ── Algoritmo recursivo ──────────────────────────────────────────────────
+    story.append(Paragraph("Algoritmo recursivo", s["subsection"]))
+    story.append(Paragraph(
+        "El pseudocódigo captura la estrategia de manera exacta. La función recibe el número "
+        "de discos y los nombres de las tres torres (origen, destino, auxiliar):", s["body"]))
+    story.append(Paragraph(
+        "def hanoi(n, origen, destino, auxiliar):\n"
+        "    # Caso base: mover directamente\n"
+        "    if n == 1:\n"
+        "        mover disco de origen -> destino\n"
+        "        return\n"
+        "    # Paso 1: liberar el disco grande\n"
+        "    hanoi(n-1, origen, auxiliar, destino)\n"
+        "    # Paso 2: mover el disco mas grande\n"
+        "    mover disco de origen -> destino\n"
+        "    # Paso 3: reconstruir sobre el disco grande\n"
+        "    hanoi(n-1, auxiliar, destino, origen)", s["code"]))
+    story.append(Paragraph(
+        "Obsérvese que los roles de las torres <b>rotan</b> en cada llamada recursiva: "
+        "lo que era destino pasa a ser auxiliar y viceversa. Este intercambio es lo que "
+        "garantiza que nunca se violen las restricciones del problema.", s["body"]))
+
+    # ── Árbol de recursión ───────────────────────────────────────────────────
+    story.append(Paragraph("Árbol de recursión (n = 3)", s["subsection"]))
+    story.append(Paragraph(
+        "Con n=3, la ejecución genera 7 movimientos. El árbol de llamadas ilustra cómo "
+        "se descompone el problema:", s["body"]))
+    story.append(Paragraph(
+        "hanoi(3, A, C, B)\n"
+        "  +--> hanoi(2, A, B, C)\n"
+        "  |      +--> hanoi(1, A, C, B)  =>  mueve disco 1: A -> C\n"
+        "  |      +--> mover disco 2:          A -> B\n"
+        "  |      +--> hanoi(1, C, B, A)  =>  mueve disco 1: C -> B\n"
+        "  +--> mover disco 3:                 A -> C\n"
+        "  +--> hanoi(2, B, C, A)\n"
+        "         +--> hanoi(1, B, A, C)  =>  mueve disco 1: B -> A\n"
+        "         +--> mover disco 2:          B -> C\n"
+        "         +--> hanoi(1, A, C, B)  =>  mueve disco 1: A -> C", s["code"]))
+    story.append(Paragraph(
+        "Cada nivel del árbol duplica el trabajo: el nivel 0 tiene 1 llamada, "
+        "el nivel 1 tiene 2, el nivel 2 tiene 4, hasta llegar a las 2ⁿ⁻¹ llamadas "
+        "base que corresponden a los movimientos reales.", s["body"]))
+
+    # ── Demostración matemática ───────────────────────────────────────────────
+    story.append(Paragraph("Demostración matemática de la complejidad", s["subsection"]))
+    story.append(Paragraph(
+        "Sea T(n) el número de movimientos necesarios para n discos. "
+        "La recurrencia se formula directamente desde el algoritmo:", s["body"]))
+    story.append(Paragraph(
+        "T(1) = 1                        (caso base)\n"
+        "T(n) = 2 * T(n-1) + 1          (2 subproblemas de n-1 + 1 movimiento del disco grande)", s["code"]))
+    story.append(Paragraph(
+        "Desarrollando la recurrencia por sustitución repetida:", s["body"]))
+    story.append(Paragraph(
+        "T(n) = 2*T(n-1) + 1\n"
+        "     = 2*(2*T(n-2) + 1) + 1   =  4*T(n-2) + 3\n"
+        "     = 4*(2*T(n-3) + 1) + 3   =  8*T(n-3) + 7\n"
+        "     = ...\n"
+        "     = 2^(n-1) * T(1) + (2^(n-1) - 1)\n"
+        "     = 2^(n-1) + 2^(n-1) - 1\n"
+        "     = 2^n - 1", s["code"]))
+    story.append(Paragraph(
+        "Este resultado es también un <b>mínimo absoluto</b>: se puede demostrar por inducción "
+        "que cualquier secuencia válida de movimientos requiere al menos 2ⁿ−1 pasos, "
+        "lo que convierte al algoritmo recursivo en óptimo.", s["body"]))
+
+    # ── Tabla de complejidad ─────────────────────────────────────────────────
+    story.append(Paragraph("Tabla de complejidad: discos vs movimientos", s["subsection"]))
+    tbl_data = [["Discos (n)", "Movimientos (2ⁿ−1)", "Tiempo estimado (1 mov/s)"]]
+    tiempos  = ["1 s", "3 s", "7 s", "15 s", "31 s", "1 min 3 s",
+                "2 min 7 s", "4 min 15 s", "8 min 31 s",
+                "~17 min", "~34 min", "~1.1 h", "~2.3 h", "~4.6 h",
+                "~9.1 h", "~18.2 h", "~36.4 h", "~3.0 días",
+                "~6.0 días", "~12.0 días"]
+    for i in range(1, 21):
+        tbl_data.append([str(i), f"{2**i - 1:,}", tiempos[i-1]])
+    tbl = Table(tbl_data, colWidths=[full_w*0.28, full_w*0.36, full_w*0.36])
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0, 0), (-1, 0),  C_PRIMARY),
+        ("TEXTCOLOR",   (0, 0), (-1, 0),  colors.white),
+        ("FONTNAME",    (0, 0), (-1, 0),  "Helvetica-Bold"),
+        ("FONTSIZE",    (0, 0), (-1,-1),  8),
+        ("ALIGN",       (0, 0), (-1,-1),  "CENTER"),
+        ("VALIGN",      (0, 0), (-1,-1),  "MIDDLE"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, C_LIGHT]),
+        ("GRID",        (0, 0), (-1,-1),  0.5, C_GRAY),
+        ("TOPPADDING",  (0, 0), (-1,-1),  3),
+        ("BOTTOMPADDING",(0,0), (-1,-1),  3),
+    ]))
+    story.append(tbl)
+    story.append(Spacer(1, 0.2*cm))
+
+    # ── Diseño OOP ───────────────────────────────────────────────────────────
+    story.append(Paragraph("Diseño orientado a objetos (OOP)", s["subsection"]))
+    story.append(Paragraph(
+        "La solución se implementa con cinco clases que siguen el principio de "
+        "<i>responsabilidad única</i>:", s["body"]))
+    oop_rows = [
+        ["Clase", "Responsabilidad", "Métodos clave"],
+        ["Disk", "Entidad: disco con tamaño y color", "color (property)"],
+        ["Tower", "Pila de discos; valida restricciones", "push(disk), pop(), top"],
+        ["HanoiState", "Instantánea de las tres torres", "snapshot()"],
+        ["HanoiSolver", "Ejecuta la recursión y registra movimientos", "_recurse(n, towers, src, dst, aux)"],
+        ["HanoiVisualizer", "Genera animación y gráficos de análisis", "animate(), plot_analysis(), save_all()"],
+    ]
+    oop_tbl = Table(oop_rows, colWidths=[full_w*0.22, full_w*0.44, full_w*0.34])
+    oop_tbl.setStyle(TableStyle([
+        ("BACKGROUND",  (0, 0), (-1, 0),  C_SECONDARY),
+        ("TEXTCOLOR",   (0, 0), (-1, 0),  colors.white),
+        ("FONTNAME",    (0, 0), (-1, 0),  "Helvetica-Bold"),
+        ("FONTNAME",    (0, 1), (0, -1),  "Helvetica-Bold"),
+        ("FONTSIZE",    (0, 0), (-1,-1),  8),
+        ("ALIGN",       (0, 0), (-1,-1),  "LEFT"),
+        ("VALIGN",      (0, 0), (-1,-1),  "MIDDLE"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, C_LIGHT]),
+        ("GRID",        (0, 0), (-1,-1),  0.5, C_GRAY),
+        ("TOPPADDING",  (0, 0), (-1,-1),  4),
+        ("BOTTOMPADDING",(0,0), (-1,-1),  4),
+        ("LEFTPADDING", (0, 0), (-1,-1),  6),
+    ]))
+    story.append(oop_tbl)
+    story.append(Paragraph(
+        "La clase <b>Tower.push()</b> lanza ValueError si se intenta colocar un disco mayor "
+        "sobre uno menor, lo que convierte la restricción del puzzle en una invariante "
+        "verificada en tiempo de ejecución. <b>HanoiSolver._recurse()</b> opera directamente "
+        "sobre las instancias Tower, mientras que <b>HanoiState</b> captura una copia profunda "
+        "de las tres torres en cada paso para permitir la visualización completa.", s["body"]))
+
+    # ── Visualizaciones ──────────────────────────────────────────────────────
     story.append(Paragraph("Visualizaciones — Hanoi", s["subsection"]))
 
     w3 = full_w * 0.38
@@ -364,13 +495,17 @@ def build_pdf():
         "Fig. 10 — Curva de complejidad O(2ⁿ − 1). Con 4 discos se necesitan 15 movimientos; "
         "con 10 discos serían 1023; con 20 discos más de 1 millón.", s["caption"]))
 
+    # ── Conclusión ───────────────────────────────────────────────────────────
     story.append(Paragraph("Conclusión — Hanoi", s["subsection"]))
     story.append(Paragraph(
-        "La Torre de Hanoi es el ejemplo más claro de recursión óptima: el algoritmo no solo "
-        "encuentra una solución, sino que demuestra formalmente que no puede existir una "
-        "solución más corta que 2ⁿ−1 movimientos. La dificultad no está en programarlo "
-        "sino en visualizar los 2ⁿ−1 estados y entender por qué la recursión cubre todos "
-        "los casos sin solapamiento ni omisión.", s["conclusion"]))
+        "La Torre de Hanoi demuestra tres principios fundamentales de la algoritmia: "
+        "(1) <b>Recursión óptima</b> — el algoritmo encuentra la solución mínima sin necesidad "
+        "de exploración adicional; (2) <b>Complejidad exponencial inevitable</b> — T(n) = 2ⁿ−1 "
+        "no es una debilidad del algoritmo sino un límite inferior del problema; y "
+        "(3) <b>Separación de responsabilidades en OOP</b> — al distribuir la lógica entre "
+        "Disk, Tower, HanoiSolver y HanoiVisualizer, el código es legible, testeable y "
+        "extensible (por ejemplo, para 10 discos o para nuevas reglas de movimiento) "
+        "sin modificar ninguna clase existente.", s["conclusion"]))
 
     story.append(PageBreak())
 
