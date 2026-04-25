@@ -1,4 +1,4 @@
-from Taller1.P1_TSP.TSP import study_case_1
+from Taller1.P1_TSP.TSP import study_case_1, study_case_2
 
 def main():
     print('Bienvenido al taller 1 de Inteligencia Artificial')
