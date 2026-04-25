@@ -1,0 +1,1 @@
+# Hola Gustavo, aquí te dejo el código del granjero. He implementado la lógica para que el granjero pueda cruzar el río con el lobo, la cabra y el repollo sin que ninguno de ellos se coma al otro. Si tienes alguna pregunta o necesitas alguna modificación, no dudes en decírmelo.
