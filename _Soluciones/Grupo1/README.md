@@ -14,7 +14,7 @@
     • Nicolás Carrión
 
 ### Resumen
-- [Taller 1](/Taller1/README.md)
+- [Taller 1](_Soluciones/Grupo1/Taller1/README.md)
   - P1: Descripción 
   - P2: Descripción
 
