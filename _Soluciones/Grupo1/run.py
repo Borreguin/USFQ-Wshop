@@ -1,5 +1,6 @@
 from Taller1.P1_TSP.TSP import study_case_1
 from Taller1.P2_Granjero.Acertijo import main as granjero_main
+from Taller1.P3_Torres.Torres import main as torres_main
 
 def main():
     print('Bienvenido al taller 1 de Inteligencia Artificial')
@@ -31,7 +32,7 @@ def main():
         print('\n=========================')
         print('Juego 2048')
         print('=========================')
-        study_case_3()
+        torres_main()
         print('\nFin del estudio de caso 3\n')
         print('=========================')
     else:
