@@ -9,6 +9,7 @@
     • Kevin Viteri
     • Nancy Altamirano
     • Raquel Pacheco
+    .Hola
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
