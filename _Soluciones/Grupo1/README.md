@@ -5,11 +5,13 @@
 - **Nombre del grupo**: Grupo #
 - **Integrantes del grupo**:
 
-    • xxxxx
+    • Evelyn Bermeo
 
-    • xxxxx
+    • Jairo Cabrera
 
-    • xxxxx
+    • Javier Cuzco
+
+    • Nicolás Carrión
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
