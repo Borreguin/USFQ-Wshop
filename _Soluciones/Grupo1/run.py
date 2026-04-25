@@ -1,11 +1,12 @@
 from Taller1.P1_TSP.TSP import study_case_1
+from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 
 def main():
     print('Bienvenido al taller 1 de Inteligencia Artificial')
     print('\nEstudio de casos')
     print('1. TSP')
-    print('2. N-body')
+    print('2. Acertijo del granjero y el bote')
     print('3. Juego 2048')
     print('4. Otro')
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
@@ -23,9 +24,9 @@ def main():
         print('=========================')
     elif study_case == '2':
         print('\n=========================')
-        print('N-body')
+        print('Acertijo del granjero y el bote')
         print('=========================')
-        study_case_2()
+        granjero_main()
         print('\nFin del estudio de caso 2\n')
     elif study_case == '3':
         print('\n=========================')
