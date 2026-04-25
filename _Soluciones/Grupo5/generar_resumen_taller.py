@@ -392,16 +392,16 @@ def build_pdf():
     ]:
         story.append(Paragraph(f"&#8226; {cond}", s["bullet"]))
     story.append(Paragraph(
-        "Esta validación se implementó en el método <b>State.is_valid()</b> del dataclass "
-        "inmutable (frozen=True). Al ser inmutable y hashable, cada estado puede almacenarse "
-        "en un conjunto de visitados sin colisiones, lo que es fundamental para la eficiencia "
-        "del BFS.", s["body"]))
+        "Esta validación se implementó en la función <b>is_valid(state)</b>, que recibe "
+        "la tupla de estado y retorna True o False. Al usar tuplas (inmutables y hashables), "
+        "cada estado puede almacenarse en un conjunto de visitados sin colisiones, lo que "
+        "es fundamental para la eficiencia del BFS.", s["body"]))
 
     story.append(Paragraph("Paso 3 — Generación de sucesores", s["subsection"]))
     story.append(Paragraph(
         "Desde cualquier estado válido, el granjero puede realizar hasta 4 acciones: "
         "cruzar solo, o llevar consigo el lobo, la cabra o la col (siempre que el ítem "
-        "elegido esté en su misma orilla). El método <b>State.successors()</b> genera "
+        "elegido esté en su misma orilla). La función <b>successors(state)</b> genera "
         "todos los estados alcanzables y filtra los inválidos antes de devolverlos:", s["body"]))
     story.append(Paragraph(
         "para cada accion en [solo, lobo, cabra, col]:\n"
@@ -423,7 +423,7 @@ def build_pdf():
         "Crear un conjunto de visitados = {(0,0,0,0)}.",
         "<b>Desencolar:</b> tomar el primer elemento de la cola (FIFO). Si es el estado objetivo "
         "(1,1,1,1), devolver el camino completo — se encontró la solución óptima.",
-        "<b>Expandir:</b> llamar a State.successors() para obtener todos los estados válidos "
+        "<b>Expandir:</b> llamar a successors(state) para obtener todos los estados válidos "
         "alcanzables desde el estado actual.",
         "<b>Filtrar y encolar:</b> para cada sucesor no visitado: marcarlo como visitado y "
         "encolarlo junto con el camino extendido (camino_actual + [(sucesor, acción)]).",
@@ -476,9 +476,9 @@ def build_pdf():
         "al lobo con la cabra sin supervisión (estado inválido). La única opción válida es "
         "regresar con la cabra, produciendo (0,1,0,0). Hay que 'retroceder' para avanzar.", s["body"]))
 
-    story.append(Paragraph("Diseño OOP — clases implementadas", s["subsection"]))
+    story.append(Paragraph("Diseño funcional — funciones implementadas", s["subsection"]))
     farm_oop = [
-        ["Función / Módulo", "Responsabilidad", "Detalle"],
+        ["Función", "Responsabilidad", "Detalle"],
         ["is_valid(state)", "Valida que el estado no viole las restricciones.",
          "Descarta lobo+cabra o cabra+col solos."],
         ["successors(state)", "Genera los estados alcanzables desde el estado actual.",
