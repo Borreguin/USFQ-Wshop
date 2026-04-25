@@ -2,14 +2,13 @@
 # WorkShop-USFQ
 ## Inteligencia artificial
 
-- **Nombre del grupo**: Grupo #
+- **Nombre del grupo**: Grupo # 5
 - **Integrantes del grupo**:
 
-    • xxxxx
-
-    • xxxxx
-
-    • xxxxx
+    • Gustavo Berru
+    • Kevin Viteri
+    • Nancy Altamirano
+    • Raquel Pacheco
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
