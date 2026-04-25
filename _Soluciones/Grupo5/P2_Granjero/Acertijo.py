@@ -31,8 +31,9 @@ import networkx as nx
 # 1. CONFIGURACION DE RUTAS
 # ============================================================
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = BASE_DIR
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "imagenes")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 # ============================================================
