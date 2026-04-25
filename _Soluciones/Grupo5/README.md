@@ -79,3 +79,4 @@ python Taller1/P3_Torres/Torres.py
 ```
 
 ## Notion Link:
+https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-9fe3570dff2d48359703271a0cc9b6d4
