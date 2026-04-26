@@ -144,7 +144,7 @@ def seccion_tsp(s):
         ["Enfoque", "Complejidad", "Para n = 24"],
         ["Búsqueda exhaustiva", "O((n−1)!/2)", "≈ 1.3 × 10²³ rutas — inviable"],
         ["Nearest Neighbor (greedy)", "O(n²)", "576 operaciones — muy rápido, sub-óptimo"],
-        ["Held-Karp (exacto)",  "O(2ⁿ · n²)", "≈ 9.4 × 10⁹ — aún inviable para n=24"],
+        ["Held-Karp (exacto)",  "O(2^n · n²)", "≈ 9.4 × 10^9 — aún inviable para n=24"],
         ["ACO (metaheurística)", "O(iter × ants × n²)", "200 × 30 × 576 ≈ 3.5 M — manejable"],
         ["2-opt (post-proceso)", "O(n²) / iteración", "576 por paso — muy rápido"],
     ]
@@ -197,7 +197,7 @@ def seccion_tsp(s):
     alts = [
         ("Fuerza bruta", "Óptimo garantizado", "O((n-1)!) — inviable para n>12"),
         ("Nearest Neighbor", "O(n²), muy rápido", "Sub-óptimo; no mejora la solución inicial"),
-        ("Held-Karp (DP)", "Óptimo, O(2ⁿ·n²)", "Aún exponencial; inviable para n>25"),
+        ("Held-Karp (DP)", "Óptimo, O(2^n·n²)", "Aún exponencial; inviable para n>25"),
         ("Algoritmos genéticos", "Buena exploración global", "Convergencia lenta, muchos hiperparámetros"),
         ("Simulated Annealing", "Escapa de mínimos locales", "Sensible a la temperatura inicial; difícil de calibrar"),
         ("<b>ACO + 2-opt ✓</b>",
@@ -417,7 +417,7 @@ def seccion_granjero(s):
         "El espacio de estados es pequeño y perfectamente acotado:", s["body_left"]))
     comp_data = [
         ["Magnitud", "Valor", "Explicación"],
-        ["Estados totales", "2⁴ = 16", "Cada elemento puede estar en orilla 0 o 1"],
+        ["Estados totales", "2^4 = 16", "Cada elemento puede estar en orilla 0 o 1"],
         ["Estados válidos", "10", "6 estados violan las restricciones del problema"],
         ["Aristas (movimientos)", "≤ 4 por estado", "Granjero solo, con lobo, con cabra, con col"],
         ["Complejidad BFS", "O(V + E)", "V=10 nodos, E≈20 aristas — trivial computacionalmente"],
@@ -641,11 +641,11 @@ def seccion_hanoi(s):
     items.append(Paragraph("2. Complejidad", s["h2"]))
     items.append(Paragraph(
         "La Torre de Hanoi tiene una propiedad matemática fundamental: el número mínimo de "
-        "movimientos es exactamente <b>2ⁿ − 1</b>, demostrado por inducción matemática.",
+        "movimientos es exactamente <b>2^n − 1</b>, demostrado por inducción matemática.",
         s["body"]
     ))
     hanoi_comp = [
-        ["n discos", "Movimientos mínimos (2ⁿ−1)", "Nodos en grafo (3ⁿ)", "Tiempo estimado"],
+        ["n discos", "Movimientos mínimos (2^n−1)", "Nodos en grafo (3^n)", "Tiempo estimado"],
         ["1", "1", "3", "< 0.001 s"],
         ["2", "3", "9", "< 0.001 s"],
         ["3", "7", "27", "< 0.01 s"],
@@ -673,8 +673,8 @@ def seccion_hanoi(s):
         "<b>Estado:</b> configuración de los n discos distribuidos en las tres torres. Se representa como una tupla de n posiciones: positions[k] = torre donde está el disco k+1.",
         "<b>Estado inicial:</b> todos los discos en la torre A, ordenados de mayor (abajo) a menor (arriba).",
         "<b>Estado objetivo:</b> todos los discos en la torre C, mismo orden.",
-        "<b>Grafo de estados:</b> 3ⁿ nodos (cada disco puede estar en A, B o C). Las aristas son movimientos legales (mover disco superior de una torre a otra sin violar el orden).",
-        "<b>Camino óptimo:</b> secuencia de 2ⁿ−1 aristas que conectan el estado inicial con el objetivo. La recursión lo recorre exactamente.",
+        "<b>Grafo de estados:</b> 3^n nodos (cada disco puede estar en A, B o C). Las aristas son movimientos legales (mover disco superior de una torre a otra sin violar el orden).",
+        "<b>Camino óptimo:</b> secuencia de 2^n−1 aristas que conectan el estado inicial con el objetivo. La recursión lo recorre exactamente.",
     ]:
         items.append(Paragraph(f"• {item}", s["bullet"]))
     items.append(Paragraph(
@@ -691,11 +691,11 @@ def seccion_hanoi(s):
         ["Iterativa (con pila explícita)", "No usa pila de llamadas del SO",
          "Más compleja de implementar; pierde la elegancia del mapeo directo"],
         ["BFS sobre grafo de estados", "Encuentra mínimo garantizado",
-         "O(3ⁿ) nodos — inviable para n>10; redundante ya que la recursión es óptima"],
+         "O(3^n) nodos — inviable para n>10; redundante ya que la recursión es óptima"],
         ["Heurística (greedy)", "Simple",
          "No siempre óptima sin conocimiento de la estructura del problema"],
         ["<b>Recursividad ✓</b>",
-         "<b>Óptima (2ⁿ−1 movimientos), elegante, demostrable por inducción</b>",
+         "<b>Óptima (2^n−1 movimientos), elegante, demostrable por inducción</b>",
          "<b>Stack overflow teórico para n muy grande — irrelevante para n≤30</b>"],
     ]
     data = [[Paragraph(f"<b>{h}</b>", s["body"]) for h in ["Enfoque","Ventaja","Limitación"]]]
@@ -720,8 +720,8 @@ def seccion_hanoi(s):
     ))
     items.append(Paragraph(
         "• Caso base n=1: se necesita 1 movimiento = 2¹−1 ✓\n"
-        "• Hipótesis: mover k discos requiere 2ᵏ−1 movimientos.\n"
-        "• Paso inductivo: mover k+1 discos = (2ᵏ−1) + 1 + (2ᵏ−1) = 2ᵏ⁺¹−1 ✓\n"
+        "• Hipótesis: mover k discos requiere 2^k−1 movimientos.\n"
+        "• Paso inductivo: mover k+1 discos = (2^k−1) + 1 + (2^k−1) = 2^(k+1)-1 ✓\n"
         "  Ningún algoritmo puede hacerlo con menos movimientos.",
         s["code"]
     ))
@@ -786,7 +786,7 @@ def seccion_hanoi(s):
     # 7. Resultado
     items.append(Paragraph("7. Resultado Obtenido", s["h2"]))
     items.append(Paragraph(
-        "El programa se ejecutó con <b>4 discos</b>. Resultado: <b>15 movimientos</b> = 2⁴−1 ✓",
+        "El programa se ejecutó con <b>4 discos</b>. Resultado: <b>15 movimientos</b> = 2^4−1 ✓",
         s["body"]
     ))
     items.append(Paragraph(
@@ -811,14 +811,14 @@ def seccion_hanoi(s):
          "Estado inicial con los n discos en la torre A ordenados de mayor (abajo) a menor (arriba). "
          "Sirve como referencia visual del punto de partida."),
         ("Torre_2.png",
-         "Grafo completo de los 3ⁿ estados posibles como red de nodos. Las aristas son movimientos "
+         "Grafo completo de los 3^n estados posibles como red de nodos. Las aristas son movimientos "
          "legales. El camino óptimo recursivo se resalta en naranja, demostrando que la recursión "
          "navega exactamente el camino más corto en el grafo completo."),
         ("Torre_3.png",
          "Barras de frecuencia de uso de cada torre como origen y destino. Confirma que la torre A "
          "es la mayor fuente, la torre C el mayor destino, y B actúa como intermediaria equilibrada."),
         ("Torre_4.png",
-         "Curva O(2ⁿ−1) para n=1..12 con el valor ejecutado marcado. Ilustra el crecimiento "
+         "Curva O(2^n−1) para n=1..12 con el valor ejecutado marcado. Ilustra el crecimiento "
          "exponencial y por qué para n>20 la animación ya no es práctica pero el cálculo sigue siendo instantáneo."),
     ]:
         items.append(Paragraph(f"• <b>{nombre}:</b> {desc}", s["bullet"]))
@@ -830,7 +830,7 @@ def seccion_hanoi(s):
         "que permite una solución exacta y óptima por inducción</b>. La recursión no es solo "
         "una técnica de programación: es la transcripción directa de la prueba matemática al "
         "código. El grafo de estados construido visualiza que la solución recursiva recorre "
-        "exactamente el camino más corto en un espacio de 3ⁿ configuraciones posibles — sin "
+        "exactamente el camino más corto en un espacio de 3^n configuraciones posibles — sin "
         "búsqueda, sin exploración innecesaria. Este problema ilustra el paradigma "
         "<b>Divide y Vencerás</b>: reducir un problema complejo a instancias más pequeñas del "
         "mismo problema hasta llegar al caso base.",
@@ -854,7 +854,7 @@ def seccion_conclusiones(s):
         ["TSP","ACO","Metaheurística","Aprox. ≈opt","O(it·m·n²)","Optimización combinatoria"],
         ["TSP","2-opt","Búsqueda local","Óptimo local","O(n²)/iter","Post-proceso clásico"],
         ["Granjero","BFS","Búsq. sistemática","Óptimo global","O(V+E)","Planificación"],
-        ["Hanoi","Recursividad","Divide y Vencerás","Óptimo global","O(2ⁿ)","Razonamiento formal"],
+        ["Hanoi","Recursividad","Divide y Vencerás","Óptimo global","O(2^n)","Razonamiento formal"],
     ]
     data = [[Paragraph(f"<b>{c}</b>" if i==0 else c, s["body"]) for c in row]
             for i, row in enumerate(comp)]
