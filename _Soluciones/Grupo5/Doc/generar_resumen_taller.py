@@ -577,6 +577,248 @@ def seccion_hanoi(s):
     return items
 
 
+def seccion_notion(s):
+    items = []
+    items.append(PageBreak())
+    items.append(HRFlowable(width="100%", thickness=2, color=AZUL_MED))
+    items.append(Paragraph("  NUMERAL 2: USO DE LA IA – PLANEAMIENTO DE TAREAS", s["h1"]))
+
+    items.append(Paragraph(
+        "El taller requiere aplicar herramientas de IA en el planeamiento y gestión de las "
+        "actividades. El Grupo 5 utilizó <b>Notion</b> como plataforma de planificación "
+        "colaborativa y <b>Claude (Anthropic)</b> como asistente de IA para organizar, "
+        "desglosar y ejecutar las tareas del taller.",
+        s["body"]
+    ))
+
+    items.append(Paragraph("1. Cómo se aplicó la IA en el planeamiento", s["h2"]))
+    pasos = [
+        ("<b>Desglose de tareas con IA:</b> se solicitó a Claude que identificara las subtareas "
+         "de cada problema (investigación, implementación, visualización, documentación) y estimara "
+         "la complejidad relativa de cada una para distribuir el trabajo de forma equitativa."),
+        ("<b>Generación de código asistida:</b> todo el desarrollo fue co-creado con Claude Code "
+         "(CLI), que generó el esqueleto de cada solución, sugirió los parámetros óptimos para "
+         "ACO (α=1.2, β=2.5, ρ=0.15) y estructuró las visualizaciones con matplotlib y networkx."),
+        ("<b>Revisión iterativa:</b> los errores de implementación y los ajustes de parámetros "
+         "se resolvieron en conversación con la IA, documentando las decisiones en el tablero "
+         "de Notion para mantener trazabilidad del proceso."),
+        ("<b>Redacción asistida:</b> la documentación técnica (README, PDF resumen, ensayo) "
+         "fue estructurada con ayuda de IA, asegurando que cada sección explique el 'por qué' "
+         "de las decisiones algorítmicas y no solo el 'qué'."),
+    ]
+    for p in pasos:
+        items.append(Paragraph(f"• {p}", s["bullet"]))
+        items.append(Spacer(1, 0.05*cm))
+
+    items.append(Paragraph("2. Estructura del tablero en Notion", s["h2"]))
+    items.append(Paragraph(
+        "Se creó un proyecto con flujo de trabajo Kanban y seguimiento de hitos:", s["body_left"]))
+    cols = [
+        ["Columna", "Propósito"],
+        ["Por hacer", "Tareas identificadas, aún no iniciadas"],
+        ["En progreso", "Tareas activas con responsable asignado"],
+        ["En revisión", "Completadas, pendientes de validación grupal"],
+        ["Completado", "Entregables finalizados y commiteados"],
+    ]
+    data = [[Paragraph(f"<b>{c}</b>" if i==0 else c, s["body"]) for c in row]
+            for i, row in enumerate(cols)]
+    tbl = Table(data, colWidths=[4*cm, 13*cm])
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0,0),(-1,0),  AZUL_MED), ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+        ("ROWBACKGROUNDS",(0,1),(-1,-1), [colors.white, AZUL_CLAR]),
+        ("GRID",          (0,0),(-1,-1), 0.3, colors.HexColor("#c5cae9")),
+        ("TOPPADDING",    (0,0),(-1,-1), 4), ("BOTTOMPADDING",(0,0),(-1,-1),4),
+        ("LEFTPADDING",   (0,0),(-1,-1), 6),
+    ]))
+    items.append(tbl)
+    items.append(Spacer(1, 0.3*cm))
+
+    items.append(Paragraph("3. Distribución de responsabilidades y hitos", s["h2"]))
+    resp = [
+        ["Integrante", "Tarea principal", "Tareas de soporte"],
+        ["Nancy Altamirano", "TSP – ACO + 2-opt", "Coordinación, README, PDF"],
+        ["Gustavo Berru", "TSP – Visualizaciones y estadísticas", "Revisión de parámetros ACO"],
+        ["Raquel Pacheco", "Granjero – BFS + visualizaciones", "Documentación del algoritmo"],
+        ["Kevin Viteri", "Hanoi – Recursividad + grafo de estados", "Animaciones y gráficas"],
+    ]
+    data = [[Paragraph(f"<b>{c}</b>" if i==0 else c, s["body"]) for c in row]
+            for i, row in enumerate(resp)]
+    tbl = Table(data, colWidths=[4*cm, 6.5*cm, 6.5*cm])
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0,0),(-1,0),  AZUL_MED), ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+        ("ROWBACKGROUNDS",(0,1),(-1,-1), [colors.white, AZUL_CLAR]),
+        ("GRID",          (0,0),(-1,-1), 0.3, colors.HexColor("#c5cae9")),
+        ("TOPPADDING",    (0,0),(-1,-1), 4), ("BOTTOMPADDING",(0,0),(-1,-1),4),
+        ("LEFTPADDING",   (0,0),(-1,-1), 6),
+    ]))
+    items.append(tbl)
+    items.append(Spacer(1, 0.3*cm))
+
+    items.append(Paragraph("4. Enlace al proyecto de planificación", s["h2"]))
+    items.append(Paragraph(
+        "El tablero completo con todas las tareas, responsables y avances está disponible en:",
+        s["body"]
+    ))
+    items.append(Paragraph(
+        "https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-"
+        "9fe3570dff2d48359703271a0cc9b6d4?source=copy_link",
+        s["code"]
+    ))
+    items.append(Paragraph(
+        "✅ El uso de IA en el planeamiento permitió reducir el tiempo de coordinación, "
+        "asegurar que ninguna tarea quedara sin responsable y mantener un registro claro "
+        "de las decisiones de diseño y los cambios de enfoque durante el desarrollo.",
+        s["highlight"]
+    ))
+    return items
+
+
+def seccion_ensayo(s):
+    items = []
+    items.append(PageBreak())
+    items.append(HRFlowable(width="100%", thickness=2, color=AZUL_MED))
+    items.append(Paragraph(
+        "  NUMERAL 3: LA EVOLUCIÓN DE LA IA – CHIPS ANALÓGICOS", s["h1"]))
+
+    items.append(Paragraph(
+        "El tercer numeral del taller requiere elaborar un ensayo sobre los últimos avances "
+        "en inteligencia artificial con chips analógicos, basado en los videos proporcionados. "
+        "El ensayo completo está en <b>Doc/ensayo_chips_analogicos.pdf</b>. "
+        "A continuación se presenta un resumen estructurado.",
+        s["body"]
+    ))
+
+    items.append(Paragraph("Videos de referencia analizados", s["h2"]))
+    videos = [
+        ["#", "URL", "Tema central"],
+        ["1", "youtube.com/watch?v=GVsUOuSjvcg",
+         "Computación analógica y el futuro del hardware para IA"],
+        ["2", "youtube.com/watch?v=6Y6FJVqzivc",
+         "Memristores y redes neuronales analógicas"],
+        ["3", "youtube.com/watch?v=trPFX6yAC3E",
+         "Procesadores neuromórficos y eficiencia energética"],
+    ]
+    data = [[Paragraph(f"<b>{c}</b>" if i==0 else c, s["body"]) for c in row]
+            for i, row in enumerate(videos)]
+    tbl = Table(data, colWidths=[0.8*cm, 6.5*cm, 9.7*cm])
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0,0),(-1,0),  AZUL_MED), ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+        ("ROWBACKGROUNDS",(0,1),(-1,-1), [colors.white, AZUL_CLAR]),
+        ("GRID",          (0,0),(-1,-1), 0.3, colors.HexColor("#c5cae9")),
+        ("TOPPADDING",    (0,0),(-1,-1), 4), ("BOTTOMPADDING",(0,0),(-1,-1),4),
+        ("LEFTPADDING",   (0,0),(-1,-1), 5),
+    ]))
+    items.append(tbl)
+    items.append(Spacer(1, 0.3*cm))
+
+    items.append(Paragraph("1. El límite de la computación digital para IA", s["h2"]))
+    items.append(Paragraph(
+        "Los modelos de IA modernos (GPT-4, LLaMA, Gemini) requieren centros de datos que "
+        "consumen entre 10 y 100 MW de energía. La arquitectura digital von Neumann enfrenta "
+        "el <b>'memory wall'</b>: el cuello de botella entre CPU/GPU y la memoria principal "
+        "limita el rendimiento. Los chips digitales realizan operaciones exactas de 32/64 bits "
+        "cuando las redes neuronales solo necesitan precisión reducida (FP8, INT4), "
+        "desperdiciando transistores y energía.",
+        s["body"]
+    ))
+
+    items.append(Paragraph("2. Computación analógica: operar en el dominio físico", s["h2"]))
+    items.append(Paragraph(
+        "Los chips analógicos realizan operaciones matemáticas mediante fenómenos físicos directos, "
+        "eliminando el ciclo fetch-decode-execute de la arquitectura digital:",
+        s["body_left"]
+    ))
+    analogicos = [
+        ("<b>Multiplicación (ley de Ohm):</b> V = I·R calcula productos en hardware sin ciclos "
+         "de reloj. Aplicar un voltaje V a una resistencia R produce una corriente I = V/R "
+         "instantáneamente."),
+        ("<b>Suma (ley de Kirchhoff):</b> las corrientes de múltiples resistencias en paralelo "
+         "se suman automáticamente, implementando la acumulación de productos matriciales en hardware."),
+        ("<b>Activación no lineal:</b> transistores en región sub-umbral emulan funciones "
+         "sigmoides naturalmente, sin necesidad de tablas de lookup ni aproximaciones digitales."),
+    ]
+    for a in analogicos:
+        items.append(Paragraph(f"• {a}", s["bullet"]))
+    items.append(Paragraph(
+        "Resultado: la operación de multiplicación-acumulación (MAC) —el núcleo de las redes "
+        "neuronales— se implementa con <b>10–100× menos energía</b> que con aritmética digital.",
+        s["highlight"]
+    ))
+
+    items.append(Paragraph("3. Memristores: memoria con cómputo integrado", s["h2"]))
+    items.append(Paragraph(
+        "El memristor es un componente pasivo cuya <b>resistencia cambia según la historia de "
+        "corriente que ha pasado por él</b> (efecto de memoria). Esto lo convierte en el "
+        "sustrato ideal para el 'Computing-in-Memory' (CIM):",
+        s["body"]
+    ))
+    memristores = [
+        "Los pesos de una red neuronal se almacenan como niveles de conductancia del memristor.",
+        "La inferencia ocurre físicamente al aplicar voltajes de entrada: la corriente resultante "
+        "es el producto matricial — sin transferir datos entre memoria y procesador.",
+        "IBM Research, Intel (Loihi), Mythic AI e Innatera han demostrado chips CIM con "
+        "memristores operando a <1 mW para inferencia en el borde (edge AI).",
+    ]
+    for m in memristores:
+        items.append(Paragraph(f"• {m}", s["bullet"]))
+
+    items.append(Paragraph("4. Procesadores neuromórficos: inspiración biológica", s["h2"]))
+    items.append(Paragraph(
+        "Los procesadores neuromórficos replican la arquitectura del cerebro humano "
+        "en lugar de seguir el modelo von Neumann:", s["body_left"]
+    ))
+    neuro = [
+        ("<b>Procesamiento basado en eventos (spiking):</b> solo procesan cuando hay un cambio, "
+         "igual que las neuronas biológicas. En tareas esparcidas, el 99% del tiempo el chip "
+         "está en reposo, consumiendo energía mínima."),
+        ("<b>Aprendizaje local (STDP):</b> los pesos se actualizan localmente sin backpropagation "
+         "global, habilitando aprendizaje continuo sin acceso a datos de entrenamiento centralizados."),
+        ("<b>Intel Loihi 2 (2021):</b> 1 millón de neuronas artificiales en 31 mm². Consume "
+         "1000× menos energía que una GPU equivalente para tareas de inferencia esparcida."),
+        ("<b>IBM TrueNorth:</b> 4.096 núcleos neuromórficos, 256 neuronas por núcleo, "
+         "operando a 70 mW — equivalente al consumo de un LED."),
+    ]
+    for n in neuro:
+        items.append(Paragraph(f"• {n}", s["bullet"]))
+
+    items.append(Paragraph("5. Perspectivas: arquitecturas híbridas digital-analógicas", s["h2"]))
+    items.append(Paragraph(
+        "La computación analógica enfrenta retos: variabilidad de fabricación, ruido inherente, "
+        "dificultad para entrenar (los gradientes no se propagan fácilmente en hardware analógico) "
+        "y menor precisión numérica. Sin embargo, para inferencia en el borde (IoT, wearables, "
+        "vehículos autónomos), la ventaja energética supera estas limitaciones.",
+        s["body"]
+    ))
+    items.append(Paragraph(
+        "El consenso académico apunta a arquitecturas <b>híbridas digital-analógicas</b>: "
+        "entrenamiento en la nube con hardware digital preciso, e inferencia en el borde con "
+        "chips analógicos ultraeficientes. Esta división de responsabilidades permite aprovechar "
+        "lo mejor de ambos mundos: exactitud en el entrenamiento y eficiencia en la inferencia.",
+        s["highlight"]
+    ))
+
+    items.append(Paragraph("Conclusión del ensayo", s["h2"]))
+    items.append(Paragraph(
+        "La era de la IA estará definida no solo por los algoritmos, sino por el hardware que "
+        "los ejecuta. Los chips analógicos y neuromórficos representan el siguiente salto "
+        "evolutivo: pasar de simular la inteligencia en hardware digital genérico a implementarla "
+        "en sustrato físico especializado, reduciendo el consumo energético en órdenes de magnitud. "
+        "Este cambio habilitará IA ubicua, permanente y eficiente en dispositivos que hoy no "
+        "tienen capacidad de cómputo: sensores agrícolas, implantes médicos, wearables industriales "
+        "y, eventualmente, interfaces cerebro-computadora.",
+        s["body"]
+    ))
+    items.append(Paragraph(
+        "Referencias del ensayo: videos del taller (URLs arriba) + "
+        "Mead, C. (1990). Neuromorphic electronic systems. <i>Proc. IEEE</i>, 78(10). | "
+        "Strukov, D.B. et al. (2008). The missing memristor found. <i>Nature</i>, 453, 80–83. | "
+        "Davies, M. et al. (2018). Loihi: A neuromorphic manycore processor. "
+        "<i>IEEE Micro</i>, 38(1), 82–99.",
+        s["bullet"]
+    ))
+    return items
+
+
 def seccion_conclusiones(s):
     items = []
     items.append(PageBreak())
@@ -660,6 +902,8 @@ def build_pdf():
     story += seccion_tsp(s)
     story += seccion_granjero(s)
     story += seccion_hanoi(s)
+    story += seccion_notion(s)
+    story += seccion_ensayo(s)
     story += seccion_conclusiones(s)
     doc.build(story)
     print(f"PDF generado: {OUTPUT}")

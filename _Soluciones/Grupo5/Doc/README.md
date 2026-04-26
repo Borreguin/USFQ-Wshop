@@ -202,19 +202,107 @@ Programa ejecutado con **4 discos** → 15 movimientos. Grafo disponible para n 
 
 ---
 
-## 3. Planeamiento en Notion
+## 3. Uso de la IA – Planeamiento de Tareas
 
-El planeamiento de tareas del taller se gestionó en Notion, donde se registraron las actividades, responsables y avances de cada problema:
+El taller requiere usar herramientas de IA para el planeamiento y gestión de las actividades. El Grupo 5 utilizó **Notion** como plataforma de planificación colaborativa asistida por IA.
+
+### ¿Cómo se aplicó la IA en el planeamiento?
+
+1. **Definición de tareas con IA:** Se utilizó Claude (Anthropic) para desglosar cada problema del taller (TSP, Granjero, Hanoi) en subtareas concretas: investigación del algoritmo, implementación, generación de visualizaciones, documentación y presentación.
+
+2. **Estructura del tablero en Notion:** Se creó un proyecto con las siguientes columnas de seguimiento:
+   - **Por hacer** – tareas identificadas pero no iniciadas
+   - **En progreso** – tareas activas con responsable asignado
+   - **En revisión** – tareas completadas pendientes de validación del grupo
+   - **Completado** – entregables finalizados
+
+3. **Distribución de responsabilidades:**
+
+| Integrante | Tarea principal | Tareas de soporte |
+|---|---|---|
+| Nancy Altamirano | TSP – Implementación ACO + 2-opt | Coordinación general, README |
+| Gustavo Berru | TSP – Visualizaciones y análisis estadístico | Revisión de parámetros ACO |
+| Raquel Pacheco | Granjero – BFS + visualizaciones | Documentación del algoritmo |
+| Kevin Viteri | Hanoi – Recursividad + grafo de estados | Animaciones y gráficas |
+
+4. **Hitos del proyecto:**
+
+| Hito | Fecha límite | Estado |
+|---|---|---|
+| Implementación TSP base | Semana 1 | ✅ Completado |
+| Implementación Granjero y Hanoi | Semana 1 | ✅ Completado |
+| Visualizaciones y gráficas | Semana 2 | ✅ Completado |
+| README y documentación técnica | Semana 2 | ✅ Completado |
+| PDF resumen del taller | Semana 2 | ✅ Completado |
+| Ensayo chips analógicos | Semana 2 | ✅ Completado |
+| Revisión final y commit | Semana 2 | ✅ Completado |
+
+5. **Uso de IA para generar código:** Todo el desarrollo fue asistido por Claude Code (CLI), que generó, revisó y corrigió el código de cada problema, sugirió los parámetros óptimos para ACO, y ayudó a estructurar las visualizaciones con matplotlib y networkx.
+
+### Enlace al proyecto de planificación
 
 [Proyecto de Planificación – Taller 1 IA Grupo 5](https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-9fe3570dff2d48359703271a0cc9b6d4?source=copy_link)
 
 ---
 
-## 4. Ensayo: Evolución de la IA con Chips Analógicos
+## 4. La Evolución de la IA – Ensayo sobre Chips Analógicos
 
 **Archivo:** `Doc/ensayo_chips_analogicos.pdf`
 
-Ensayo basado en las transcripciones de los videos del taller sobre computación analógica y su impacto en la IA moderna. Analiza la evolución hacia arquitecturas híbridas con memristores, la eficiencia energética de la computación analógica y el potencial futuro de los procesadores neuromórficos.
+### Descripción del ensayo
+
+El ensayo aborda la pregunta: **¿cuáles son los últimos avances en inteligencia artificial impulsados por chips analógicos?** El análisis parte de las transcripciones y contenido de tres videos del taller y se desarrolla en torno a cuatro ejes temáticos.
+
+### Videos de referencia
+
+Los tres videos analizados para el ensayo son:
+
+| # | URL | Tema central |
+|---|---|---|
+| 1 | https://www.youtube.com/watch?v=GVsUOuSjvcg | Computación analógica y el futuro del hardware para IA |
+| 2 | https://www.youtube.com/watch?v=6Y6FJVqzivc | Memristores y redes neuronales analógicas |
+| 3 | https://www.youtube.com/watch?v=trPFX6yAC3E | Procesadores neuromórficos y eficiencia energética |
+
+### Estructura del ensayo
+
+**1. El límite de la computación digital para IA**
+
+Los modelos de IA modernos (GPT-4, LLaMA, Gemini) requieren centros de datos que consumen entre 10 y 100 MW de energía. La arquitectura digital von Neumann enfrenta el "memory wall": el cuello de botella entre CPU/GPU y la memoria principal limita el rendimiento. Los chips digitales realizan operaciones exactas de 32/64 bits cuando las redes neuronales solo necesitan precisión reducida (FP8, INT4), desperdiciando transistores y energía.
+
+**2. Computación analógica: operar en el dominio físico**
+
+Los chips analógicos realizan operaciones matemáticas mediante fenómenos físicos directos:
+- **Multiplicación:** la ley de Ohm (V = I·R) calcula productos en hardware sin ciclos de reloj
+- **Suma:** la ley de Kirchhoff suma corrientes de múltiples resistencias en paralelo instantáneamente
+- **Activación:** transistores en región sub-umbral emulan funciones sigmoides naturalmente
+
+Esto permite implementar la operación de multiplicación-acumulación (MAC) —el núcleo de las redes neuronales— con 10–100× menos energía que con aritmética digital.
+
+**3. Memristores: memoria con cómputo integrado**
+
+El memristor es un componente pasivo cuya resistencia cambia según la corriente que ha pasado por él (memoria). Esto lo convierte en el substrato ideal para el "Computing-in-Memory" (CIM):
+- Los pesos de una red neuronal se almacenan como niveles de conductancia del memristor
+- La inferencia ocurre físicamente al aplicar voltajes de entrada: la corriente resultante es el producto matricial
+- No hay transferencia de datos entre memoria y procesador: el cálculo ocurre donde están los pesos
+
+Empresas como IBM Research, Intel (Loihi), y startups como Mythic AI e Innatera han demostrado chips CIM con memristores operando a <1 mW para inferencia en el borde (edge AI).
+
+**4. Procesadores neuromórficos: inspiración biológica**
+
+Los procesadores neuromórficos (Intel Loihi 2, IBM TrueNorth, BrainScaleS) replican la arquitectura del cerebro:
+- **Procesamiento basado en eventos (spiking):** solo procesan cuando hay un cambio, igual que las neuronas biológicas
+- **Aprendizaje local (STDP):** los pesos se actualizan localmente sin backpropagation global
+- **Masiva paralelización:** millones de núcleos simples en lugar de pocos núcleos potentes
+
+Intel Loihi 2 (2021) tiene 1 millón de neuronas artificiales en 31 mm² y consume 1000× menos energía que una GPU equivalente para tareas de inferencia esparcida.
+
+**5. Perspectivas y desafíos**
+
+La computación analógica enfrenta retos: variabilidad de fabricación, ruido inherente, dificultad para entrenar (los gradientes no se propagan fácilmente en hardware analógico), y menor precisión numérica. Sin embargo, para inferencia en el borde (IoT, wearables, vehículos autónomos), la ventaja energética supera estas limitaciones. El consenso académico apunta a arquitecturas **híbridas digital-analógicas**: entrenamiento en la nube con hardware digital preciso, e inferencia en el borde con chips analógicos ultraeficientes.
+
+### Conclusión del ensayo
+
+La era de la IA estará definida no solo por los algoritmos, sino por el hardware que los ejecuta. Los chips analógicos y neuromórficos representan el siguiente salto evolutivo: pasar de simular la inteligencia en hardware digital genérico a implementarla en substrato físico especializado, reduciendo el consumo energético en órdenes de magnitud. Este cambio habilitará IA ubicua, permanente y eficiente en dispositivos que hoy no tienen capacidad de cómputo.
 
 ---
 
