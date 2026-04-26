@@ -19,33 +19,33 @@
 ## 1. Problemas Resueltos
 
 ### A. TSP – Travelling Salesman Problem
-**Archivos:** `P1_TSP/TSP.py` · `src/tsp.py` (OOP)
+**Archivo:** `P1_TSP/TSP.py`
 
-Solución con tres algoritmos en cadena aplicados a las **24 capitales de provincia del Ecuador**:
-1. **Nearest Neighbor** – baseline greedy (2146.62 km)
+Solución con tres algoritmos en cadena aplicados a **10 ciudades ecuatorianas** (Quito, Guayaquil, Cuenca, Manta, Ambato, Loja, Esmeraldas, Riobamba, Ibarra, Latacunga):
+1. **Nearest Neighbor** – baseline greedy
 2. **Ant Colony Optimization (ACO)** – metaheurística bioinspirada; 25 hormigas × 150 iteraciones, feromonas, evaporación ρ=0.15, hormigas élite
-3. **2-opt** – refinamiento local sobre la mejor solución ACO (2003.89 km, mejora 6.6%)
+3. **2-opt** – refinamiento local sobre la mejor solución ACO
 
 **Visualizaciones generadas:**
-- `tsp_01_comparativa_rutas.png` – Comparativa NN vs ACO vs ACO+2opt
-- `tsp_02_convergencia.png` – Curva de convergencia por iteración
-- `tsp_03_feromonas.png` – Evolución de feromonas τ(i,j) en 4 momentos
-- `tsp_04_estadisticas.png` – Análisis de 20 corridas (media=2010.50 km ±10.73 km)
-- `tsp_05_heatmap_distancias.png` – Mapa de calor de distancias Haversine
+- `P1_TSP/imagenes/tsp_01_comparativa_rutas.png` – Comparativa NN vs ACO vs ACO+2opt
+- `P1_TSP/imagenes/tsp_02_convergencia.png` – Curva de convergencia por iteración
+- `P1_TSP/imagenes/tsp_03_feromonas.png` – Evolución de feromonas τ(i,j) en 4 momentos
+- `P1_TSP/imagenes/tsp_04_estadisticas.png` – Análisis estadístico de 20 corridas
+- `P1_TSP/imagenes/tsp_05_heatmap_distancias.png` – Mapa de calor de distancias
 
 ### B. El acertijo del granjero y el bote
-**Archivos:** `P2_Granjero/Acertijo.py` · `src/granjero.py` (OOP)
+**Archivo:** `P2_Granjero/Acertijo.py`
 
 Solución con **BFS (Búsqueda en Anchura)** sobre espacio de estados.
 Estado: `(granjero, lobo, cabra, col)` donde `0`=orilla izquierda, `1`=orilla derecha.
 De 16 estados posibles, 10 son válidos. BFS encuentra la solución óptima en **7 pasos**.
 
 **Visualizaciones generadas:**
-- `granjero_01_pasos.png` – 8 paneles con la secuencia completa de solución
-- `granjero_02_grafo.png` – Grafo de transiciones de estados con camino óptimo en naranja
+- `P2_Granjero/farmer_steps.png` – Paneles con la secuencia completa de solución
+- `P2_Granjero/farmer_graph.png` – Grafo de transiciones de estados con camino óptimo en naranja
 
 ### C. La Torre de Hanoi
-**Archivos:** `P3_Torres/Torres.py` · `src/hanoi.py` (OOP)
+**Archivo:** `P3_Torres/Torres.py`
 
 Solución **recursiva** exacta con estrategia divide y vencerás.
 Para n discos: mueve n-1 a auxiliar → mueve el mayor al destino → mueve n-1 del auxiliar al destino.
@@ -53,9 +53,10 @@ Siempre requiere exactamente **2ⁿ − 1 movimientos** (mínimo demostrado).
 Con 4 discos: **15 movimientos**. Espacio de estados: 3⁴ = **81 nodos**, 120 aristas.
 
 **Visualizaciones generadas:**
-- `hanoi_01_estado_final.png` – Estado final con 4 discos en Torre C
-- `hanoi_02_movimientos.png` – Distribución de movimientos por torre
-- `hanoi_03_complejidad.png` – Curva de complejidad O(2ⁿ) para n=1..12
+- `P3_Torres/Figure_1.png` – Estado inicial
+- `P3_Torres/Figure_2.png` – Grafo completo de estados con camino óptimo
+- `P3_Torres/Figure_3.png` – Distribución de movimientos por torre
+- `P3_Torres/Figure_4.png` – Curva de complejidad O(2ⁿ) para n=1..12
 
 ---
 
@@ -78,19 +79,20 @@ en la IA moderna: chips de memristores, eficiencia energética, futuro híbrido 
 ```
 _Soluciones/Grupo5/
 ├── P1_TSP/
-│   └── TSP.py                     # Entrada: corre TSP con 24 ciudades
+│   ├── TSP.py                     # ACO + 2-opt sobre 10 ciudades ecuatorianas
+│   └── imagenes/                  # 5 PNG generadas por TSP.py
 ├── P2_Granjero/
-│   ├── Acertijo.py                # Entrada: BFS + visualizaciones
+│   ├── Acertijo.py                # BFS + visualizaciones
+│   ├── farmer_steps.png           # Secuencia de pasos
+│   ├── farmer_graph.png           # Grafo de estados
 │   └── solucion_granjero.txt      # Solución impresa con estados
 ├── P3_Torres/
-│   └── Torres.py                  # Entrada: Hanoi recursivo
-├── src/
-│   ├── tsp.py                     # OOP: City, ACO, TSPVisualizer…
-│   ├── granjero.py                # OOP: State, FarmerPuzzle…
-│   └── hanoi.py                   # OOP: Disk, Tower, HanoiSolver…
-├── images/                        # 10 PNG generadas (5 TSP + 2 Granjero + 3 Hanoi)
-├── generar_imagenes.py            # Regenera las 10 imágenes (headless)
-├── generar_resumen_taller.py      # Regenera el PDF resumen
+│   ├── Torres.py                  # Hanoi recursivo + animación + grafo
+│   ├── Figure_1.png               # Estado inicial
+│   ├── Figure_2.png               # Grafo de estados
+│   ├── Figure_3.png               # Movimientos por torre
+│   └── Figure_4.png               # Curva de complejidad
+├── images/                        # Imágenes adicionales
 ├── resumen_taller1_grupo5.pdf     # Informe completo del taller
 └── ensayo_chips_analogicos.pdf    # Ensayo literal C
 ```
@@ -99,14 +101,10 @@ _Soluciones/Grupo5/
 
 ```bash
 # Instalar dependencias
-pip install numpy matplotlib networkx reportlab
+pip install numpy matplotlib networkx
 
 # Desde la raíz del repositorio (USFQ-Wshop/)
 python _Soluciones/Grupo5/P1_TSP/TSP.py
 python _Soluciones/Grupo5/P2_Granjero/Acertijo.py
 python _Soluciones/Grupo5/P3_Torres/Torres.py
-
-# Regenerar todas las imágenes y el PDF resumen
-python _Soluciones/Grupo5/generar_imagenes.py
-python _Soluciones/Grupo5/generar_resumen_taller.py
 ```
