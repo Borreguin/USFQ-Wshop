@@ -19,7 +19,7 @@
 - 3. Iniciar el sistema ejecutando `start.bat`.
 
 ### Resumen
-- Soluciones explicadas en: [Taller 1](_Soluciones/Grupo1/Taller1/README.md)
+- Soluciones explicadas en: [Taller 1](Taller1/README.md)
 - Problemas: 
   - P1: TSP – Travelling Salesman Problem – Problema del vendedor viajante. Dada una lista de ubicaciones y las distancias entre cada par de ellas, ¿cuál es la ruta más corta posible que visita cada ubicación exactamente una vez y al finalizar regresa a la ciudad de origen formando un ciclo cerrado? Cuál es la mejor manera de representar este problema.
   - P2: El acertijo del granjero y el bote. Un granjero compra un lobo, una cabra y una col y debe cruzar un río con una barca que solo puede llevarlo a él y un objeto a la vez. Reglas: el lobo no puede quedarse solo con la cabra, la cabra no puede quedarse sola con la col, y la barca debe ser manejada por el granjero. El objetivo es cruzar a la otra orilla sin riesgos.
