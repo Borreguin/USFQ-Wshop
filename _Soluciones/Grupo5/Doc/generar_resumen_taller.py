@@ -111,6 +111,18 @@ def portada(s):
         "soporte para la exposición del trabajo."
     )
     items.append(Paragraph(intro, s["body"]))
+    items.append(Spacer(1, 0.3*cm))
+    items.append(Paragraph("Planeamiento del taller en Notion", s["h2"]))
+    items.append(Paragraph(
+        "El planeamiento de tareas, distribución de responsabilidades y seguimiento de avances "
+        "del taller se gestionó en Notion. El tablero de planificación del Grupo 5 está disponible en:",
+        s["body"]
+    ))
+    items.append(Paragraph(
+        "https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-"
+        "9fe3570dff2d48359703271a0cc9b6d4?source=copy_link",
+        s["code"]
+    ))
     return items
 
 

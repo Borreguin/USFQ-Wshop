@@ -204,7 +204,9 @@ Programa ejecutado con **4 discos** → 15 movimientos. Grafo disponible para n 
 
 ## 3. Planeamiento en Notion
 
-[Proyecto de Planificación – Taller 1 IA Grupo 5](https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-9fe3570dff2d48359703271a0cc9b6d4)
+El planeamiento de tareas del taller se gestionó en Notion, donde se registraron las actividades, responsables y avances de cada problema:
+
+[Proyecto de Planificación – Taller 1 IA Grupo 5](https://www.notion.so/Proyecto-de-planificaci-n-Taller-1-IA-Grupo-5-9fe3570dff2d48359703271a0cc9b6d4?source=copy_link)
 
 ---
 
