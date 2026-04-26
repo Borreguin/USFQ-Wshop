@@ -4,18 +4,22 @@ Uso: python _Soluciones/Grupo5/Doc/generar_resumen_taller.py
 """
 
 import os
+import io
+from PIL import Image as PILImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    HRFlowable, PageBreak, KeepTogether
+    HRFlowable, PageBreak, KeepTogether, Image
 )
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT   = os.path.join(BASE_DIR, "resumen_taller1_grupo5.pdf")
+IMG_DIR  = os.path.join(os.path.dirname(BASE_DIR), "Imagenes")
+MAX_W    = 16 * cm   # ancho máximo seguro dentro de los márgenes A4
 
 AZUL      = colors.HexColor("#1a237e")
 AZUL_MED  = colors.HexColor("#283593")
@@ -62,7 +66,36 @@ def build_styles():
     s["warning"]   = ParagraphStyle("warning",   parent=base["Normal"],
         fontSize=9.5, leading=13, backColor=colors.HexColor("#fff8e1"),
         leftIndent=0.3*cm, rightIndent=0.3*cm, borderPad=5, spaceAfter=6)
+    s["caption"]   = ParagraphStyle("caption",   parent=base["Normal"],
+        fontSize=8, leading=10, textColor=GRIS, alignment=TA_CENTER,
+        spaceBefore=2, spaceAfter=8, fontName="Helvetica-Oblique")
     return s
+
+
+# ── Helper imágenes ───────────────────────────────────────────────────────────
+
+def add_image(items, filename, caption, s, width=None):
+    path = os.path.join(IMG_DIR, filename)
+    if not os.path.exists(path):
+        items.append(Paragraph(f"[Imagen no encontrada: {filename}]", s["warning"]))
+        return
+    # Convierte RGBA → RGB (fondo blanco) para compatibilidad con ReportLab
+    pil_img = PILImage.open(path)
+    if pil_img.mode in ("RGBA", "LA", "P"):
+        bg = PILImage.new("RGB", pil_img.size, (255, 255, 255))
+        bg.paste(pil_img, mask=pil_img.split()[-1] if pil_img.mode == "RGBA" else None)
+        pil_img = bg
+    nat_w, nat_h = pil_img.size
+    buf = io.BytesIO()
+    pil_img.save(buf, format="PNG")
+    buf.seek(0)
+    w = min(width, MAX_W) if width else MAX_W
+    h = w * nat_h / nat_w          # alto proporcional
+    img = Image(buf, width=w, height=h)
+    img.hAlign = "CENTER"
+    items.append(img)
+    items.append(Paragraph(caption, s["caption"]))
+    items.append(Spacer(1, 0.3*cm))
 
 
 # ── Portada ──────────────────────────────────────────────────────────────────
@@ -352,25 +385,21 @@ def seccion_tsp(s):
 
     # 8. Visualizaciones
     items.append(Paragraph("8. Visualizaciones", s["h2"]))
-    viz = [
-        ("tsp_01_comparativa_rutas.png",
-         "Tres mapas lado a lado: Nearest Neighbor, ACO y ACO+2opt. Permite comparar "
-         "visualmente la mejora de calidad de ruta entre los tres algoritmos."),
-        ("tsp_02_convergencia.png",
-         "Curva del mejor costo global por iteración y costo promedio. Evidencia cómo "
-         "el ACO converge progresivamente y cuándo se estabiliza la búsqueda."),
-        ("tsp_03_feromonas.png",
-         "Heatmaps de la matriz τ(i,j) en 4 momentos durante la ejecución. Muestra "
-         "cómo el algoritmo 'aprende' cuáles arcos son más prometedores a lo largo del tiempo."),
-        ("tsp_04_estadisticas.png",
-         "Histograma, boxplot y tabla estadística de 20 corridas independientes. "
-         "Demuestra la robustez del enfoque y cuantifica la variabilidad entre ejecuciones."),
-        ("tsp_05_heatmap_distancias.png",
-         "Matriz completa de distancias entre las 24 ciudades. Evidencia por qué "
-         "Galápagos genera el arco más largo y cuáles capitales son geográficamente más cercanas."),
-    ]
-    for nombre, desc in viz:
-        items.append(Paragraph(f"• <b>{nombre}:</b> {desc}", s["bullet"]))
+    add_image(items, "tsp_01_comparativa_rutas.png",
+        "Figura 1 – Comparativa de rutas: Nearest Neighbor vs ACO vs ACO+2opt "
+        "(las tres rutas sobre el mapa del Ecuador con su costo en km)", s)
+    add_image(items, "tsp_02_convergencia.png",
+        "Figura 2 – Curva de convergencia ACO: mejor costo global por iteración "
+        "y costo promedio de la colonia", s)
+    add_image(items, "tsp_03_feromonas.png",
+        "Figura 3 – Evolución de la matriz de feromonas τ(i,j) en 4 momentos: "
+        "el algoritmo 'aprende' cuáles arcos son más prometedores", s)
+    add_image(items, "tsp_04_estadisticas.png",
+        "Figura 4 – Análisis estadístico de 20 corridas independientes de ACO+2opt: "
+        "histograma, boxplot y tabla de métricas", s)
+    add_image(items, "tsp_05_heatmap_distancias.png",
+        "Figura 5 – Mapa de calor de distancias entre las 24 capitales (km). "
+        "Galápagos genera el arco más largo de la instancia", s, width=11*cm)
 
     # 9. Conclusiones
     items.append(Paragraph("9. Conclusiones del Problema TSP", s["h2"]))
@@ -593,16 +622,12 @@ def seccion_granjero(s):
 
     # 8. Visualizaciones
     items.append(Paragraph("8. Visualizaciones", s["h2"]))
-    for nombre, desc in [
-        ("farmer_steps.png",
-         "8 paneles con el estado visual de ambas orillas en cada paso de la solución. "
-         "Permite seguir el razonamiento y verificar que nunca se violan las restricciones."),
-        ("farmer_graph.png",
-         "Grafo dirigido de los 10 estados válidos con todas las transiciones posibles. "
-         "El camino solución aparece resaltado en naranja sobre el grafo completo, "
-         "mostrando visualmente cómo BFS navega el espacio de búsqueda."),
-    ]:
-        items.append(Paragraph(f"• <b>{nombre}:</b> {desc}", s["bullet"]))
+    add_image(items, "farmer_steps (1).png",
+        "Figura 6 – Secuencia completa de los 8 pasos: estado de ambas orillas "
+        "en cada movimiento, verificando que nunca se violan las restricciones", s)
+    add_image(items, "farmer_graph (1).png",
+        "Figura 7 – Grafo de los 10 estados válidos con todas las transiciones posibles. "
+        "El camino BFS óptimo aparece resaltado en naranja", s, width=14.5*cm)
 
     # 9. Conclusiones
     items.append(Paragraph("9. Conclusiones del Problema Granjero", s["h2"]))
@@ -806,22 +831,18 @@ def seccion_hanoi(s):
 
     # 8. Visualizaciones
     items.append(Paragraph("8. Visualizaciones", s["h2"]))
-    for nombre, desc in [
-        ("Torre_1.png",
-         "Estado inicial con los n discos en la torre A ordenados de mayor (abajo) a menor (arriba). "
-         "Sirve como referencia visual del punto de partida."),
-        ("Torre_2.png",
-         "Grafo completo de los 3^n estados posibles como red de nodos. Las aristas son movimientos "
-         "legales. El camino óptimo recursivo se resalta en naranja, demostrando que la recursión "
-         "navega exactamente el camino más corto en el grafo completo."),
-        ("Torre_3.png",
-         "Barras de frecuencia de uso de cada torre como origen y destino. Confirma que la torre A "
-         "es la mayor fuente, la torre C el mayor destino, y B actúa como intermediaria equilibrada."),
-        ("Torre_4.png",
-         "Curva O(2^n−1) para n=1..12 con el valor ejecutado marcado. Ilustra el crecimiento "
-         "exponencial y por qué para n>20 la animación ya no es práctica pero el cálculo sigue siendo instantáneo."),
-    ]:
-        items.append(Paragraph(f"• <b>{nombre}:</b> {desc}", s["bullet"]))
+    add_image(items, "Torre_1.png",
+        "Figura 8 – Estado inicial: los n discos apilados en la torre A "
+        "de mayor (abajo) a menor (arriba)", s, width=11*cm)
+    add_image(items, "Torre_2.png",
+        "Figura 9 – Grafo completo de 3^n estados posibles. El camino óptimo "
+        "recursivo (naranja) navega exactamente el trayecto más corto", s, width=14.5*cm)
+    add_image(items, "Torre_3.png",
+        "Figura 10 – Frecuencia de uso de cada torre como origen y destino: "
+        "A es la mayor fuente, C el mayor destino, B actúa como intermediaria", s, width=11*cm)
+    add_image(items, "Torre_4.png",
+        "Figura 11 – Curva de complejidad O(2^n - 1) para n=1..12 "
+        "con el valor ejecutado (n=4, 15 movimientos) marcado", s, width=11*cm)
 
     # 9. Conclusiones
     items.append(Paragraph("9. Conclusiones del Problema Hanoi", s["h2"]))
