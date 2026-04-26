@@ -65,7 +65,7 @@ def bfs():
 
 
 def _action_name(prev, curr, item):
-    direction = "->" if curr[0] == 1 else "<-"
+    direction = "→" if curr[0] == 1 else "←"
     carry = ITEMS[item] if item > 0 else "solo"
     return f"Granjero {direction} ({carry})"
 
@@ -129,7 +129,7 @@ def draw_side(ax, state, title):
     ax.text(barca_x, 2.8, "🚣", fontsize=10, ha="center", va="center")
 
 
-def main(save_dir=None):
+def main():
     path, actions, _ = bfs()
     if path is None:
         print("Sin solución")
@@ -196,17 +196,8 @@ def main(save_dir=None):
     ax2.axis("off")
     plt.tight_layout()
 
-    if save_dir:
-        import os
-        os.makedirs(save_dir, exist_ok=True)
-        fig1.savefig(f"{save_dir}/granjero_01_pasos.png",  dpi=150, bbox_inches="tight")
-        fig2.savefig(f"{save_dir}/granjero_02_grafo.png",  dpi=150, bbox_inches="tight")
-        print(f"  Imágenes guardadas en: {save_dir}/")
-        plt.close("all")
-    else:
-        plt.show()
+    plt.show()
 
 
 if __name__ == "__main__":
-    import sys
-    main(save_dir=sys.argv[1] if len(sys.argv) > 1 else None)
+    main()

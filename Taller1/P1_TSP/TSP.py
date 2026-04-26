@@ -387,7 +387,7 @@ def figure_distance_heatmap(dist, names):
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-def main(save_dir=None):
+def main():
     dist, names, coords = build_distance_matrix(CITIES)
     n = len(names)
 
@@ -417,7 +417,7 @@ def main(save_dir=None):
     mejora = (nn_cost - aco2_cost) / nn_cost * 100
     print(f"\n  Mejora sobre NN:     {mejora:.1f}%")
     print("\n  Ruta óptima encontrada:")
-    print("  " + " -> ".join(names[i] for i in aco2_route))
+    print("  " + " → ".join(names[i] for i in aco2_route))
 
     # 4. Análisis multi-corrida (estadísticas)
     print("\n[3] Análisis estadístico (20 corridas ACO+2opt)…")
@@ -435,21 +435,8 @@ def main(save_dir=None):
     fig4 = figure_statistical_analysis(multi_results, aco2_cost, nn_cost)
     fig5 = figure_distance_heatmap(dist, names)
 
-    if save_dir:
-        import os
-        os.makedirs(save_dir, exist_ok=True)
-        fig1.savefig(f"{save_dir}/tsp_01_comparativa_rutas.png",     dpi=150, bbox_inches="tight")
-        fig2.savefig(f"{save_dir}/tsp_02_convergencia.png",          dpi=150, bbox_inches="tight")
-        fig3.savefig(f"{save_dir}/tsp_03_feromonas.png",             dpi=150, bbox_inches="tight")
-        fig4.savefig(f"{save_dir}/tsp_04_estadisticas.png",          dpi=150, bbox_inches="tight")
-        fig5.savefig(f"{save_dir}/tsp_05_heatmap_distancias.png",    dpi=150, bbox_inches="tight")
-        print(f"\n  Imágenes guardadas en: {save_dir}/")
-        plt.close("all")
-    else:
-        plt.show()
-
+    plt.show()
 
 
 if __name__ == "__main__":
-    import sys
-    main(save_dir=sys.argv[1] if len(sys.argv) > 1 else None)
+    main()
