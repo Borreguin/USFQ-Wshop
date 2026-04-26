@@ -245,64 +245,11 @@ El taller requiere usar herramientas de IA para el planeamiento y gestión de la
 
 ---
 
-## 4. La Evolución de la IA – Ensayo sobre Chips Analógicos
+## 4. Ensayo: Evolución de la IA con Chips Analógicos
 
 **Archivo:** `Doc/ensayo_chips_analogicos.pdf`
 
-### Descripción del ensayo
-
-El ensayo aborda la pregunta: **¿cuáles son los últimos avances en inteligencia artificial impulsados por chips analógicos?** El análisis parte de las transcripciones y contenido de tres videos del taller y se desarrolla en torno a cuatro ejes temáticos.
-
-### Videos de referencia
-
-Los tres videos analizados para el ensayo son:
-
-| # | URL | Tema central |
-|---|---|---|
-| 1 | https://www.youtube.com/watch?v=GVsUOuSjvcg | Computación analógica y el futuro del hardware para IA |
-| 2 | https://www.youtube.com/watch?v=6Y6FJVqzivc | Memristores y redes neuronales analógicas |
-| 3 | https://www.youtube.com/watch?v=trPFX6yAC3E | Procesadores neuromórficos y eficiencia energética |
-
-### Estructura del ensayo
-
-**1. El límite de la computación digital para IA**
-
-Los modelos de IA modernos (GPT-4, LLaMA, Gemini) requieren centros de datos que consumen entre 10 y 100 MW de energía. La arquitectura digital von Neumann enfrenta el "memory wall": el cuello de botella entre CPU/GPU y la memoria principal limita el rendimiento. Los chips digitales realizan operaciones exactas de 32/64 bits cuando las redes neuronales solo necesitan precisión reducida (FP8, INT4), desperdiciando transistores y energía.
-
-**2. Computación analógica: operar en el dominio físico**
-
-Los chips analógicos realizan operaciones matemáticas mediante fenómenos físicos directos:
-- **Multiplicación:** la ley de Ohm (V = I·R) calcula productos en hardware sin ciclos de reloj
-- **Suma:** la ley de Kirchhoff suma corrientes de múltiples resistencias en paralelo instantáneamente
-- **Activación:** transistores en región sub-umbral emulan funciones sigmoides naturalmente
-
-Esto permite implementar la operación de multiplicación-acumulación (MAC) —el núcleo de las redes neuronales— con 10–100× menos energía que con aritmética digital.
-
-**3. Memristores: memoria con cómputo integrado**
-
-El memristor es un componente pasivo cuya resistencia cambia según la corriente que ha pasado por él (memoria). Esto lo convierte en el substrato ideal para el "Computing-in-Memory" (CIM):
-- Los pesos de una red neuronal se almacenan como niveles de conductancia del memristor
-- La inferencia ocurre físicamente al aplicar voltajes de entrada: la corriente resultante es el producto matricial
-- No hay transferencia de datos entre memoria y procesador: el cálculo ocurre donde están los pesos
-
-Empresas como IBM Research, Intel (Loihi), y startups como Mythic AI e Innatera han demostrado chips CIM con memristores operando a <1 mW para inferencia en el borde (edge AI).
-
-**4. Procesadores neuromórficos: inspiración biológica**
-
-Los procesadores neuromórficos (Intel Loihi 2, IBM TrueNorth, BrainScaleS) replican la arquitectura del cerebro:
-- **Procesamiento basado en eventos (spiking):** solo procesan cuando hay un cambio, igual que las neuronas biológicas
-- **Aprendizaje local (STDP):** los pesos se actualizan localmente sin backpropagation global
-- **Masiva paralelización:** millones de núcleos simples en lugar de pocos núcleos potentes
-
-Intel Loihi 2 (2021) tiene 1 millón de neuronas artificiales en 31 mm² y consume 1000× menos energía que una GPU equivalente para tareas de inferencia esparcida.
-
-**5. Perspectivas y desafíos**
-
-La computación analógica enfrenta retos: variabilidad de fabricación, ruido inherente, dificultad para entrenar (los gradientes no se propagan fácilmente en hardware analógico), y menor precisión numérica. Sin embargo, para inferencia en el borde (IoT, wearables, vehículos autónomos), la ventaja energética supera estas limitaciones. El consenso académico apunta a arquitecturas **híbridas digital-analógicas**: entrenamiento en la nube con hardware digital preciso, e inferencia en el borde con chips analógicos ultraeficientes.
-
-### Conclusión del ensayo
-
-La era de la IA estará definida no solo por los algoritmos, sino por el hardware que los ejecuta. Los chips analógicos y neuromórficos representan el siguiente salto evolutivo: pasar de simular la inteligencia en hardware digital genérico a implementarla en substrato físico especializado, reduciendo el consumo energético en órdenes de magnitud. Este cambio habilitará IA ubicua, permanente y eficiente en dispositivos que hoy no tienen capacidad de cómputo.
+Ensayo basado en las transcripciones de los videos del taller sobre computación analógica y su impacto en la IA moderna. Analiza la evolución hacia arquitecturas híbridas con memristores, la eficiencia energética de la computación analógica y el potencial futuro de los procesadores neuromórficos.
 
 ---
 
