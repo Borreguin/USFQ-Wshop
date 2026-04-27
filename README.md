@@ -5,11 +5,11 @@
 - **Nombre del grupo**: Grupo #
 - **Integrantes del grupo**:
 
-    • Anderson Alvarez
+    • xxxxx
 
-    • Maximo Pinta
+    • xxxxx
 
-    • Steeven Quezada
+    • xxxxx
 
 ### Resumen
 - [Taller 1](/Taller1/README.md)
