@@ -1,4 +1,3 @@
-import os
 import random
 import string
 import math
@@ -35,7 +34,7 @@ def generar_ciudades_con_distancias(n_cities: int):
     distancias = generar_distancias(ciudades)
     return ciudades, distancias
 
-def plotear_ruta(ciudades, ruta, mostrar_anotaciones=True, save_path=None):
+def plotear_ruta(ciudades, ruta, mostrar_anotaciones=True):
     # Extraer coordenadas de las ciudades
     coordenadas_x = [ciudades[ciudad][0] for ciudad in ruta]
     coordenadas_y = [ciudades[ciudad][1] for ciudad in ruta]
@@ -61,10 +60,4 @@ def plotear_ruta(ciudades, ruta, mostrar_anotaciones=True, save_path=None):
     plt.title('Ubicaciones de las Ciudades y Mejor Ruta')
     plt.legend()
     plt.grid(True)
-
-    # ✅ Guardar imagen si se especifica ruta
-    if save_path:
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        plt.savefig(save_path, dpi=300, bbox_inches="tight")
-
     plt.show()
