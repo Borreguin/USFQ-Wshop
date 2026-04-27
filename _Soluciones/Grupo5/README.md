@@ -212,8 +212,6 @@ Programa ejecutado con **4 discos** → 15 movimientos. Grafo disponible para n 
 ```
 _Soluciones/Grupo5/
 ├── Doc/
-│   ├── README.md                          # Este archivo
-│   ├── ensayo_chips_analogicos.pdf        # Ensayo literal C
 │   ├── generar_resumen_taller.py          # Script para regenerar el PDF
 │   └── resumen_taller1_grupo5.pdf         # Informe completo del taller
 ├── Imágenes/                              # Todas las imágenes generadas
@@ -235,7 +233,7 @@ _Soluciones/Grupo5/
 │   └── solucion_granjero.txt             # Solución en texto
 ├── P3_Torres/
 │   └── Torres.py                          # Hanoi recursivo + animación + grafo
-└── usfq-red.png
+└── README.md
 ```
 
 ---
