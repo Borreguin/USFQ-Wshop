@@ -3,6 +3,7 @@ TSP – Travelling Salesman Problem
 Enfoque: Ant Colony Optimization (ACO) + 2-opt local search
 Comparativa: Greedy Nearest Neighbor vs ACO vs ACO+2opt
 Análisis: convergencia, feromonas, estadísticas multi-corrida
+Ciudades: 24 capitales de provincia del Ecuador
 """
 
 import numpy as np
@@ -12,18 +13,32 @@ import matplotlib.animation as animation
 from itertools import combinations
 import time
 
-# ── Ciudades ecuatorianas (lon, lat) ────────────────────────────────────────
+# ── 24 capitales de provincia del Ecuador (lon, lat) ────────────────────────
 CITIES = {
-    "Quito":       (-78.5249, -0.2295),
-    "Guayaquil":   (-79.9000, -2.1894),
-    "Cuenca":      (-79.0059, -2.9001),
-    "Manta":       (-80.7089, -0.9677),
-    "Ambato":      (-78.6197, -1.2491),
-    "Loja":        (-79.2045, -3.9931),
-    "Esmeraldas":  (-79.7000,  0.9592),
-    "Riobamba":    (-78.6464, -1.6635),
-    "Ibarra":      (-78.1228,  0.3517),
-    "Latacunga":   (-78.6165, -0.9319),
+    "Quito":           (-78.5249, -0.2295),   # Pichincha
+    "Guayaquil":       (-79.9000, -2.1894),   # Guayas
+    "Cuenca":          (-79.0059, -2.9001),   # Azuay
+    "Ambato":          (-78.6197, -1.2491),   # Tungurahua
+    "Riobamba":        (-78.6464, -1.6635),   # Chimborazo
+    "Ibarra":          (-78.1228,  0.3517),   # Imbabura
+    "Latacunga":       (-78.6165, -0.9319),   # Cotopaxi
+    "Loja":            (-79.2045, -3.9931),   # Loja
+    "Esmeraldas":      (-79.7000,  0.9592),   # Esmeraldas
+    "Portoviejo":      (-80.4541, -1.0546),   # Manabí
+    "Machala":         (-79.9605, -3.2581),   # El Oro
+    "Babahoyo":        (-79.5340, -1.8013),   # Los Ríos
+    "Guaranda":        (-79.0016, -1.5933),   # Bolívar
+    "Azogues":         (-78.8467, -2.7392),   # Cañar
+    "Tulcán":          (-77.7175,  0.8117),   # Carchi
+    "Macas":           (-78.1167, -2.3000),   # Morona Santiago
+    "Tena":            (-77.8167, -0.9833),   # Napo
+    "El Coca":         (-76.9871, -0.4625),   # Orellana
+    "Puyo":            (-77.9897, -1.4924),   # Pastaza
+    "Santa Elena":     (-80.8586, -2.2267),   # Santa Elena
+    "Santo Domingo":   (-79.1719, -0.2523),   # Sto. Domingo de los Tsáchilas
+    "Lago Agrio":      (-76.8874,  0.0856),   # Sucumbíos
+    "Zamora":          (-78.9501, -4.0668),   # Zamora Chinchipe
+    "Pto. Baquerizo":  (-89.6158, -0.9005),   # Galápagos
 }
 
 # ── Utilidades de distancia y rutas ─────────────────────────────────────────
@@ -128,14 +143,12 @@ class ACO:
         route = [start]
         for _ in range(self.n - 1):
             current = route[-1]
-            # probabilidades de transición
             pheromone = self.tau[current] ** self.alpha
             heuristic = self.eta[current] ** self.beta
             probs = pheromone * heuristic
             probs[visited] = 0.0
             total = probs.sum()
             if total == 0:
-                # todos los vecinos iguales, elige aleatorio
                 unvisited = np.where(~visited)[0]
                 nxt = np.random.choice(unvisited)
             else:
@@ -147,16 +160,13 @@ class ACO:
         return route
 
     def _update_pheromones(self, all_routes: list, best_route_global: list):
-        # Evaporación
         self.tau *= (1 - self.rho)
-        # Depósito por todas las hormigas de esta iteración
         for route in all_routes:
             cost = route_cost(route, self.dist)
             delta = self.Q / cost
             for i in range(len(route) - 1):
                 self.tau[route[i]][route[i + 1]] += delta
                 self.tau[route[i + 1]][route[i]] += delta
-        # Refuerzo élite: la mejor ruta global deposita extra veces
         best_cost = route_cost(best_route_global, self.dist)
         delta_elite = self.elite * self.Q / best_cost
         for i in range(len(best_route_global) - 1):
@@ -167,9 +177,9 @@ class ACO:
     def run(self, verbose: bool = False):
         best_route = None
         best_cost  = np.inf
-        cost_history     = []   # mejor costo por iteración
-        avg_cost_history = []   # costo promedio por iteración
-        tau_snapshots    = []   # instantáneas de feromonas cada 10 iter
+        cost_history     = []
+        avg_cost_history = []
+        tau_snapshots    = []
 
         for iteration in range(self.n_iter):
             routes = [self._build_route() for _ in range(self.n_ants)]
@@ -224,7 +234,7 @@ def plot_route_on_ax(ax, route, coords, names, title, color="steelblue",
                    marker="*")
     for i, name in enumerate(names):
         ax.annotate(name, (coords[i][0], coords[i][1]),
-                    textcoords="offset points", xytext=(5, 4), fontsize=7.5)
+                    textcoords="offset points", xytext=(5, 4), fontsize=6.5)
     ax.set_title(title, fontsize=10, fontweight="bold")
     ax.set_xlabel("Longitud (°)")
     ax.set_ylabel("Latitud (°)")
@@ -233,8 +243,9 @@ def plot_route_on_ax(ax, route, coords, names, title, color="steelblue",
 
 def figure_algorithm_comparison(nn_route, nn_cost, aco_route, aco_cost,
                                   aco2_route, aco2_cost, coords, names):
-    fig, axes = plt.subplots(1, 3, figsize=(17, 5))
-    fig.suptitle("TSP Ecuador – Comparativa de Algoritmos", fontsize=14, fontweight="bold")
+    fig, axes = plt.subplots(1, 3, figsize=(20, 6))
+    fig.suptitle("TSP Ecuador – 24 Capitales de Provincia – Comparativa de Algoritmos",
+                 fontsize=13, fontweight="bold")
 
     plot_route_on_ax(axes[0], nn_route, coords, names,
                      f"Nearest Neighbor\n{nn_cost:.1f} km", color="tomato")
@@ -243,7 +254,7 @@ def figure_algorithm_comparison(nn_route, nn_cost, aco_route, aco_cost,
     plot_route_on_ax(axes[2], aco2_route, coords, names,
                      f"ACO + 2-opt\n{aco2_cost:.1f} km", color="seagreen")
 
-    mejora_nn  = (nn_cost - aco2_cost) / nn_cost * 100
+    mejora_nn = (nn_cost - aco2_cost) / nn_cost * 100
     fig.text(0.5, 0.01,
              f"Mejora ACO+2opt vs Nearest Neighbor: {mejora_nn:.1f}%",
              ha="center", fontsize=10, color="darkgreen", fontweight="bold")
@@ -253,7 +264,7 @@ def figure_algorithm_comparison(nn_route, nn_cost, aco_route, aco_cost,
 
 def figure_convergence(cost_history, avg_history, nn_cost, aco2_cost):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
-    fig.suptitle("ACO – Convergencia", fontsize=13, fontweight="bold")
+    fig.suptitle("ACO – Convergencia (24 ciudades)", fontsize=13, fontweight="bold")
 
     iters = range(len(cost_history))
     ax1.plot(iters, cost_history, color="steelblue", linewidth=2, label="Mejor global")
@@ -270,7 +281,6 @@ def figure_convergence(cost_history, avg_history, nn_cost, aco2_cost):
     ax1.legend(fontsize=9)
     ax1.grid(True, alpha=0.3)
 
-    # Velocidad de mejora (derivada discreta)
     delta = -np.diff(cost_history)
     ax2.bar(range(len(delta)), delta, color=np.where(delta > 0, "seagreen", "lightgrey"),
             edgecolor="none")
@@ -285,7 +295,7 @@ def figure_convergence(cost_history, avg_history, nn_cost, aco2_cost):
 
 def figure_pheromone_heatmap(tau_snapshots, names):
     n_snaps = min(len(tau_snapshots), 4)
-    fig, axes = plt.subplots(1, n_snaps, figsize=(4.5 * n_snaps, 4.5))
+    fig, axes = plt.subplots(1, n_snaps, figsize=(4.5 * n_snaps, 5))
     fig.suptitle("Evolución de Feromonas τ(i,j) a lo largo de ACO",
                  fontsize=13, fontweight="bold")
     if n_snaps == 1:
@@ -298,8 +308,8 @@ def figure_pheromone_heatmap(tau_snapshots, names):
                                norm=mcolors.LogNorm(vmin=tau[tau > 0].min(), vmax=tau.max()))
         axes[idx].set_xticks(range(n))
         axes[idx].set_yticks(range(n))
-        axes[idx].set_xticklabels(names, rotation=45, ha="right", fontsize=7)
-        axes[idx].set_yticklabels(names, fontsize=7)
+        axes[idx].set_xticklabels(names, rotation=90, ha="right", fontsize=6)
+        axes[idx].set_yticklabels(names, fontsize=6)
         axes[idx].set_title(f"Iteración {iteration}", fontsize=10)
         plt.colorbar(im, ax=axes[idx], shrink=0.8)
 
@@ -309,10 +319,9 @@ def figure_pheromone_heatmap(tau_snapshots, names):
 
 def figure_statistical_analysis(multi_results, aco2_cost, nn_cost):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
-    fig.suptitle(f"Análisis Estadístico – {len(multi_results)} ejecuciones de ACO+2opt",
-                 fontsize=13, fontweight="bold")
+    fig.suptitle(f"Análisis Estadístico – {len(multi_results)} ejecuciones de ACO+2opt (24 ciudades)",
+                 fontsize=12, fontweight="bold")
 
-    # Histograma
     axes[0].hist(multi_results, bins=10, color="steelblue", edgecolor="white",
                  alpha=0.85, density=True)
     axes[0].axvline(multi_results.mean(), color="orange", linewidth=2,
@@ -325,9 +334,7 @@ def figure_statistical_analysis(multi_results, aco2_cost, nn_cost):
     axes[0].legend(fontsize=9)
     axes[0].grid(True, alpha=0.3)
 
-    # Boxplot
-    bp = axes[1].boxplot(multi_results, patch_artist=True, vert=True,
-                          widths=0.5)
+    bp = axes[1].boxplot(multi_results, patch_artist=True, vert=True, widths=0.5)
     bp["boxes"][0].set_facecolor("steelblue")
     bp["boxes"][0].set_alpha(0.7)
     axes[1].axhline(nn_cost, color="tomato", linestyle="--", linewidth=1.5,
@@ -338,14 +345,13 @@ def figure_statistical_analysis(multi_results, aco2_cost, nn_cost):
     axes[1].legend(fontsize=9)
     axes[1].grid(True, alpha=0.3, axis="y")
 
-    # Tabla de métricas
     stats = {
-        "Mínimo":          f"{multi_results.min():.2f} km",
-        "Máximo":          f"{multi_results.max():.2f} km",
-        "Media":           f"{multi_results.mean():.2f} km",
-        "Desv. estándar":  f"{multi_results.std():.2f} km",
-        "Mediana":         f"{np.median(multi_results):.2f} km",
-        "Nearest Neighbor":f"{nn_cost:.2f} km",
+        "Mínimo":             f"{multi_results.min():.2f} km",
+        "Máximo":             f"{multi_results.max():.2f} km",
+        "Media":              f"{multi_results.mean():.2f} km",
+        "Desv. estándar":     f"{multi_results.std():.2f} km",
+        "Mediana":            f"{np.median(multi_results):.2f} km",
+        "Nearest Neighbor":   f"{nn_cost:.2f} km",
         "Mejora media vs NN": f"{(nn_cost - multi_results.mean()) / nn_cost * 100:.1f}%",
         "Mejora máx vs NN":   f"{(nn_cost - multi_results.min()) / nn_cost * 100:.1f}%",
     }
@@ -370,17 +376,19 @@ def figure_statistical_analysis(multi_results, aco2_cost, nn_cost):
 
 def figure_distance_heatmap(dist, names):
     n = len(names)
-    fig, ax = plt.subplots(figsize=(8, 6.5))
+    fig, ax = plt.subplots(figsize=(11, 9))
     im = ax.imshow(dist, cmap="YlOrRd", aspect="auto")
-    ax.set_xticks(range(n)); ax.set_yticks(range(n))
-    ax.set_xticklabels(names, rotation=45, ha="right", fontsize=8)
-    ax.set_yticklabels(names, fontsize=8)
+    ax.set_xticks(range(n))
+    ax.set_yticks(range(n))
+    ax.set_xticklabels(names, rotation=90, ha="right", fontsize=7)
+    ax.set_yticklabels(names, fontsize=7)
     plt.colorbar(im, ax=ax, label="Distancia (km)")
     for i in range(n):
         for j in range(n):
             ax.text(j, i, f"{dist[i][j]:.0f}", ha="center", va="center",
-                    fontsize=6.5, color="black" if dist[i][j] < dist.max() * 0.6 else "white")
-    ax.set_title("Mapa de Calor – Distancias entre Ciudades (km)", fontweight="bold")
+                    fontsize=5, color="black" if dist[i][j] < dist.max() * 0.6 else "white")
+    ax.set_title("Mapa de Calor – Distancias entre las 24 Capitales de Provincia (km)",
+                 fontweight="bold")
     plt.tight_layout()
     return fig
 
@@ -389,10 +397,9 @@ def figure_distance_heatmap(dist, names):
 
 def main():
     dist, names, coords = build_distance_matrix(CITIES)
-    n = len(names)
 
     print("=" * 60)
-    print("  TSP Ecuador – ACO + 2-opt")
+    print("  TSP Ecuador – 24 Capitales de Provincia – ACO + 2-opt")
     print("=" * 60)
 
     # 1. Baseline: Nearest Neighbor
@@ -404,7 +411,7 @@ def main():
     # 2. ACO
     print("\n[2] ACO en progreso…")
     t0 = time.time()
-    aco = ACO(dist, n_ants=25, n_iter=150, alpha=1.2, beta=2.5, rho=0.15, Q=500, elite=3)
+    aco = ACO(dist, n_ants=30, n_iter=200, alpha=1.2, beta=2.5, rho=0.15, Q=500, elite=3)
     aco_route, aco_cost, cost_hist, avg_hist, tau_snaps = aco.run(verbose=True)
     print(f"    ACO puro:          {aco_cost:.2f} km  ({time.time()-t0:.3f}s)")
 
@@ -419,7 +426,7 @@ def main():
     print("\n  Ruta óptima encontrada:")
     print("  " + " → ".join(names[i] for i in aco2_route))
 
-    # 4. Análisis multi-corrida (estadísticas)
+    # 4. Análisis multi-corrida
     print("\n[3] Análisis estadístico (20 corridas ACO+2opt)…")
     t0 = time.time()
     multi_results = multi_run_analysis(dist, n_runs=20)
