@@ -28,5 +28,4 @@ Representarlo como tres pilas (A, B, C) es muy natural porque coincide con la re
 - [Enlace notion](https://www.notion.so/P3-Torre-de-Hanoi-cbe6d05ac39d486aabd2c87960644a3d?source=copy_link)
 
 ## Ensayo - Cuáles son los últimos avances en IA con chips analógicos
-
-*WIP*
+- [Ensayo](Ensayo_G1.pdf)
