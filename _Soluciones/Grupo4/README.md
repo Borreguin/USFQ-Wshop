@@ -2,17 +2,20 @@
 # WorkShop-USFQ
 ## Inteligencia artificial
 
-- **Nombre del grupo**: Grupo #
+- **Nombre del grupo**: Grupo 4
 - **Integrantes del grupo**:
 
-    • xxxxx
+    • Anderson Alvarez
 
-    • xxxxx
+    • Maximo Pinta
 
-    • xxxxx
+    • Steeven Quezada
 
 ### Resumen
-- [Taller 1](/Taller1/README.md)
-  - P1: Descripción 
-  - P2: Descripción
+- [Taller 1](_Soluciones/Grupo4/Taller1/README.md)
+  - P1: [TSP](_Soluciones/Grupo4/Taller1/P1_TSP)
+  - P2: [Granjero](_Soluciones/Grupo4/Taller1/P2_Granjero)
+  - P3: [Torres](_Soluciones/Grupo4/Taller1/P3_Torres)
+  - P4: [La Evolución de la IA](https://jumpy-quasar-0d7.notion.site/PLANEAMIENTO-DE-TAREAS-PROBLEMA-DEL-VIAJERO-GRUPO-4-34d02961eb4e8071b3c3e873f7cae23d)
+  - P5: [Ensayo](_Soluciones/Grupo4/Taller1/ENSAYO%20-%20CUALES%20SON%20LOS%20%C3%9ALTIMOS%20AVANCES%20EN%20IA%20CON%20CHIPS%20ANAL%C3%93GICOS.pdf)
 
