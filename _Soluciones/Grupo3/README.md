@@ -19,3 +19,6 @@
   - P2: El	acertijo	del	granjero	y	el	bote	
   - P3: La	torre	de	Hanoi	
   - P4: LA	EVOLUCIÓN	DE	LA	IA
+
+Enlace Notion:
+https://www.notion.so/TSP-Problema-del-Vendedor-Viajante-34d5f38977b480c4b2f7f3b6df19436c?source=copy_link
