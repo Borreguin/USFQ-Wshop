@@ -3,8 +3,9 @@
 
 - **Nombre del grupo**: Grupo 6
 - **Integrantes del grupo**:
-  * Estudiante 1
-  * Estudiante 2
+  * Stan Mora
+  * Tais Rodriguez
+  * Santiago Bonilla
 
 ---
 
@@ -113,22 +114,82 @@ Explora en profundidad. **No garantiza** el camino más corto.
 
 ---
 
-## Análisis comparativo
+## Métricas de evaluación propuestas
 
-**BFS vs A\*:**
-- Ambos encuentran siempre el **camino óptimo** (mismo número de pasos).
-- A\* explora menos nodos gracias a la heurística Manhattan: ~16% menos en laberinto 2, ~8% menos en laberintos 3 y 4.
-- La ventaja de A\* crece con el tamaño del laberinto.
+Para comparar los algoritmos de forma objetiva se definen tres métricas:
 
-**BFS/A\* vs DFS:**
-- DFS encuentra solución con menos nodos explorados, pero el camino es **subóptimo**:
-  - Laberinto 1: 30 pasos vs 14 (BFS/A\*) — 114% más largo
-  - Laberinto 3: 558 pasos vs 344 — 62% más largo
-  - Laberinto 4: 1086 pasos vs 472 — 130% más largo
-- DFS es útil cuando se necesita *alguna* solución rápida, no la óptima.
+### M1 — Ratio de optimalidad
+Mide qué tan corto es el camino encontrado respecto al óptimo (BFS/A\* como referencia).
 
-**Conclusión:** A\* es el mejor balance entre calidad de solución y eficiencia.
-Para laberintos grandes donde el camino óptimo importa, A\* supera a BFS reduciendo los nodos explorados mediante la guía heurística.
+```
+Ratio_optimalidad = pasos_algoritmo / pasos_óptimos
+```
+Valor ideal: **1.0** (igual al óptimo). Un valor mayor indica un camino más largo.
+
+### M2 — Eficiencia de exploración
+Mide qué porcentaje del grafo fue necesario explorar para encontrar la solución.
+
+```
+Eficiencia = (nodos_explorados / total_nodos_grafo) × 100 %
+```
+Valor ideal: **lo más bajo posible**. Menos exploración = algoritmo más dirigido.
+
+### M3 — Tiempo de ejecución (ms)
+Tiempo real de cómputo. Depende del hardware, pero sirve para comparar algoritmos en el mismo entorno.
+
+---
+
+## Análisis comparativo con métricas
+
+### M1 — Ratio de optimalidad (pasos encontrados / pasos óptimos)
+
+| Laberinto    | Nodos | BFS  | A\*  | DFS  |
+|--------------|------:|-----:|-----:|-----:|
+| Laberinto 1  |    43 | 1.00 | 1.00 | **2.14** |
+| Laberinto 2  |   201 | 1.00 | 1.00 | **1.64** |
+| Laberinto 3  |  1270 | 1.00 | 1.00 | **1.62** |
+| Laberinto 4  |  2651 | 1.00 | 1.00 | **2.30** |
+
+BFS y A\* siempre obtienen ratio 1.00 (camino óptimo garantizado).
+DFS obtiene entre 1.6× y 2.3× más pasos que el óptimo.
+
+### M2 — Eficiencia de exploración (% del grafo explorado)
+
+| Laberinto    | Total nodos | BFS    | A\*    | DFS    |
+|--------------|------------:|-------:|-------:|-------:|
+| Laberinto 1  |          43 | 100.0% | 83.7%  | 79.1%  |
+| Laberinto 2  |         201 |  91.0% | 69.7%  | 44.3%  |
+| Laberinto 3  |        1270 |  67.6% | 62.0%  | 45.5%  |
+| Laberinto 4  |        2651 |  90.9% | 77.9%  | 57.9%  |
+
+DFS explora menos nodos, pero a costa de un camino no óptimo.
+A\* reduce la exploración respecto a BFS gracias a la heurística, manteniendo optimalidad.
+
+### M3 — Tiempo de ejecución (ms)
+
+| Laberinto    | BFS    | A\*    | DFS    |
+|--------------|-------:|-------:|-------:|
+| Laberinto 1  |  0.028 |  0.057 |  0.022 |
+| Laberinto 2  |  0.092 |  0.252 |  0.141 |
+| Laberinto 3  |  0.964 |  1.749 |  1.158 |
+| Laberinto 4  |  2.537 |  5.296 |  2.445 |
+
+BFS resulta más rápido en tiempo real porque su estructura (cola simple) tiene menor sobrecarga que el heap de A\*.
+En laberintos muy grandes y con heurística más precisa, A\* sería más rápido.
+
+---
+
+## Conclusiones
+
+1. **BFS** garantiza el camino más corto y es el más rápido en tiempo de ejecución, pero explora casi la totalidad del grafo porque no tiene información sobre la ubicación del destino (búsqueda ciega).
+
+2. **A\*** también garantiza el camino óptimo y explora entre un 8% y 22% menos nodos que BFS gracias a la heurística de distancia Manhattan. En laberintos con muchos pasillos rectos y poca ambigüedad estructural la ventaja es menor; en laberintos más complejos o de mayor dimensión la ventaja aumenta. El costo extra de tiempo se debe a la administración del heap de prioridad.
+
+3. **DFS** es el más rápido explorando (menos nodos visitados) pero entrega caminos subóptimos con entre 1.6× y 2.3× más pasos que el óptimo. Es útil únicamente cuando importa encontrar *algún* camino rápidamente y no el más corto.
+
+4. **Métrica recomendada para este problema:** dado que el objetivo es resolver el laberinto (llegar de E a S), la métrica más importante es M1 (optimalidad). Si el tiempo es crítico se añade M3. M2 (eficiencia de exploración) es útil para entender el comportamiento interno del algoritmo pero no afecta directamente al usuario.
+
+5. **Recomendación:** A\* es el algoritmo más adecuado para resolver laberintos cuando se requiere el camino más corto, especialmente a medida que el tamaño del grafo crece.
 
 ---
 
