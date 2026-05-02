@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
-    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15):
+    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=30, evaporation_rate=0.3, alpha=1, beta=3):
         self.start = start
         self.end = end
         self.obstacles = obstacles
@@ -55,6 +55,7 @@ class AntColonyOptimization:
             for _ in range(self.num_ants):
                 current_position = self.start
                 path = [current_position]
+
                 while current_position != self.end:
                     next_position = self._select_next_position(current_position, path)
                     if next_position is None:
@@ -65,28 +66,48 @@ class AntColonyOptimization:
 
             # Escoger el mejor camino por su tamaño?
             # --------------------------
-            all_paths.sort(key=lambda x: len(x))
-            best_path = all_paths[0]
+            #all_paths.sort(key=lambda x: len(x))
+            #best_path = all_paths[0]
 
-            self._evaporate_pheromones()
-            self._deposit_pheromones(best_path)
+            #self._evaporate_pheromones()
+            #self._deposit_pheromones(best_path)
 
-            if self.best_path is None or len(best_path) <= len(self.best_path):
-                self.best_path = best_path
+            #if self.best_path is None or len(best_path) <= len(self.best_path):
+            #    self.best_path = best_path
             # --------------------------
+            # Filtrar solo caminos que llegan al destino
+            valid_paths = [p for p in all_paths if p[-1] == self.end]
+
+            # Si hay caminos válidos, escoger el mejor
+            if valid_paths:
+                valid_paths.sort(key=lambda x: len(x))
+                best_path = valid_paths[0]
+
+                self._evaporate_pheromones()
+                self._deposit_pheromones(best_path)
+
+                if self.best_path is None or len(best_path) <= len(self.best_path):
+                    self.best_path = best_path
+            # Si ninguna hormiga llegó al destino, no actualizar
+            else:
+                continue
 
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
         plt.figure(figsize=(8, 8))
         plt.imshow(self.pheromones, cmap=cmap, vmin=np.min(self.pheromones), vmax=np.max(self.pheromones))
         plt.colorbar(label='Pheromone intensity')
+
         plt.scatter(self.start[0], self.start[1], color='orange', label='Start', s=100)
         plt.scatter(self.end[0], self.end[1], color='magenta', label='End', s=100)
+
         for obstacle in self.obstacles:
             plt.scatter(obstacle[0], obstacle[1], color='gray', s=900, marker='s')
+
         if self.best_path:
             path_x, path_y = zip(*self.best_path)
             plt.plot(path_x, path_y, color='blue', label='Best Path', linewidth=3)
+
         plt.xlabel('Column')
         plt.ylabel('Row')
         plt.title('Ant Colony Optimization')
@@ -119,7 +140,6 @@ def study_case_2():
 if __name__ == '__main__':
     study_case_1()
     study_case_2()
-    
     
 
 
