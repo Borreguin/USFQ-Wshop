@@ -3,10 +3,10 @@
 
 - **Nombre del grupo**: Grupo 3
 - **Integrantes del grupo**:
-  * Lucy Barreno
-  * Jhon Del Castillo
-  * Anita Haro
-  * Darwin Simba
+  * Ana Haro             Realiza P2 Actividades D, E, F
+  * Lucy Barreno         Realiza P1
+  * Darwin Simba         Realiza P2 Actividades A, B, C
+  * Jhon Del Castillo    Realiza ENSAYO
 
 El objetivo de esta tarea es utilizar cualquier algoritmo de búsqueda para resolver los 3 laberintos propuestos, 
 el reto es poder visualizar/representar los resultados, adicionalmente poder comparar al menos 2 algoritmos de búsqueda 
