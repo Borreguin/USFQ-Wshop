@@ -1,0 +1,13 @@
+maze,algorithm,found,path_steps,path_nodes,visited_nodes,expanded_nodes,max_frontier_size,time_ms,graph_nodes,graph_edges,image
+laberinto1.txt,BFS,True,14,15,43,43,5,0.0448,43,46,results\laberinto1_bfs.png
+laberinto1.txt,DFS,True,34,35,37,37,6,0.0951,43,46,results\laberinto1_dfs.png
+laberinto1.txt,A*,True,14,15,36,36,5,0.4678,43,46,results\laberinto1_astar.png
+laberinto2.txt,BFS,True,44,45,183,183,13,0.1518,201,216,results\laberinto2_bfs.png
+laberinto2.txt,DFS,True,44,45,137,137,10,0.0913,201,216,results\laberinto2_dfs.png
+laberinto2.txt,A*,True,44,45,140,140,15,0.2447,201,216,results\laberinto2_astar.png
+laberinto3.txt,BFS,True,344,345,859,859,10,0.5137,1270,1731,results\laberinto3_bfs.png
+laberinto3.txt,DFS,True,378,379,1062,1062,157,0.861,1270,1731,results\laberinto3_dfs.png
+laberinto3.txt,A*,True,344,345,788,788,14,1.326,1270,1731,results\laberinto3_astar.png
+laberinto4.txt,BFS,True,472,473,2410,2410,23,1.7789,2651,4317,results\laberinto4_bfs.png
+laberinto4.txt,DFS,True,742,743,1238,1238,475,0.9182,2651,4317,results\laberinto4_dfs.png
+laberinto4.txt,A*,True,472,473,2064,2064,27,3.4927,2651,4317,results\laberinto4_astar.png
