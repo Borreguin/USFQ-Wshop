@@ -176,7 +176,7 @@ class MazeLoader:
             self.plot_solution(None)
         return None
 
-    def solve_nayfeth(self, graph=None, start=None, goal=None, show=True):
+    def solve_dfs(self, graph=None, start=None, goal=None, show=True):
         if graph is None:
             graph = self.get_graph()
 
@@ -201,7 +201,7 @@ class MazeLoader:
             if node == goal:
                 path = self.reconstruct_path(parents, start, goal)
                 elapsed_time = time.perf_counter() - start_time
-                self.print_solution_metrics("Nayfeth", path, elapsed_time)
+                self.print_solution_metrics("DFS", path, elapsed_time)
                 if show:
                     self.plot_solution(path)
                 return path
@@ -215,7 +215,7 @@ class MazeLoader:
                 stack.append(neighbor)
 
         elapsed_time = time.perf_counter() - start_time
-        self.print_solution_metrics("Nayfeth", None, elapsed_time)
+        self.print_solution_metrics("DFS", None, elapsed_time)
         if show:
             self.plot_solution(None)
         return None

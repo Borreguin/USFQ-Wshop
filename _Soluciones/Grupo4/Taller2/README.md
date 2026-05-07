@@ -37,7 +37,7 @@ Se implementaron tres algoritmos de búsqueda para la resolución de los laberin
 
 - A*: Utiliza heurística para optimizar la búsqueda, en teoria deberia reducir el tiempo de exploración.
 
-- Nayfeth: Algoritmo con comportamiento variable dependiendo de la estructura del laberinto (Tomás et al., s.f).
+- DFS: Algoritmo con comportamiento variable dependiendo de la estructura del laberinto (Tomás et al., s.f).
 
 Estos algoritmos fueron aplicados a cada uno de los laberintos, obteniendo las siguientes soluciones:
 
@@ -68,21 +68,21 @@ Número de callejones sin salida explorados: permite evaluar la eficiencia en la
 Si bien estas métricas, en conjunto, permiten realizar una evaluación más completa del rendimiento de cada algoritmo, en este caso se utilizaron dos, las cuales se muestran en la Tabla.
 
 | Algoritmo | **Laberinto 1**  |  | **Laberinto 2** |  | **Laberinto 3** |  |
-|----------|------------------|--|-----------------|--|-----------------|--|
-|          | Tiempo ejecución | Pasos | Tiempo ejecución | Pasos | Tiempo ejecución         | Pasos |
-| BFS      | 0,0373 ms        | 14 | 0,1089 ms       | 44 | 0,4018 ms       | 344 |
-| Nayfeth  | 0,0357 ms        | 34 | 0,1034 ms       | 44 | 0,6882 ms       | 378 |
-| A*       | 0,0859 ms        | 14 | 0,1868 ms       | 44 | 0,9499 ms       | 344 |
+|-----------|------------------|--|-----------------|--|-----------------|--|
+|           | Tiempo ejecución | Pasos | Tiempo ejecución | Pasos | Tiempo ejecución         | Pasos |
+| BFS       | 0,0373 ms        | 14 | 0,1089 ms       | 44 | 0,4018 ms       | 344 |
+| DFS       | 0,0357 ms        | 34 | 0,1034 ms       | 44 | 0,6882 ms       | 378 |
+| A*        | 0,0859 ms        | 14 | 0,1868 ms       | 44 | 0,9499 ms       | 344 |
 
 Al comparar los algoritmos en los tres laberintos, se observaron los siguientes comportamientos entre eficiencia (tiempo) y calidad (número de pasos).
 
-- En laberinto1, el algoritmo Nayfeth presenta el menor tiempo de ejecución, sin embargo, su solución requiere un mayor número de pasos (34 frente a 14 de BFS y A*). Esto indica que es rápido pero no óptimo. Por otro lado, BFS y A* encuentran la mejor solución (menor número de pasos), aunque con mayor tiempo computacional en el caso de A*.
+- En laberinto1, el algoritmo DFS presenta el menor tiempo de ejecución, sin embargo, su solución requiere un mayor número de pasos (34 frente a 14 de BFS y A*). Esto indica que es rápido pero no óptimo. Por otro lado, BFS y A* encuentran la mejor solución (menor número de pasos), aunque con mayor tiempo computacional en el caso de A*.
 
-- En laberinto2, todos los algoritmos encuentran soluciones con el mismo número de pasos (44). En este caso, Nayfeth vuelve a ser el más rápido, seguido de BFS, mientras que A* resulta el más lento, probablemente debido a la heurística.
+- En laberinto2, todos los algoritmos encuentran soluciones con el mismo número de pasos (44). En este caso, DFS vuelve a ser el más rápido, seguido de BFS, mientras que A* resulta el más lento, probablemente debido a la heurística.
 
-- En laberinto3, que es el más complejo, se mantiene la tendencia: Nayfeth es el más rápido, pero nuevamente produce una solución con más pasos. BFS y A* encuentran soluciones óptimas (344 pasos), siendo BFS más eficiente en tiempo que A*.
+- En laberinto3, que es el más complejo, se mantiene la tendencia: DFS es el más rápido, pero nuevamente produce una solución con más pasos. BFS y A* encuentran soluciones óptimas (344 pasos), siendo BFS más eficiente en tiempo que A*.
 
-En conclusión, para estos tres casos particulares, BFS ofrece un buen balance entre eficiencia y calidad, A* garantiza soluciones similares a BFS pero con mayor costo computacional, y Nayfeth prioriza velocidad sacrificando calidad de solución.
+En conclusión, para estos tres casos particulares, BFS ofrece un buen balance entre eficiencia y calidad, A* garantiza soluciones similares a BFS pero con mayor costo computacional, y DFS es más veloz pero sacrifica calidad de solución.
 
 **Referencias**
 

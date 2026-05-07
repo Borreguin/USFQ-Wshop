@@ -14,14 +14,14 @@ def solve_study_case(maze_file):
     print("Arbol BFS")
     maze.plot_graph_as_tree(graph)
 
-    print("Arbol Nayfeth")
+    print("Arbol DFS")
     maze.plot_graph_as_dfs_tree(graph)
 
     print("Solucion BFS")
     maze.solve_bfs(graph)
 
-    print("Solucion Nayfeth")
-    maze.solve_nayfeth(graph)
+    print("Solucion DFS")
+    maze.solve_dfs(graph)
 
     print("Solucion A*")
     maze.solve_astar(graph)
