@@ -1,0 +1,44 @@
+SOLUCIÓN DEL ACERTIJO DEL GRANJERO Y EL BOTE
+======================================================================
+Solución encontrada en 7 movimientos.
+
+Paso 0: Inicio
+  Estado numérico: (0, 0, 0, 0)
+  Orilla izquierda: ['Granjero', 'Lobo', 'Cabra', 'Col']
+  Orilla derecha:   Vacía
+----------------------------------------------------------------------
+Paso 1: Granjero cruza con Cabra →
+  Estado numérico: (1, 0, 1, 0)
+  Orilla izquierda: ['Lobo', 'Col']
+  Orilla derecha:   ['Granjero', 'Cabra']
+----------------------------------------------------------------------
+Paso 2: Granjero cruza solo ←
+  Estado numérico: (0, 0, 1, 0)
+  Orilla izquierda: ['Granjero', 'Lobo', 'Col']
+  Orilla derecha:   ['Cabra']
+----------------------------------------------------------------------
+Paso 3: Granjero cruza con Lobo →
+  Estado numérico: (1, 1, 1, 0)
+  Orilla izquierda: ['Col']
+  Orilla derecha:   ['Granjero', 'Lobo', 'Cabra']
+----------------------------------------------------------------------
+Paso 4: Granjero cruza con Cabra ←
+  Estado numérico: (0, 1, 0, 0)
+  Orilla izquierda: ['Granjero', 'Cabra', 'Col']
+  Orilla derecha:   ['Lobo']
+----------------------------------------------------------------------
+Paso 5: Granjero cruza con Col →
+  Estado numérico: (1, 1, 0, 1)
+  Orilla izquierda: ['Cabra']
+  Orilla derecha:   ['Granjero', 'Lobo', 'Col']
+----------------------------------------------------------------------
+Paso 6: Granjero cruza solo ←
+  Estado numérico: (0, 1, 0, 1)
+  Orilla izquierda: ['Granjero', 'Cabra']
+  Orilla derecha:   ['Lobo', 'Col']
+----------------------------------------------------------------------
+Paso 7: Granjero cruza con Cabra →
+  Estado numérico: (1, 1, 1, 1)
+  Orilla izquierda: Vacía
+  Orilla derecha:   ['Granjero', 'Lobo', 'Cabra', 'Col']
+----------------------------------------------------------------------
