@@ -30,3 +30,4 @@ Representarlo como tres pilas (A, B, C) es muy natural porque coincide con la re
 ## Ensayo - Cuáles son los últimos avances en IA con chips analógicos
 
 *WIP*
+- [Ensayo](Ensayo_G1.pdf)
