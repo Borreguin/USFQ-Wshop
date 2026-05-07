@@ -8,7 +8,7 @@ def taller_1():
     print('\nEstudio de casos')
     print('1. TSP')
     print('2. Acertijo del granjero y el bote')
-    print('3. Juego 2048')
+    print('3. Torres de Hanoi')
     print('4. Otro')
     print('5. Salir')
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
@@ -86,6 +86,36 @@ def main():
         else:
             print('No hay el texto')
         option = input('Ingrese el taller que desea ejecutar: ')
+    study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
+    while study_case != '5':
+        if study_case == '1':
+            print('\n=========================')
+            print('Viaje del vendedor (TSP)')
+            print('=========================')
+            study_case_1()
+            print('\nFin del estudio de caso 1\n')
+            print('=========================')
+            print('Viaje del vendedor (TSP) caso 2')
+            print('=========================')
+            study_case_2()
+            print('\nFin del estudio de caso 2\n')
+            print('=========================')
+        elif study_case == '2':
+            print('\n=========================')
+            print('Acertijo del granjero y el bote')
+            print('=========================')
+            granjero_main()
+            print('\nFin del estudio de caso 2\n')
+        elif study_case == '3':
+            print('\n=========================')
+            print('Torres de Hanoi')
+            print('=========================')
+            torres_main()
+            print('\nFin del estudio de caso 3\n')
+            print('=========================')
+        else :
+            print('No hay el texto')
+        study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
     print('Fin del programa')
 
 if __name__ == "__main__":
