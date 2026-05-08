@@ -63,17 +63,21 @@ class AntColonyOptimization:
                     current_position = next_position
                 all_paths.append(path)
 
-            # Escoger el mejor camino por su tamaño?
-            # --------------------------
-            all_paths.sort(key=lambda x: len(x))
-            best_path = all_paths[0]
+            # Filtrar solo los caminos que llegaron al destino
+            valid_paths = [p for p in all_paths if p[-1] == self.end]
 
-            self._evaporate_pheromones()
-            self._deposit_pheromones(best_path)
+            if valid_paths:
+                valid_paths.sort(key=lambda x: len(x))
+                best_iteration_path = valid_paths[0]
 
-            if self.best_path is None or len(best_path) <= len(self.best_path):
-                self.best_path = best_path
-            # --------------------------
+                self._evaporate_pheromones()
+                self._deposit_pheromones(best_iteration_path)
+
+                if self.best_path is None or len(best_iteration_path) < len(self.best_path):
+                    self.best_path = best_iteration_path
+            else:
+                # Si ninguna hormiga llega al destino, solo se evaporan las feromonas
+                self._evaporate_pheromones()
 
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
@@ -94,31 +98,71 @@ class AntColonyOptimization:
         plt.grid(True)
         plt.show()
 
-def study_case_1():
-    print("Start of Ant Colony Optimization - First Study Case")
-    start = (0, 0)
-    end = (4, 7)
-    obstacles = [(1, 2), (2, 2), (3, 2)]
-    aco = AntColonyOptimization(start, end, obstacles)
-    aco.find_best_path(100)
+def run_study_case(case_number, start, end, obstacles, iterations=100, **kwargs):
+    print(f"--- Caso de Estudio {case_number} ---")
+    aco = AntColonyOptimization(start, end, obstacles, **kwargs)
+    aco.find_best_path(iterations)
     aco.plot()
-    print("End of Ant Colony Optimization")
-    print("Best path: ", aco.best_path)
+    if aco.best_path:
+        print("Mejor camino encontrado:", aco.best_path)
+        print("Longitud del camino:", len(aco.best_path))
+    else:
+        print("No se encontró un camino válido.")
 
-def study_case_2():
-    print("Start of Ant Colony Optimization - Second Study Case")
-    start = (0, 0)
-    end = (4, 7)
-    obstacles = [(0, 2), (1, 2), (2, 2), (3, 2)]
-    aco = AntColonyOptimization(start, end, obstacles)
-    aco.find_best_path(100)
-    aco.plot()
-    print("End of Ant Colony Optimization")
-    print("Best path: ", aco.best_path)
+import itertools
+
+def grid_search_aco(start, end, obstacles, alpha_values, beta_values, iterations=100):
+    best_overall_path = None
+    best_params = None
+    min_length = float('inf')
+    
+    print(f"{'Alpha':<10} | {'Beta':<10} | {'Longitud':<10}")
+    print("-" * 35)
+    
+    for alpha, beta in itertools.product(alpha_values, beta_values):
+        aco = AntColonyOptimization(start, end, obstacles, alpha=alpha, beta=beta, num_ants=20)
+        aco.find_best_path(iterations)
+        
+        if aco.best_path:
+            length = len(aco.best_path)
+            print(f"{alpha:<10.2f} | {beta:<10.2f} | {length:<10}")
+            
+            if length < min_length:
+                min_length = length
+                best_params = (alpha, beta)
+                best_overall_path = aco.best_path
+        else:
+            print(f"{alpha:<10.2f} | {beta:<10.2f} | No path")
+            
+    print("-" * 35)
+    print(f"Mejor configuración: Alpha={best_params[0]}, Beta={best_params[1]} con longitud {min_length}")
+    return best_params
 
 if __name__ == '__main__':
-    study_case_1()
-    # study_case_2()
+    # Ejecución del Caso 1 solicitado
+    run_study_case(1, (0, 0), (4, 7), [(1, 2), (2, 2), (3, 2)])
+
+    # Definir rangos de búsqueda para el Caso 2
+    alphas = [0.1, 0.5, 1.0]
+    betas = [1.0, 5.0, 10.0]
+
+    # Ejecutar búsqueda para el Caso 2
+    print("\nEjecutando Grid Search para el Caso 2...")
+    best_alpha, best_beta = grid_search_aco(
+        start=(0, 0), 
+        end=(4, 7), 
+        obstacles=[(0, 2), (1, 2), (2, 2), (3, 2)],
+        alpha_values=alphas,
+        beta_values=betas,
+        iterations=100
+    )
+
+    # Visualizar el mejor resultado encontrado por la búsqueda
+    print("\n--- Visualización de la Mejor Configuración Encontrada para el Caso 2 ---")
+    run_study_case(
+        2, (0, 0), (4, 7), [(0, 2), (1, 2), (2, 2), (3, 2)],
+        iterations=150, alpha=best_alpha, beta=best_beta, num_ants=20
+    )
 
 
 
