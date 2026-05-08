@@ -4,6 +4,7 @@
 
 ### A. Leer el laberinto y representarlo como un grafo
 
+Los laberintos fueron representados como un grafo no dirigido, donde cada celda transitable corresponde a un nodo identificado por sus coordenadas (fila, columna). Las conexiones entre nodos representan los movimientos válidos en cuatro direcciones: arriba, abajo, izquierda y derecha. Las paredes (#) fueron excluidas del grafo. De esta forma, el problema del laberinto se transforma en un problema de búsqueda de caminos entre el nodo de entrada E y el nodo de salida S.
 
 ### B. Aplicar algoritmos de búsqueda
 Completar con conclusiones sobre parte B, responder:
