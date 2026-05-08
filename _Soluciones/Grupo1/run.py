@@ -1,7 +1,7 @@
 from Taller1.P1_TSP.TSP import study_case_1, study_case_2
 from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
-from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2
+from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, study_case_optimized as study_case_optimized
 
 def taller_1():
     print('Bienvenido al taller 1 de Inteligencia Artificial')
@@ -67,6 +67,11 @@ def taller_2():
             print('=========================')
             aco_study_case_2()
             print('\nFin del estudio de caso 2\n')
+            print('=========================')
+            print('Colonia de Hormigas caso de optimización')
+            print('=========================')
+            study_case_optimized()
+            print('\nFin del estudio de optimización 2\n')
         else :
             print('No hay el texto')
         study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
