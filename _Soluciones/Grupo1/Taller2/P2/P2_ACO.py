@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
 class AntColonyOptimization:
-    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15):
+    def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=20):
         self.start = start
         self.end = end
         self.obstacles = obstacles
@@ -115,10 +115,3 @@ def study_case_2():
     aco.plot()
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
-
-if __name__ == '__main__':
-    study_case_1()
-    # study_case_2()
-
-
-
