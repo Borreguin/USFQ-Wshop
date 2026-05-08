@@ -7,10 +7,9 @@ def taller_1():
     print('Bienvenido al taller 1 de Inteligencia Artificial')
     print('\nEstudio de casos')
     print('1. TSP')
-    print('2. Acertijo del granjero y el bote')
-    print('3. Torres de Hanoi')
+    print('2. N-body')
+    print('3. Juego 2048')
     print('4. Otro')
-    print('5. Salir')
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
     while study_case != '5':
         if study_case == '1':
