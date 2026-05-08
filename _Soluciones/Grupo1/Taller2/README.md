@@ -16,15 +16,15 @@ Soluciones en imágenes para los laberintos:
 
 #### Laberinto 1:
 
-![Maze1](/images/laberinto1_BFS.png)
+![Maze1](images/laberinto1_BFS.png)
 
-![Maze1](/images/laberinto1_DFS.png)
+![Maze1](images/laberinto1_DFS.png)
 
 #### Laberinto 3:
 
-![Maze3](/images/laberinto3_BFS.png)
+![Maze3](images/laberinto3_BFS.png)
 
-![Maze3](/images/laberinto3_DFS.png)
+![Maze3](images/laberinto3_DFS.png)
 
 
 
