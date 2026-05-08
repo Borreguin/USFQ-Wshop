@@ -3,13 +3,31 @@
 ## 1. USO DE ALGORITMOS DE BÚSQUEDA
 
 ### A. Leer el laberinto y representarlo como un grafo
-Completar con conclusiones sobre parte A
+
 
 ### B. Aplicar algoritmos de búsqueda
 Completar con conclusiones sobre parte B, responder:
 ¿Se puede establecer alguna métrica para evaluar los algoritmos en este problema?
 
-Recordar agregar la solución a los laberintos como una imagen en el readme
+Para este problema se compararon BFS y DFS para el Laberinto 1 y 3. BFS garantiza encontrar la ruta más corta en laberintos no ponderados, por eso obtiene caminos más cortos en ambos casos. DFS puede encontrar una solución más rápido o visitando menos nodos, pero no garantiza que esa solución sea óptima. Las métricas usadas fueron longitud de la ruta, nodos visitados y tiempo de ejecución.
+
+
+Soluciones en imágenes para los laberintos:
+
+#### Laberinto 1:
+
+![Maze1](/images/laberinto1_BFS.png)
+
+![Maze1](/images/laberinto1_DFS.png)
+
+#### Laberinto 3:
+
+![Maze3](/images/laberinto3_BFS.png)
+
+![Maze3](/images/laberinto3_DFS.png)
+
+
+
 
 ## 2. OPTIMIZACIÓN DE COLONIAS DE HORMIGAS
 
