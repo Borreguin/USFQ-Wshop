@@ -8,5 +8,3 @@ def define_color(cell):
         return 'green'
     elif cell == 'S':   # Salida
         return 'red'
-    
-    
