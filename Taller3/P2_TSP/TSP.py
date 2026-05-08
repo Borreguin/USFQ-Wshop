@@ -1,12 +1,14 @@
 import pyomo.environ as pyo
 import re
-import sys, os
+import sys
+import os
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
 
 from util import *
 from util_nearest_neighbor import nearest_neighbor
-# https://baobabsoluciones.es/blog/2020/10/01/problema-del-viajante/
+# Referencia: https://baobabsoluciones.es/blog/2020/10/01/problema-del-viajante/
+
 
 class TSP:
     def __init__(self, ciudades, distancias, heuristics: List[str]):
@@ -24,186 +26,259 @@ class TSP:
         self.cal_min_max_distances()
 
     def cal_min_max_distances(self):
+        # Estimación de límites para la distancia total del recorrido.
+        # Se usa la media entre la distancia mínima y la media como referencia.
         medium_low_distance = (self.min_distance + self.average_distance) / 2
+        # Límite inferior: 25% del "recorrido ideal" estimado
         self.min_possible_distance = medium_low_distance * len(self.ciudades) * 0.25
+        # Límite superior: 60% del "recorrido ideal" estimado
         self.max_possible_distance = medium_low_distance * len(self.ciudades) * 0.6
 
-
     def print_min_max_distances(self):
-        print(f"Distancia mínima entre nodos: {self.min_distance}")
-        print(f"Distancia máxima entre nodos: {self.max_distance}")
-        print(f"Distancia promedio entre nodos: {self.average_distance}")
-        print(f"Distancia Total mínima posible: {self.min_possible_distance}")
-        print(f"Distancia Total máxima posible: {self.max_possible_distance}")
-        print(f"Heurísticas aplicadas: {self.heuristics}")
+        print(f"  Dist. min entre nodos   : {self.min_distance:.2f}")
+        print(f"  Dist. max entre nodos   : {self.max_distance:.2f}")
+        print(f"  Dist. promedio nodos    : {self.average_distance:.2f}")
+        print(f"  Dist. total min posible : {self.min_possible_distance:.2f}")
+        print(f"  Dist. total max posible : {self.max_possible_distance:.2f}")
+        print(f"  Heuristicas aplicadas   : {self.heuristics}")
 
     def encontrar_la_ruta_mas_corta(self, mipgap, time_limit, tee):
         start_time = dt.datetime.now()
 
-        _model = pyo.ConcreteModel()
+        _model = pyo.ConcreteModel()   # modelo de programación entera mixta
 
         cities = list(self.ciudades.keys())
         n_cities = len(cities)
 
-
-        # Sets to work with (conjuntos)
+        # --- CONJUNTOS ---
+        # M y N representan el mismo conjunto de ciudades (origen y destino)
         _model.M = pyo.Set(initialize=self.ciudades.keys())
         _model.N = pyo.Set(initialize=self.ciudades.keys())
-
-        # Index for the dummy variable u
+        # U = todas las ciudades menos la primera (para restricciones de subtour)
         _model.U = pyo.Set(initialize=cities[1:])
 
-        # Variables
+        # --- VARIABLES ---
+        # x[i,j] = 1 si el viajante va de ciudad i a ciudad j, 0 si no
         _model.x = pyo.Var(_model.N, _model.M, within=pyo.Binary)
+        # u[i] = variable auxiliar entera (Miller-Tucker-Zemlin) para evitar subtours
         _model.u = pyo.Var(_model.N, bounds=(0, n_cities - 1), within=pyo.NonNegativeIntegers)
 
-        # Objetive Function: (función objetivo a minimizar)
+        # --- FUNCIÓN OBJETIVO: minimizar distancia total ---
         def obj_rule(model):
-            return sum(self.distancias[i, j] * model.x[i, j] for i in model.N for j in model.M if i != j)
-
+            # Suma distancia[i,j] * x[i,j] para todos los pares distintos
+            return sum(
+                self.distancias[i, j] * model.x[i, j]
+                for i in model.N for j in model.M if i != j
+            )
         _model.obj = pyo.Objective(rule=obj_rule, sense=pyo.minimize)
 
-        # Restricciones
-        # Desde cada ciudad exactamente una arista
-        def regla_una_entrada_una_salida_por_ciudad_desde(model, city_j):
-            return sum(model.x[i, city_j]  for i in model.N if city_j != i) == 1
+        # --- RESTRICCIÓN 1: exactamente una llegada a cada ciudad ---
+        def regla_una_entrada(model, city_j):
+            return sum(model.x[i, city_j] for i in model.N if city_j != i) == 1
+        _model.one_way_i_j = pyo.Constraint(_model.M, rule=regla_una_entrada)
 
-        _model.one_way_i_j = pyo.Constraint(_model.M, rule=regla_una_entrada_una_salida_por_ciudad_desde)
-
-        # Hacia cada ciudad exactamente una arista
-        def regla_una_entrada_una_salida_por_ciudad_hacia(model, city_i):
+        # --- RESTRICCIÓN 2: exactamente una salida de cada ciudad ---
+        def regla_una_salida(model, city_i):
             return sum(model.x[city_i, j] for j in model.M if city_i != j) == 1
+        _model.one_way_j_i = pyo.Constraint(_model.N, rule=regla_una_salida)
 
-        _model.one_way_j_i = pyo.Constraint(_model.N, rule=regla_una_entrada_una_salida_por_ciudad_hacia)
-
+        # --- RESTRICCIÓN 3: eliminación de subtours (MTZ) ---
+        # Sin esta restricción el solver podría hacer varios ciclos cortos
+        # en lugar de un único recorrido completo.
+        # La condición u[i] - u[j] + n*x[i,j] <= n-1 fuerza un orden
+        # único de visita, imposibilitando los ciclos cerrados parciales.
         def rule_formando_path(model, i, j):
             if i != j:
                 return model.u[i] - model.u[j] + model.x[i, j] * n_cities <= n_cities - 1
-            else:
-                # No se puede ir de una ciudad a la misma
-                return pyo.Constraint.Skip
-
+            return pyo.Constraint.Skip
         _model.complete_path = pyo.Constraint(_model.U, _model.N, rule=rule_formando_path)
 
-        def rule_asegurar_viaje(model, i, j):
+        # --- RESTRICCIÓN 4: no viajar a la misma ciudad ---
+        def rule_no_self(model, i, j):
             if i == j:
                 return model.x[i, j] == 0
             return pyo.Constraint.Skip
-        _model.no_self_travel = pyo.Constraint(_model.N, _model.M, rule=rule_asegurar_viaje)
+        _model.no_self_travel = pyo.Constraint(_model.N, _model.M, rule=rule_no_self)
 
-        # Heurísticas:
+        # ---------------------------------------------------------------
+        # HEURÍSTICAS OPCIONALES
+        # ---------------------------------------------------------------
 
-        # Añadiendo limites a la función objetivo como una heurística
+        # HEURÍSTICA A: Limitar la función objetivo (caso 2)
+        # En lugar de buscar en todo [0, +inf), acotamos la búsqueda al
+        # rango [min_posible, max_posible]. El solver puede podar ramas
+        # del árbol B&B que claramente no caen en ese rango → más rápido.
         if "limitar_funcion_objetivo" in self.heuristics:
-            _model.obj_lower_bound = pyo.Constraint(expr=_model.obj >= self.min_possible_distance)
-            _model.obj_upper_bound = pyo.Constraint(expr=_model.obj <= self.max_possible_distance)
+            _model.obj_lower = pyo.Constraint(
+                expr=_model.obj >= self.min_possible_distance)
+            _model.obj_upper = pyo.Constraint(
+                expr=_model.obj <= self.max_possible_distance)
 
+        # HEURÍSTICA B: Vecino cercano (caso 3)
+        # Restringe que el costo de ir de i a j no supere el promedio local de i.
+        # Si i ya tiene distancias promedio bajas, lo obligamos a elegir
+        # sólo vecinos cercanos, reduciendo el espacio de búsqueda.
         if "vecino_cercano" in self.heuristics:
             def rule_vecino_cercano(model, i, j):
                 if i == j:
                     return pyo.Constraint.Skip
-                print(i, self.min_distance, self.average_distance,  self.min_distance_for_city[i], self.max_distance_for_city[i], self.average_distance_for_city[i])
                 if self.average_distance_for_city[i] > self.average_distance:
-                     return pyo.Constraint.Skip
-                expr = model.x[i,j] * self.distancias[i,j] <= (self.average_distance_for_city[i] + self.min_distance_for_city[i])/2
-                return expr
-            _model.nearest_neighbor = pyo.Constraint(_model.N, _model.M, rule=rule_vecino_cercano)
+                    return pyo.Constraint.Skip
+                threshold = (
+                    self.average_distance_for_city[i] + self.min_distance_for_city[i]
+                ) / 2
+                return model.x[i, j] * self.distancias[i, j] <= threshold
+            _model.nearest_neighbor = pyo.Constraint(
+                _model.N, _model.M, rule=rule_vecino_cercano)
 
-        # Initialize empty set for dynamic constraints (optional)
-        # _model.subtour_constraint = pyo.ConstraintList()
-
-
-        # Resolver el modelo
+        # --- RESOLVER ---
         solver = pyo.SolverFactory('glpk')
-        solver.options['mipgap'] = mipgap
-        solver.options['tmlim'] = time_limit
+        solver.options['mipgap'] = mipgap    # tolerancia: para cuando gap <= mipgap
+        solver.options['tmlim'] = time_limit  # tiempo máximo en segundos
+        # tee=True muestra el log completo de GLPK (ver literal B)
         results = solver.solve(_model, tee=tee)
 
         execution_time = dt.datetime.now() - start_time
-        print(f"Tiempo de ejecución: {delta_time_mm_ss(execution_time)}")
+        print(f"  Tiempo LP               : {delta_time_mm_ss(execution_time)}")
         self.print_min_max_distances()
 
-        # Mostrar resultados
         if results.solver.termination_condition == pyo.TerminationCondition.optimal:
-            print("Ruta óptima encontrada:")
+            print("  --> Ruta OPTIMA encontrada")
         else:
-            print("No se encontró una solución óptima, la siguiente es la mejor solución encontrada:")
+            print("  --> Tiempo agotado: mejor solucion encontrada hasta ahora")
 
-        edges = dict()
+        # Extraer las aristas activas (x[i,j] = 1) y reconstruir el camino
+        edges = {}
         valid_paths = []
         for v in _model.component_data_objects(pyo.Var):
             if v.domain == pyo.Boolean and v.value is not None and v.value > 0:
                 edge = re.search(r'\[(\w\d)*,(\w\d)*]', v.name)
                 city1, city2 = edge.group(1), edge.group(2)
                 key = f"{city1}_{city2}"
-                # Esto evita caer en ciclos cerrados
                 if key not in valid_paths:
                     valid_paths += [f"{city1}_{city2}", f"{city2}_{city1}"]
                     edges[city1] = city2
 
         initial_city = cities[0]
         path = get_path(edges, initial_city, [])
-        path.append(path[0])
+        path.append(path[0])   # cerrar el ciclo volviendo a la ciudad inicial
         distance = calculate_path_distance(self.distancias, path)
-        print("Distancia total recorrida:", distance)
+        print(f"  Distancia total LP      : {distance:.2f}")
         return path
-
-
 
     def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
         plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
+
+
+# =============================================================================
+# LITERAL A: Loop 10-50 ciudades comparando LP vs Vecino Cercano
+# mipgap=0.05 significa que el solver para cuando la solución está a
+# no más del 5% del óptimo teórico → solución "suficientemente buena"
+# =============================================================================
+def study_case_1():
+    print("\n" + "="*60)
+    print("CASO 1 - LP vs Vecino Cercano (mipgap=0.05, limite=30s)")
+    print("="*60)
+    city_counts = [10, 20, 30, 40, 50]
+
+    for n_cities in city_counts:
+        print(f"\n--- {n_cities} ciudades ---")
+        ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+
+        # Vecino cercano: O(n^2), siempre termina en tiempo despreciable
+        start_nn = dt.datetime.now()
+        ruta_nn = nearest_neighbor(ciudades, distancias)
+        time_nn = dt.datetime.now() - start_nn
+        dist_nn = calculate_path_distance(distancias, ruta_nn)
+        print(f"  Vecino Cercano          : dist={dist_nn:.2f}, t={delta_time_mm_ss(time_nn)}")
+
+        # LP: puede no converger en 30s para n >= 30
+        heuristics = []
+        tsp = TSP(ciudades, distancias, heuristics)
+        ruta_lp = tsp.encontrar_la_ruta_mas_corta(
+            mipgap=0.05, time_limit=30, tee=False)
+
+        if ruta_lp:
+            tsp.plotear_resultado(ruta_lp, mostrar_anotaciones=(n_cities <= 20))
+
+
+# =============================================================================
+# LITERAL B: Parámetro tee
+# tee=True hace que GLPK imprima en pantalla todo su proceso interno:
+#   - Relajación LP: solución continua del problema (cota inferior)
+#   - Iteraciones Branch & Bound: el árbol de búsqueda de soluciones enteras
+#   - Cada línea muestra: iteración, mejor cota, gap actual, tiempo
+#   - El gap va bajando hasta alcanzar el mipgap especificado o el tiempo límite
+# Sirve para entender por qué el solver tarda más con más ciudades.
+# =============================================================================
+def study_case_1_tee():
+    print("\n" + "="*60)
+    print("CASO 1B - tee=True (20 ciudades, log completo de GLPK)")
+    print("="*60)
+    n_cities = 20
+    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+    heuristics = []
+    tsp = TSP(ciudades, distancias, heuristics)
+    # tee=True: imprime el log completo del solver Branch & Bound
+    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap=0.05, time_limit=30, tee=True)
+    tsp.plotear_resultado(ruta)
+
+
+# =============================================================================
+# LITERAL C: Heurística de límites a la función objetivo
+# Con heurística: el solver acota el espacio de búsqueda → más rápido
+# Sin heurística: el solver busca en [0, +inf) → más lento
+# RIESGO: si los límites son muy estrechos y la solución óptima cae fuera,
+#   el modelo es infactible → no hay solución. Por eso no sirve para cualquier caso.
+# =============================================================================
+def study_case_2():
+    n_cities = 70
+    for use_heuristic in [True, False]:
+        label = "CON" if use_heuristic else "SIN"
+        print(f"\n{'='*60}")
+        print(f"CASO 2 - {label} heuristica de limites (70 ciudades)")
+        print("="*60)
+        ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+        heuristics = ['limitar_funcion_objetivo'] if use_heuristic else []
+        tsp = TSP(ciudades, distancias, heuristics)
+        ruta = tsp.encontrar_la_ruta_mas_corta(mipgap=0.2, time_limit=40, tee=True)
+        if ruta:
+            tsp.plotear_resultado(ruta, False)
+
+
+# =============================================================================
+# LITERAL D: Heurística de vecinos cercanos
+# Con heurística: restringe las aristas a vecinos "cercanos" → espacio más pequeño
+# Sin heurística: todas las aristas son válidas → espacio completo
+# LIMITACIÓN: si la restricción es demasiado estricta puede eliminar la solución
+#   óptima del espacio factible, entregando una ruta subóptima o infactible.
+# =============================================================================
+def study_case_3():
+    n_cities = 100
+    for use_heuristic in [True, False]:
+        label = "CON" if use_heuristic else "SIN"
+        print(f"\n{'='*60}")
+        print(f"CASO 3 - {label} heuristica vecino cercano (100 ciudades)")
+        print("="*60)
+        ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+        heuristics = ['vecino_cercano'] if use_heuristic else []
+        tsp = TSP(ciudades, distancias, heuristics)
+        ruta = tsp.encontrar_la_ruta_mas_corta(mipgap=0.05, time_limit=60, tee=True)
+        if ruta:
+            tsp.plotear_resultado(ruta, False)
+
 
 def study_nearest_neighbor(n_cities):
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
     ruta = nearest_neighbor(ciudades, distancias)
     plotear_ruta(ciudades, distancias, ruta, True)
 
-def study_case_1():
-    # tal vez un loop para probar 10, 20, 30, 40, 50 ciudades?
-    n_cities = 50
-    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
-    heuristics = []
-    mipgap = 0.05
-    time_limit = 30
-    tee = False
-    tsp = TSP(ciudades, distancias, heuristics)
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta)
-
-def study_case_2():
-    n_cities = 70
-    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
-    # con heuristicas
-    heuristics = ['limitar_funcion_objetivo']
-    # sin heuristicas
-    # heuristics = []
-    tsp = TSP(ciudades, distancias, heuristics)
-    mipgap = 0.2
-    time_limit = 40
-    tee = True
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta, False)
-
-def study_case_3():
-    n_cities = 100
-    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
-    # con heuristicas
-    heuristics = ['vecino_cercano']
-    # sin heuristicas
-    # heuristics = []
-    tsp = TSP(ciudades, distancias, heuristics)
-    mipgap = 0.05
-    time_limit = 60
-    tee = True
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta, False)
-
 
 if __name__ == "__main__":
-    print("Se ha colocado un límite de tiempo de 30 segundos para la ejecución del modelo.")
-    # as reference, see nearest neighbor heuristic
+    print("Referencia: vecino cercano con 100 ciudades")
     study_nearest_neighbor(100)
-    # Solve the TSP problem
-    # study_case_1()
-    # study_case_2()
-    study_case_3()
+
+    study_case_1()        # Literal A: loop 10-50 ciudades
+    study_case_1_tee()    # Literal B: activar tee
+    study_case_2()        # Literal C: heuristica de limites
+    study_case_3()        # Literal D: heuristica vecino cercano
