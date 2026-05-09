@@ -1,4 +1,4 @@
-![USFQ-LOGO](/Taller1/images/usfq-red.png)
+![USFQ-LOGO](../Taller1/images/usfq-red.png)
 # WorkShop-USFQ
 ## Inteligencia artificial — Taller 2
 
@@ -12,14 +12,25 @@
 
 Este taller aborda dos problemas de Inteligencia Artificial: búsqueda en laberintos mediante algoritmos clásicos y optimización mediante colonias de hormigas (ACO). Cada problema fue implementado en Python con visualización interactiva y análisis comparativo de algoritmos.
 
----
-
 ## Índice
 
-1. [P1 — Resolución de Laberintos](#p1--resolución-de-laberintos)
-2. [P2 — Ant Colony Optimization (ACO)](#p2--ant-colony-optimization-aco)
-3. [Resumen comparativo](#resumen-comparativo)
-4. [Requisitos](#requisitos)
+1. [División del trabajo](#división-del-trabajo)
+2. [P1 — Resolución de Laberintos](#p1--resolución-de-laberintos)
+3. [P2 — Ant Colony Optimization (ACO)](#p2--ant-colony-optimization-aco)
+4. [Resumen comparativo](#resumen-comparativo)
+5. [Requisitos](#requisitos)
+
+---
+
+## División del trabajo
+
+El Taller 2 fue desarrollado de forma colaborativa por todo el equipo. En cada sección hubo un liderazgo encargado de organizar el trabajo, revisar avances, garantizar la calidad y coordinar el aporte de los demás integrantes.
+
+| Sección | Liderazgo | Equipo de trabajo |
+|---|---|---|
+| **Parte 1 — Resolución de Laberintos** | Fernando Escobar y Manuel Pillapa | Fernando Escobar, Manuel Pillapa, Estefano Galarza y Jonathan Guallasamin |
+| **Parte 2 — Ant Colony Optimization (ACO)** | Jonathan Guallasamin | Fernando Escobar, Manuel Pillapa, Estefano Galarza y Jonathan Guallasamin |
+| **Ensayo** | Estefano Galarza | Fernando Escobar, Manuel Pillapa, Estefano Galarza y Jonathan Guallasamin |
 
 ---
 
@@ -71,25 +82,25 @@ python P1/P1.py
 
 | Laberinto 1 (9×11) | Laberinto 2 (15×29) |
 |:---:|:---:|
-| ![Laberinto 1](/Taller2/P1/images/maze1.png) | ![Laberinto 2](/Taller2/P1/images/maze2.png) |
+| ![Laberinto 1](P1/images/maze1.png) | ![Laberinto 2](P1/images/maze2.png) |
 
 | Laberinto 3 | Laberinto 4 |
 |:---:|:---:|
-| ![Laberinto 3](/Taller2/P1/images/maze3.png) | ![Laberinto 4](/Taller2/P1/images/maze4.png) |
+| ![Laberinto 3](P1/images/maze3.png) | ![Laberinto 4](P1/images/maze4.png) |
 
 ### Soluciones por algoritmo
 
 **Laberinto 1**
-![Soluciones Laberinto 1](/Taller2/P1/images/maze1_solutions.png)
+![Soluciones Laberinto 1](P1/images/maze1_solutions.png)
 
 **Laberinto 2**
-![Soluciones Laberinto 2](/Taller2/P1/images/maze2_solutions.png)
+![Soluciones Laberinto 2](P1/images/maze2_solutions.png)
 
 **Laberinto 3**
-![Soluciones Laberinto 3](/Taller2/P1/images/maze3_solutions.png)
+![Soluciones Laberinto 3](P1/images/maze3_solutions.png)
 
 **Laberinto 4**
-![Soluciones Laberinto 4](/Taller2/P1/images/maze4_solutions.png)
+![Soluciones Laberinto 4](P1/images/maze4_solutions.png)
 
 ### Métricas comparadas
 
@@ -160,22 +171,22 @@ El método `plot()` genera un mapa de calor de feromonas sobre la cuadrícula, m
 ### Resultados
 
 **Caso 1 — Configuración base** (3 obstáculos, camino abierto)
-![Caso 1 resultado](/Taller2/P2/images/caso1_resultado.png)
+![Caso 1 resultado](P2/images/caso1_resultado.png)
 
 **Caso 2 — Bug detectado** (pared completa: el camino reportado no llega al destino)
-![Caso 2 buggy](/Taller2/P2/images/caso2_buggy.png)
+![Caso 2 buggy](P2/images/caso2_buggy.png)
 
 **Caso 2 — Versión corregida** (filtro de validez + parámetros ajustados)
-![Caso 2 corregido](/Taller2/P2/images/caso2_corregido.png)
+![Caso 2 corregido](P2/images/caso2_corregido.png)
 
 **Sensibilidad de parámetros** (efecto de β y tasa de evaporación sobre la longitud del camino)
-![Sensibilidad de parámetros](/Taller2/P2/images/sensibilidad_parametros.png)
+![Sensibilidad de parámetros](P2/images/sensibilidad_parametros.png)
 
 **Random Search — mejor configuración encontrada**
-![Random Search resultado](/Taller2/P2/images/random_search_resultado.png)
+![Random Search resultado](P2/images/random_search_resultado.png)
 
 **ACO aplicado a TSP — comparación con Vecino Más Cercano**
-![TSP comparación](/Taller2/P2/images/tsp_comparacion.png)
+![TSP comparación](P2/images/tsp_comparacion.png)
 
 ---
 
