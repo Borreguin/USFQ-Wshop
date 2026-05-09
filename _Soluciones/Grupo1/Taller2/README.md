@@ -12,6 +12,7 @@ Completar con conclusiones sobre parte B, responder:
 
 Para este problema se compararon BFS y DFS para el Laberinto 1 y 3. BFS garantiza encontrar la ruta más corta en laberintos no ponderados, por eso obtiene caminos más cortos en ambos casos. DFS puede encontrar una solución más rápido o visitando menos nodos, pero no garantiza que esa solución sea óptima. Las métricas usadas fueron longitud de la ruta, nodos visitados y tiempo de ejecución.
 
+Para el Laberinto 2 y 4 se compararon los algoritmos BFS y A*. Ambos algoritmos encuentran la ruta más corta en laberintos no ponderados, pero A* utiliza una heurística (distancia Manhattan) que le permite explorar menos nodos y, en general, ser más eficiente en tiempo y recursos, especialmente en laberintos grandes o con caminos complejos. Las métricas utilizadas para comparar los algoritmos fueron la longitud de la ruta encontrada, la cantidad de nodos visitados y el tiempo de ejecución. En estos casos, A* demostró ser más eficiente que BFS al visitar menos nodos para encontrar la solución óptima, manteniendo la misma longitud de ruta.
 
 Soluciones en imágenes para los laberintos:
 
@@ -21,13 +22,23 @@ Soluciones en imágenes para los laberintos:
 
 ![Maze1](images/laberinto1_DFS.png)
 
+#### Laberinto 2:
+
+![Maze2](images/laberinto2_Astar.png)
+
+![Maze2](images/laberinto2_BFS.png)
+
 #### Laberinto 3:
 
 ![Maze3](images/laberinto3_BFS.png)
 
 ![Maze3](images/laberinto3_DFS.png)
 
+#### Laberinto 4:
 
+![Maze4](images/laberinto4_Astar.png)
+
+![Maze4](images/laberinto4_BFS.png)
 
 
 ## 2. OPTIMIZACIÓN DE COLONIAS DE HORMIGAS
