@@ -18,6 +18,42 @@ Para el Laberinto 2 y 4 se compararon los algoritmos BFS y A*. Ambos algoritmos 
 
 Soluciones en imágenes para los laberintos:
 
+Representación de colores en las gráficas del laberinto 1 y 3
+
+Amarillo → representa la ruta encontrada por el algoritmo desde la entrada E hasta la salida S.
+Azul claro → representa los nodos explorados o visitados por el algoritmo durante la búsqueda, pero que no necesariamente forman parte de la solución final.
+Verde → nodo de entrada (E).
+Rojo → nodo de salida (S).
+Negro → paredes o zonas no transitables del laberinto.
+Blanco/gris claro → caminos libres no explorados.
+
+- Para el Laberinto 1 con BFS se obtuvieron los siguientes resultados:
+
+Longitud de ruta: 14
+Nodos visitados: 43
+
+- Para el Laberinto 1 con DFS se obtuvieron los siguientes resultados:
+
+Longitud de ruta: 18
+Nodos visitados: 19
+
+- Para el Laberinto 3 con BFS se obtuvieron los siguientes resultados:
+
+Longitud de ruta: 344
+Nodos visitados: 855
+
+- Para el Laberinto 3 con DFS se obtuvieron los siguientes resultados:
+
+DFS
+Longitud de ruta: 408
+Nodos visitados: 421
+
+
+Si se comparan los algoritmos BFS y DFS, se recomienda utilizar BFS para laberintos pequeños o de corta complejidad, ya que este algoritmo explora los nodos por niveles y garantiza encontrar la ruta más corta y óptima. Sin embargo, para lograrlo necesita visitar una mayor cantidad de nodos, lo que incrementa el costo computacional en laberintos grandes.
+
+Por otro lado, en laberintos de mayor tamaño o complejidad, se recomienda el uso de A*, debido a que combina la búsqueda óptima con heurísticas que le permiten dirigirse hacia la meta de forma más eficiente. Esto reduce significativamente la cantidad de nodos explorados y mejora el rendimiento general sin perder la optimalidad de la solución.
+
+
 #### Laberinto 1:
 
 ![Maze1](images/laberinto1_BFS.png)
