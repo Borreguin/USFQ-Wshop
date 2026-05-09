@@ -4,6 +4,7 @@ sys.path.append(project_path)
 from P1_MazeLoader import MazeLoader
 from collections import deque
 import matplotlib.pyplot as plt
+import heapq
 
 
 
@@ -147,7 +148,49 @@ def dfs(graph, start, end):
 
 
 
-# 4) Graficar solución
+# 4) Algoritmo A* (A Star)
+
+def heuristic(a, b):
+    # Distancia Manhattan
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def astar(graph, start, end):
+    t0 = time.perf_counter()
+    heap = [(heuristic(start, end), 0, start, None)]  # (f, g, node, parent)
+    visited = {}
+    visited_order = []
+
+    while heap:
+        f, g, current, parent = heapq.heappop(heap)
+        if current in visited:
+            continue
+        visited[current] = parent
+        visited_order.append(current)
+        if current == end:
+            break
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                heapq.heappush(heap, (g + 1 + heuristic(neighbor, end), g + 1, neighbor, current))
+
+    elapsed = time.perf_counter() - t0
+    # Reconstruir camino
+    parent_map = {start: None}
+    for node, par in visited.items():
+        parent_map[node] = par
+    path = reconstruct_path(parent_map, end)
+
+    return {
+        "algorithm": "A*",
+        "path": path,
+        "visited_order": visited_order,
+        "path_length": len(path) - 1 if path else 0,
+        "visited_nodes": len(visited_order),
+        "time": elapsed,
+    }
+
+
+
+# 5) Graficar solución
 
 def plot_solution(maze, result, output_path):
     """
@@ -224,17 +267,29 @@ def plot_solution(maze, result, output_path):
 def solve_maze(maze_file):
     maze_loader = MazeLoader(maze_file).load_Maze()
     maze = maze_loader.maze
+    # Normalizar filas para evitar IndexError
+    max_width = max(len(row) for row in maze)
+    for i in range(len(maze)):
+        if len(maze[i]) < max_width:
+            maze[i] += ['#'] * (max_width - len(maze[i]))
 
     graph, start, end = maze_to_graph(maze)
 
     if start is None or end is None:
         raise ValueError("El laberinto debe tener una entrada E y una salida S.")
 
-    results = [bfs(graph, start, end), dfs(graph, start, end)]
+    # Selección de algoritmos según el laberinto
+    if maze_file == "laberinto1.txt" or maze_file == "laberinto3.txt":
+        results = [bfs(graph, start, end), dfs(graph, start, end)]
+    elif maze_file == "laberinto2.txt" or maze_file == "laberinto4.txt":
+        results = [bfs(graph, start, end), astar(graph, start, end)]
+    else:
+        results = [bfs(graph, start, end), dfs(graph, start, end)]
 
-    print("\nResultados para:", maze_file)
+    print(f"\nResultados para: {maze_file}")
     print("Algoritmo | Longitud ruta | Nodos visitados | Tiempo (s)")
     print("-" * 60)
+
 
     for result in results:
         print(
@@ -244,7 +299,9 @@ def solve_maze(maze_file):
             f'{result["time"]:.6f}'
         )
 
-        image_name = f'{maze_file.replace(".txt", "")}_{result["algorithm"]}.png'
+        # Corrige el nombre del archivo para algoritmos con caracteres no válidos
+        alg_name = result["algorithm"].replace("*", "star").replace("/", "_")
+        image_name = f'{maze_file.replace(".txt", "")}_{alg_name}.png'
         output_path = os.path.join(project_path, image_name)
         plot_solution(maze, result, output_path)
         print("Imagen guardada:", image_name)
@@ -256,10 +313,20 @@ def study_case_1():
     solve_maze("laberinto1.txt")
 
 
+def study_case_2():
+    solve_maze("laberinto2.txt")
+
+
 def study_case_3():
     solve_maze("laberinto3.txt")
 
 
+def study_case_4():
+    solve_maze("laberinto4.txt")
+
+
 if __name__ == "__main__":
     study_case_1()
+    study_case_2()
     study_case_3()
+    study_case_4()
