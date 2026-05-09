@@ -2,6 +2,7 @@ from Taller1.P1_TSP.TSP import study_case_1, study_case_2
 from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 from Taller2.P1.P1 import study_case_1 as p1_study_case_1, study_case_3 as p1_study_case_3
+from Taller2.P1.laberintos2y4 import solve_and_compare
 from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, study_case_optimized as study_case_optimized
 
 def print_options(arr, header = None):
@@ -59,10 +60,21 @@ def taller_2():
             p1_study_case_1()
             print('\nFin del estudio de caso 1\n')
             print('=========================')
+            print('Llamado al laberinto caso 2')
+            print('=========================')
+            solve_and_compare('laberinto2')
+            print('\nFin del estudio de caso 2\n')
+            print('=========================')
             print('Llamado al laberinto caso 3')
             print('=========================')
             p1_study_case_3()
             print('\nFin del estudio de caso 3\n')
+            print('=========================')
+            print('Llamado al laberinto caso 4')
+            print('=========================')
+            solve_and_compare('laberinto4')
+            print('\nFin del estudio de caso 4\n')
+            print('=========================')
         elif study_case == '2':
             print('\n=========================')
             print('Colonia de Hormigas')
