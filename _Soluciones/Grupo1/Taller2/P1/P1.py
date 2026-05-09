@@ -245,7 +245,7 @@ def solve_maze(maze_file):
         )
 
         image_name = f'{maze_file.replace(".txt", "")}_{result["algorithm"]}.png'
-        output_path = os.path.join(project_path, image_name)
+        output_path = os.path.join(os.path.dirname(project_path), 'images', image_name)
         plot_solution(maze, result, output_path)
         print("Imagen guardada:", image_name)
 

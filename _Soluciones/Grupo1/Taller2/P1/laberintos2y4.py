@@ -104,10 +104,14 @@ def plot_solution(maze, path, title, savefile=None):
 	plt.yticks([])
 	fig.tight_layout()
 	if savefile:
-		plt.savefig(savefile)
-	plt.show()
+		output_path = os.path.join(os.path.dirname(project_path), 'images', savefile)
+		plt.savefig(output_path)
+		print(f"Imagen guardada: {savefile}")
+	else:
+		plt.show()
 
-def solve_and_compare(maze_file, name):
+def solve_and_compare(name):
+	maze_file = os.path.join(project_path, f'{name}.txt')
 	maze = load_maze(maze_file)
 	start = find_pos(maze, 'E')
 	goal = find_pos(maze, 'S')
@@ -124,8 +128,3 @@ def solve_and_compare(maze_file, name):
 	t1 = time.time()
 	print(f"A*: longitud={len(path_astar)}, nodos explorados={explored_astar}, tiempo={t1-t0:.4f}s")
 	plot_solution(maze, path_astar, f"{name} - A*", savefile=f"{name}_Astar.png")
-
-if __name__ == "__main__":
-	base = os.path.join(project_path, '../../../Taller2/P1')
-	solve_and_compare(os.path.join(base, 'laberinto2.txt'), 'laberinto2')
-	solve_and_compare(os.path.join(base, 'laberinto4.txt'), 'laberinto4')
