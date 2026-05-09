@@ -3,13 +3,43 @@
 ## 1. USO DE ALGORITMOS DE BÚSQUEDA
 
 ### A. Leer el laberinto y representarlo como un grafo
-Completar con conclusiones sobre parte A
+
+Los laberintos fueron representados como un grafo no dirigido, donde cada celda transitable corresponde a un nodo identificado por sus coordenadas (fila, columna). Las conexiones entre nodos representan los movimientos válidos en cuatro direcciones: arriba, abajo, izquierda y derecha. Las paredes (#) fueron excluidas del grafo. De esta forma, el problema del laberinto se transforma en un problema de búsqueda de caminos entre el nodo de entrada E y el nodo de salida S.
 
 ### B. Aplicar algoritmos de búsqueda
 Completar con conclusiones sobre parte B, responder:
 ¿Se puede establecer alguna métrica para evaluar los algoritmos en este problema?
 
-Recordar agregar la solución a los laberintos como una imagen en el readme
+Para este problema se compararon BFS y DFS para el Laberinto 1 y 3. BFS garantiza encontrar la ruta más corta en laberintos no ponderados, por eso obtiene caminos más cortos en ambos casos. DFS puede encontrar una solución más rápido o visitando menos nodos, pero no garantiza que esa solución sea óptima. Las métricas usadas fueron longitud de la ruta, nodos visitados y tiempo de ejecución.
+
+Para el Laberinto 2 y 4 se compararon los algoritmos BFS y A*. Ambos algoritmos encuentran la ruta más corta en laberintos no ponderados, pero A* utiliza una heurística (distancia Manhattan) que le permite explorar menos nodos y, en general, ser más eficiente en tiempo y recursos, especialmente en laberintos grandes o con caminos complejos. Las métricas utilizadas para comparar los algoritmos fueron la longitud de la ruta encontrada, la cantidad de nodos visitados y el tiempo de ejecución. En estos casos, A* demostró ser más eficiente que BFS al visitar menos nodos para encontrar la solución óptima, manteniendo la misma longitud de ruta.
+
+Soluciones en imágenes para los laberintos:
+
+#### Laberinto 1:
+
+![Maze1](images/laberinto1_BFS.png)
+
+![Maze1](images/laberinto1_DFS.png)
+
+#### Laberinto 2:
+
+![Maze1](images/laberinto2_Astar.png)
+
+![Maze1](images/laberinto2_BFS.png)
+
+#### Laberinto 3:
+
+![Maze3](images/laberinto3_BFS.png)
+
+![Maze3](images/laberinto3_DFS.png)
+
+#### Laberinto 4:
+
+![Maze1](images/laberinto4_Astar.png)
+
+![Maze1](images/laberinto4_BFS.png)
+
 
 ## 2. OPTIMIZACIÓN DE COLONIAS DE HORMIGAS
 
