@@ -59,11 +59,41 @@ Además, para superar la dificultad adicional que representa la barrera continua
 En este modelo, los parámetros controlan directamente cómo se comporta la colonia de hormigas al momento de buscar una ruta. `num_ants` define cuántas hormigas exploran el mapa en cada iteración, por lo que un valor más alto aumenta la exploración, aunque también eleva el costo computacional. `evaporation_rate` indica qué tan rápido desaparece la feromona acumulada; si es muy baja, el algoritmo puede aferrarse demasiado a caminos antiguos, y si es muy alta, pierde memoria de las rutas buenas demasiado rápido. `alpha` determina cuánto peso tiene la feromona en la decisión de movimiento, mientras que `beta` controla la influencia de la heurística, es decir, la cercanía al objetivo (la inversa de la distancia con norma euclideana). Los parámetros permiten balancear la búsqueda entre seguir experiencias previas y acercarse de forma más directa a la meta, al igual que permiten controlar qué tanto puede explorar nuevos caminos o mantenerse en los ya explorados.
 
 ### D. ¿Qué es Random Search y Grid Search? ¿Cómo aplicarlos para esta heurística?
-Responder: Qué búsqueda de parámetros es la más adecuada para este ejercicio
-Conclusiones sobre implementación de uno de los métodos de optimización de hiperparametros 
+Random Search (Búsqueda Aleatoria)
+Consiste en muestrear combinaciones de hiperparámetros de forma aleatoria a partir de distribuciones de probabilidad definidas para cada parámetro. No se exploran todas las combinaciones, sino un número fijo de iteraciones. Es útil cuando el espacio de búsqueda es grande o continuo.
+
+Grid Search (Búsqueda en Cuadrícula)
+Define un conjunto finito de valores para cada hiperparámetro y evalúa todas las combinaciones posibles (producto cartesiano). Es exhaustivo pero su costo crece exponencialmente con el número de parámetros.
+
+Para el algoritmo ACO del ejercicio, los hiperparámetros a optimizar son: alpha (influencia de feromona), beta (influencia heurística), evaporation_rate (tasa de evaporación) y num_ants (número de hormigas). La métrica de rendimiento es la longitud del mejor camino encontrado (menor es mejor).
+
+Grid Search es el más adecuado por las siguientes razones:
+
+Espacio de búsqueda pequeño: Solo 4 parámetros, con rangos razonablemente estrechos (ej. alpha 0.5–2.0, beta 1–5, evaporation_rate 0.05–0.2, num_ants 5–15). El número total de combinaciones es bajo (ej. 4×4×3×3 = 144).
+Evaluación rápida: Cada ejecución del ACO en una grid de 10×10 toma milisegundos; probar 144 combinaciones con 3 repeticiones es totalmente factible.
+Garantía de encontrar el óptimo dentro de la cuadrícula: No se deja ninguna combinación prometedora al azar.
+Reproducibilidad: Los resultados son deterministas y fáciles de comparar.
+
+Random Search sería preferible si el número de parámetros fuera mayor (>5) o si los rangos fueran continuos muy amplios, pero no es el caso.
+
+Se decidio implementar ambos metodos para probar. En el caso 1 parece que hay una mejor optimizacion en el grid search
+
+![Maze4](images/aco_optimized_grid_caso_1.png)
+
+Para el caso 2, parece que random search dio un mejor resultado, similar a la resolucion original, parece que recorre menor camino
+
+![Maze4](images/aco_optimized_random_caso_2.png)
 
 ### E. Pregunta de investigación:
 Responder: ¿Será que se puede utilizar este algoritmo para resolver el Travelling Salesman Problema (TSP)? ¿Cuáles serían los pasos de su implementación?
+
+Sí, el algoritmo de colonia de hormigas es uno de los métodos metaheurísticos más populares y efectivos para resolver el Problema del Viajante (TSP). De hecho, fue en el TSP donde se aplicó originalmente el algoritmo ACO (Dorigo et al., 1996), convirtiéndose desde entonces en un problema benchmark clásico para validar nuevas variantes de esta metaheurística.
+
+Las principales ventajas de implementar ACO para TSP son cuatro. Primero, la escalabilidad: funciona bien para problemas de hasta cientos de ciudades. Segundo, la robustez: encuentra buenas soluciones incluso con una inicialización desfavorable de las hormigas. Tercero, es paralelizable: cada hormiga construye su tour de forma independiente. Cuarto, evita óptimos locales gracias a la evaporación de feromonas y la exploración probabilística, lo que permite escapar de soluciones subóptimas.
+
+Por otro lado, ACO presenta dos desventajas importantes para TSP. Puede ser más lento que algoritmos específicos como Lin-Kernighan o branch-and-cut cuando se trabaja con grafos muy grandes (miles de ciudades). Además, requiere un ajuste fino de hiperparámetros (alpha, beta, tasa de evaporación, número de hormigas), siendo sensible a estas configuraciones; una mala elección puede llevar a convergencia prematura o nulo aprendizaje.
+
+En conclusión, el ACO es totalmente aplicable al TSP y su implementación sigue una estructura muy similar a la del problema de grid. Los cambios principales son: (1) los vecinos son todas las ciudades no visitadas (no solo adyacentes), (2) el heurístico es la inversa de la distancia entre ciudades (no la distancia al destino), y (3) el criterio de parada es visitar todas las ciudades (no llegar a un punto final).
 
 ## 3. ENSAYO - Modelos de lenguaje y algoritmos de búsqueda: análisis, comparaciones y diferencias
 

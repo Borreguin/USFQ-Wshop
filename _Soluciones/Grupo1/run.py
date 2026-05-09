@@ -2,7 +2,7 @@ from Taller1.P1_TSP.TSP import study_case_1, study_case_2
 from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 from Taller2.P1.P1 import study_case_1 as p1_study_case_1, study_case_2 as p1_study_case_2, study_case_3 as p1_study_case_3, study_case_4 as p1_study_case_4
-from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, study_case_optimized as study_case_optimized
+from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, find_optimized_path as study_case_optimized
 
 def print_options(arr, header = None):
     if header:
