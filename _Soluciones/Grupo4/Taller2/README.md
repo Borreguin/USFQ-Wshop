@@ -84,6 +84,73 @@ Al comparar los algoritmos en los tres laberintos, se observaron los siguientes 
 
 En conclusión, para estos tres casos particulares, BFS ofrece un buen balance entre eficiencia y calidad, A* garantiza soluciones similares a BFS pero con mayor costo computacional, y DFS es más veloz pero sacrifica calidad de solución.
 
+### 2) **Optimización de Colonia de Hormigas (P2)**
+
+#### A) Correr la implementación planteada
+
+Para el problema 2 se implementó la metaheurística de **Optimización de Colonia de Hormigas (ACO)** para búsqueda de rutas en rejilla con obstáculos, usando como base el archivo `P2/P2_ACO.py`.
+
+El método combina:
+
+- **Feromonas** (memoria colectiva de caminos explorados).
+- **Heurística** (cercanía al destino).
+- **Evaporación** (olvido de rutas poco prometedoras).
+
+En el **Caso de Estudio 1** (obstáculos en `(1,2), (2,2), (3,2)`), el algoritmo encuentra un camino válido y su visualización de feromonas:
+
+![Caso 1 - ACO](images/case1.png)
+
+#### B) ¿Qué ocurre con el segundo caso de estudio?
+
+En el **Caso de Estudio 2** (barrera en `(0,2), (1,2), (2,2), (3,2)`), se identificó un problema en la versión inicial:
+
+- Se reforzaban caminos cortos aunque no llegaran al destino.
+- Con un `beta` alto, el algoritmo tendía a ser demasiado "greedy" y chocaba con la barrera.
+
+Se aplicaron dos mejoras:
+
+1. **Filtrar caminos válidos** (`p[-1] == end`) antes de reforzar feromonas.
+2. **Ajustar hiperparámetros** para mejorar exploración/explotación.
+
+Evidencia visual del comportamiento:
+
+![Caso 2 - Comportamiento con error](images/case2_error.png)
+
+![Caso 2 - Versión corregida](images/case2_fixed.png)
+
+#### C) Parámetros del modelo ACO
+
+Los parámetros más relevantes analizados fueron:
+
+- `alpha`: peso de la feromona.
+- `beta`: peso de la heurística.
+- `evaporation_rate`: ritmo de evaporación.
+- `num_ants`: número de hormigas por iteración.
+- `iterations`: número de ciclos de búsqueda.
+
+Su ajuste impacta directamente en calidad de ruta, convergencia y costo computacional.
+
+#### D) Random Search vs Grid Search para esta heurística
+
+Se documentó la diferencia entre ambos enfoques y se aplicó **Grid Search** sobre `alpha` y `beta` para este taller, al ser un espacio de búsqueda pequeño y controlado.
+
+Rangos evaluados:
+
+- `alpha`: `[0.1, 0.5, 1.0]`
+- `beta`: `[1.0, 5.0, 10.0]`
+
+Con la mejor combinación encontrada se volvió a ejecutar el caso 2:
+
+![Caso 2 - Configuración optimizada](images/case2_optimized.png)
+
+#### E) Pregunta de investigación: ¿se puede usar ACO para TSP?
+
+Sí. El algoritmo ACO se puede aplicar al **Problema del Viajante (TSP)** modelando ciudades como nodos y distancias como pesos entre aristas. La actualización iterativa de feromonas favorece los recorridos más cortos y permite aproximar soluciones de alta calidad en problemas combinatorios.
+
+**Conclusión P2**
+
+En este problema se evidenció que ACO es sensible al diseño de la función de selección y a los hiperparámetros. Una corrección lógica (validar caminos que llegan al objetivo) junto con una búsqueda de parámetros mejora de forma importante la calidad y robustez de la solución.
+
 **Referencias**
 
 1. Tomás, V., Núñez, F., & Andrade, E. (s.f.). Análisis de algoritmos de búsqueda en espacio de estados. Universidad Autónoma del Estado de Hidalgo. https://www.uaeh.edu.mx/scige/boletin/huejutla/n5/a1.html
