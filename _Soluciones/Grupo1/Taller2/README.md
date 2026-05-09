@@ -1,5 +1,7 @@
 # Taller 2
 
+- [Participación](Participacion_Taller_2_G1.pdf)
+
 ## 1. USO DE ALGORITMOS DE BÚSQUEDA
 
 ### A. Leer el laberinto y representarlo como un grafo
