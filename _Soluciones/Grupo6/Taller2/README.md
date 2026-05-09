@@ -1,5 +1,11 @@
 # Taller 2 — Grupo 6
 
+## Integrantes del grupo
+
+- **Stan Mora** — Algoritmos de Busqueda
+- **Santiago Bonilla** — ACO
+- **Tais Rodriguez** — Análisis, Diseño, evaluación y documentación de los sistemas
+
 ## Requisitos
 
 ```bash
