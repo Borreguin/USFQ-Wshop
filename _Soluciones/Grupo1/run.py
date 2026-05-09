@@ -3,18 +3,20 @@ from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 from Taller2.P1.P1 import study_case_1 as p1_study_case_1, study_case_3 as p1_study_case_3
 from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, study_case_optimized as study_case_optimized
+from Taller3.P1_UML.p1_uml import start
 
 def print_options(arr, header = None):
     if header:
         print(header)
     _ = [print(f'{i+1}. {option}') for i, option in enumerate(arr)]
+    print('0. Salir')
 
 def taller_1():
-    options = ['TSP', 'Acertijo del granjero y el bote', 'Torres de Hanoi', 'Otro', 'Salir']
+    options = ['TSP', 'Acertijo del granjero y el bote', 'Torres de Hanoi', 'Otro']
     header = 'Bienvenido al taller 1 de Inteligencia Artificial'
     print_options(options, header)
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
-    while study_case != '5':
+    while study_case != '0':
         if study_case == '1':
             print('\n=========================')
             print('Viaje del vendedor (TSP)')
@@ -47,11 +49,11 @@ def taller_1():
     print('Saliendo del taller 1')
 
 def taller_2():
-    options = ['Laberinto', 'Colonia de Hormigas', 'Otro', 'Salir']
+    options = ['Laberinto', 'Colonia de Hormigas', 'Otro']
     header = 'Bienvenido al taller 2 de Inteligencia Artificial'
     print_options(options, header)
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
-    while study_case != '4':
+    while study_case != '0':
         if study_case == '1':
             print('\n=========================')
             print('Llamado al laberinto ')
@@ -85,15 +87,35 @@ def taller_2():
         study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
     print('Saliendo del taller 2')
 
+def taller_3():
+    options = ['Data de edificios', 'Otro']
+    header = 'Bienvenido al taller 3 de Inteligencia Artificial'
+    print_options(options, header)
+    study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
+    while study_case != '0':
+        if study_case == '1':
+            print('\n=========================')
+            print('Llamado al dataset de edificios ')
+            print('=========================')
+            start()
+            print('\nFin del estudio de caso 1\n')
+        else :
+            print('No hay el texto')
+        print_options(options)
+        study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
+    print('Saliendo del taller 3')
+
 def main():
-    options = ['Taller 1', 'Taller 2', 'Salir']
+    options = ['Taller 1', 'Taller 2', 'Taller 3']
     print_options(options, 'Bienvenido al taller de Inteligencia Artificial')
     option = input('Ingrese el taller que desea ejecutar: ')
-    while option != '3':
+    while option != '0':
         if option == '1':
             taller_1()
         elif option == '2':
             taller_2()
+        elif option == '3':
+            taller_3()
         else:
             print('No hay el texto')
         print_options(options)
