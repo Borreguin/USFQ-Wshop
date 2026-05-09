@@ -3,6 +3,8 @@ from Taller3.P1_UML.p1_uml_util import *
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import adjusted_rand_score
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 def prepare_data():
     script_path = os.path.dirname(os.path.abspath(__file__))
@@ -14,6 +16,25 @@ def prepare_data():
     _df.sort_index(inplace=True)
     print(_df.dtypes)
     return _df
+
+def plot_daily_overlay(_df: pd.DataFrame, lb, legend):
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+
+    df_to_plot = _df[[lb]].copy()
+    df_to_plot["day"] = df_to_plot.index.normalize()
+    df_to_plot["time_of_day"] = pd.to_datetime(df_to_plot.index.strftime("%H:%M"), format="%H:%M")
+
+    plt.figure(figsize=(12, 6))
+    for day, group in df_to_plot.groupby("day"):
+        plt.plot(group["time_of_day"], group[lb], alpha=0.6, label=day.strftime("%Y-%m-%d"))
+
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.xlabel("Hora del día")
+    plt.ylabel(legend)
+    plt.title(alias[lb])
+    plt.gcf().autofmt_xdate()
+    plt.show()
 
 def build_daily_profiles(_df: pd.DataFrame, lb):
     daily_profiles = _df[[lb]].copy()
@@ -28,8 +49,6 @@ def build_daily_profiles(_df: pd.DataFrame, lb):
 
 
 def select_cluster_count(daily_profiles):
-    from sklearn.cluster import KMeans
-    from sklearn.metrics import silhouette_score
 
     max_clusters = min(6, len(daily_profiles) - 1)
     cluster_scores = {}
@@ -104,8 +123,13 @@ def analyze_variable(_df: pd.DataFrame, lb):
     plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, lb)
 
 
+
 def start():
     df = prepare_data()
+    plot_daily_overlay(df, lb_V005_vent01_CO2, "CO2")
+    plot_daily_overlay(df, lb_V022_vent02_CO2, "CO2")
+    plot_daily_overlay(df, lb_V006_vent01_temp_out, "Temperature")
+    plot_daily_overlay(df, lb_V023_vent02_temp_out, "Temperature")
     analyze_variable(df, lb_V005_vent01_CO2)
     analyze_variable(df, lb_V022_vent02_CO2)
     analyze_variable(df, lb_V006_vent01_temp_out)
