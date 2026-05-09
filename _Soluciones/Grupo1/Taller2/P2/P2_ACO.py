@@ -93,6 +93,8 @@ class AntColonyOptimization:
                 self._evaporate_pheromones()
             # --------------------------
 
+        return self.best_path
+
     def plot(self):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
         plt.figure(figsize=(8, 8))
@@ -114,7 +116,11 @@ class AntColonyOptimization:
 
 def evaluate_parameters(start, end, obstacles, params, num_runs=3, num_iterations=100):
     """
-    Evalúa un conjunto de parámetros ejecutando ACO varias veces y devuelve la longitud media del mejor camino.
+    Evalúa un conjunto de parámetros ejecutando ACO varias veces y devuelve
+    la longitud media del mejor camino.
+
+    Si una corrida no encuentra camino, usa una penalización finita para evitar
+    promedios infinitos durante la búsqueda de hiperparámetros.
     """
     lengths = []
     for _ in range(num_runs):
@@ -130,7 +136,7 @@ def evaluate_parameters(start, end, obstacles, params, num_runs=3, num_iteration
         if best_path is not None:
             lengths.append(len(best_path))
         else:
-            lengths.append(float('inf'))  # si no encuentra camino
+            lengths.append(np.prod(aco.grid_size) + 1)  # penalización finita
     return np.mean(lengths)
 
 def grid_search_hyperparameters(start, end, obstacles, param_grid, num_runs=3, num_iterations=100):
@@ -141,13 +147,10 @@ def grid_search_hyperparameters(start, end, obstacles, param_grid, num_runs=3, n
     best_params = None
     best_score = float('inf')
     results = []
-    
     keys = list(param_grid.keys())
     values = list(param_grid.values())
     total_combinations = np.prod([len(v) for v in values])
-    
     print(f"🔍 Iniciando Grid Search con {total_combinations} combinaciones...")
-    
     for combination in itertools.product(*values):
         params = dict(zip(keys, combination))
         score = evaluate_parameters(start, end, obstacles, params, num_runs, num_iterations)
@@ -156,7 +159,6 @@ def grid_search_hyperparameters(start, end, obstacles, param_grid, num_runs=3, n
         if score < best_score:
             best_score = score
             best_params = params
-    
     print(f"\n✅ Mejores parámetros encontrados: {best_params} con longitud media = {best_score:.2f}")
     return best_params, best_score, results
 
@@ -169,9 +171,7 @@ def random_search_hyperparameters(start, end, obstacles, param_distributions, n_
     best_params = None
     best_score = float('inf')
     results = []
-    
     print(f"🎲 Iniciando Random Search con {n_iter} iteraciones...")
-    
     for i in range(n_iter):
         params = {}
         for key, dist in param_distributions.items():
