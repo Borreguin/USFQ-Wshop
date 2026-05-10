@@ -1,8 +1,12 @@
+import os
+import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import itertools
-from tqdm import tqdm
+project_path = os.path.dirname(__file__)
+sys.path.append(project_path)
 
 class AntColonyOptimization:
     def __init__(self, start, end, obstacles, grid_size=(10, 10), num_ants=10, evaporation_rate=0.1, alpha=0.1, beta=15, num_iterations=100):
@@ -95,7 +99,7 @@ class AntColonyOptimization:
 
         return self.best_path
 
-    def plot(self):
+    def plot(self, filename: str = None):
         cmap = LinearSegmentedColormap.from_list('pheromone', ['white', 'green', 'red'])
         plt.figure(figsize=(8, 8))
         plt.imshow(self.pheromones, cmap=cmap, vmin=np.min(self.pheromones), vmax=np.max(self.pheromones))
@@ -112,7 +116,11 @@ class AntColonyOptimization:
         plt.title('Ant Colony Optimization')
         plt.legend()
         plt.grid(True)
-        plt.show()
+        if filename:
+            output_path = os.path.join(os.path.dirname(project_path), 'images', filename)
+            plt.savefig(output_path)
+        else:
+            plt.show()
 
 def evaluate_parameters(start, end, obstacles, params, num_runs=3, num_iterations=100):
     """
@@ -201,14 +209,8 @@ def random_search_hyperparameters(start, end, obstacles, param_distributions, n_
 
 # ==================== ESTUDIO DE CASO CON OPTIMIZACIÓN ====================
 
-def study_case_optimized():
+def study_case_optimized(start, end, obstacles, caso_id):
     print("=== Optimización de hiperparámetros para ACO ===")
-    
-    # Definir el problema (caso 1)
-    start = (0, 0)
-    end = (4, 7)
-    obstacles = [(1, 2), (2, 2), (3, 2)]
-    
     # 1. Grid Search (recomendado)
     param_grid = {
         'alpha': [0.5, 1.0, 1.5, 2.0],
@@ -216,25 +218,11 @@ def study_case_optimized():
         'evaporation_rate': [0.05, 0.1, 0.2],
         'num_ants': [5, 10, 15]
     }
-    
+
     best_params_grid, best_score_grid, _ = grid_search_hyperparameters(
         start, end, obstacles, param_grid, num_runs=3, num_iterations=50
     )
-    
-    # 2. (Opcional) Random Search como comparación
-    param_distributions = {
-        'alpha': (0.2, 2.5),
-        'beta': (1, 8),
-        'evaporation_rate': (0.02, 0.3),
-        'num_ants': (5, 20)  # uniforme entero
-    }
-    
-    best_params_rand, best_score_rand, _ = random_search_hyperparameters(
-        start, end, obstacles, param_distributions, n_iter=15, num_runs=3, num_iterations=50
-    )
-    
-    # Ejecutar ACO con los mejores parámetros (Grid Search) y graficar
-    print("\n=== Ejecución final con mejores parámetros (Grid Search) ===")
+
     aco_best = AntColonyOptimization(
         start, end, obstacles,
         num_ants=int(best_params_grid['num_ants']),
@@ -244,9 +232,37 @@ def study_case_optimized():
         num_iterations=100
     )
     aco_best.find_best_path()
-    aco_best.plot()
+    aco_best.plot(f'aco_optimized_grid_caso_{caso_id}.png')
     print(f"Mejor camino encontrado: {aco_best.best_path}")
     print(f"Longitud del camino: {len(aco_best.best_path)}")
+    
+    # 2. (Opcional) Random Search como comparación
+    param_distributions = {
+        'alpha': (0.2, 2.5),
+        'beta': (1, 8),
+        'evaporation_rate': (0.02, 0.3),
+        'num_ants': (5, 20)  # uniforme entero
+    }
+
+    best_params_rand, best_score_rand, _ = random_search_hyperparameters(
+        start, end, obstacles, param_distributions, n_iter=15, num_runs=3, num_iterations=50
+    )
+
+    aco_best = AntColonyOptimization(
+        start, end, obstacles,
+        num_ants=int(best_params_rand['num_ants']),
+        evaporation_rate=best_params_rand['evaporation_rate'],
+        alpha=best_params_rand['alpha'],
+        beta=best_params_rand['beta'],
+        num_iterations=100
+    )
+    aco_best.find_best_path()
+    aco_best.plot(f'aco_optimized_random_caso_{caso_id}.png')
+    print(f"Mejor camino encontrado: {aco_best.best_path}")
+    print(f"Longitud del camino: {len(aco_best.best_path)}")
+    
+    # Ejecutar ACO con los mejores parámetros (Grid Search) y graficar
+    print("\n=== Ejecución final con mejores parámetros ===")
 
 def study_case_1():
     print("Start of Ant Colony Optimization - First Study Case")
@@ -255,7 +271,7 @@ def study_case_1():
     obstacles = [(1, 2), (2, 2), (3, 2)]
     aco = AntColonyOptimization(start, end, obstacles)
     aco.find_best_path(100)
-    aco.plot()
+    aco.plot('aco_caso_1.png')
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
 
@@ -267,13 +283,21 @@ def study_case_2():
     # Parámetros optimizados para barrera continua: más hormigas, menos evaporación, más alfa
     aco = AntColonyOptimization(start, end, obstacles, num_ants=30, evaporation_rate=0.05, alpha=0.5, beta=15)
     aco.find_best_path(200)
-    aco.plot()
+    aco.plot('aco_caso_2.png')
     print("End of Ant Colony Optimization")
     print("Best path: ", aco.best_path)
 
-if __name__ == '__main__':
-    study_case_1()
-    study_case_2()
+def find_optimized_path():
+    print("=== Estudio de caso optimizado con ACO , caso 1 ===")
+    start = (0, 0)
+    end = (4, 7)
+    obstacles = [(1, 2), (2, 2), (3, 2)]
+    study_case_optimized(start, end, obstacles, 1)
+    print("=== Estudio de caso optimizado con ACO , caso 2 ===")
+    start = (0, 0)
+    end = (4, 7)
+    obstacles = [(0, 2), (1, 2), (2, 2), (3, 2)]
+    study_case_optimized(start, end, obstacles, 2)
 
 
 
