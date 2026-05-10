@@ -14,7 +14,11 @@ Completar con conclusiones sobre parte B, responder:
 
 Para este problema se compararon BFS y DFS para el Laberinto 1 y 3. BFS garantiza encontrar la ruta más corta en laberintos no ponderados, por eso obtiene caminos más cortos en ambos casos. DFS puede encontrar una solución más rápido o visitando menos nodos, pero no garantiza que esa solución sea óptima. Las métricas usadas fueron longitud de la ruta, nodos visitados y tiempo de ejecución.
 
-Para el Laberinto 2 y 4 se compararon los algoritmos BFS y A*. Ambos algoritmos encuentran la ruta más corta en laberintos no ponderados, pero A* utiliza una heurística (distancia Manhattan) que le permite explorar menos nodos y, en general, ser más eficiente en tiempo y recursos, especialmente en laberintos grandes o con caminos complejos. Las métricas utilizadas para comparar los algoritmos fueron la longitud de la ruta encontrada, la cantidad de nodos visitados y el tiempo de ejecución. En estos casos, A* demostró ser más eficiente que BFS al visitar menos nodos para encontrar la solución óptima, manteniendo la misma longitud de ruta.
+En los laberintos 2 y 4 se compararon los algoritmos BFS y A* utilizando métricas cuantitativas: longitud de la ruta, cantidad de nodos visitados y tiempo de ejecución. Ambos algoritmos encontraron la ruta más corta (longitud 44 en laberinto 2 y 472 en laberinto 4), pero A* fue más eficiente en la exploración del espacio de búsqueda. 
+
+Para el laberinto 2, BFS visitó 181 nodos en 0.000109 s, mientras que A* solo 140 nodos en 0.000166 s, manteniendo la misma longitud de ruta (44). Para el laberinto 4, BFS visitó 2399 nodos en 0.001321 s y A* solo 2064 nodos en 0.003463 s, ambos con longitud de ruta 472. Esto evidencia que A* explora menos nodos y realiza menos retrocesos (backtracking), optimizando el uso de recursos computacionales, aunque en este caso el tiempo de ejecución fue ligeramente mayor en A* debido al cálculo de la heurística.
+
+En conclusión, A* mantiene la calidad de la solución (ruta óptima) y mejora la eficiencia al reducir la cantidad de nodos explorados y retrocesos, lo que lo hace más adecuado para laberintos grandes o complejos. BFS, aunque rápido, explora más nodos y puede requerir más recursos en escenarios de mayor tamaño.
 
 Soluciones en imágenes para los laberintos:
 
