@@ -28,5 +28,5 @@
 ### Resumen Taller 2
 - Soluciones explicadas en: [Taller 2](Taller2/README.md)
 - Problemas: 
-  - P1: WORK IN PROGRESS.
-  - P2: WORK IN PROGRESS.
+  - P1: Uso de algoritmos de búsqueda. Se busca resolver laberintos utilizando algoritmos de búsqueda. Cada laberinto debe ser representado como un grafo, donde cada posición posible es un nodo y los movimientos válidos son las aristas. El objetivo es encontrar el camino más eficiente desde un punto de inicio hasta la meta, comparando al menos dos algoritmos de búsqueda y evaluando su desempeño en términos de efectividad y rapidez.
+  - P2: Optimización de colonias de hormigas (ACO). El problema consiste en utilizar la metaheurística de colonias de hormigas para encontrar caminos óptimos en un grafo. Se plantea analizar cómo la selección del camino depende de parámetros como el número de hormigas, la influencia de feromonas y heurísticas, y la tasa de evaporación. Además, se propone explorar métodos de búsqueda de parámetros (Random Search, Grid Search) y estudiar cómo esta técnica podría aplicarse a problemas de optimización como el Travelling Salesman Problem (TSP).
