@@ -1,7 +1,7 @@
 from random import choice
 
-from Taller3.P3_GA.operation import *
-from Taller3.P3_GA.util import word_distance
+from _Soluciones.Grupo4.Taller3.P3_GA.operation import *
+from _Soluciones.Grupo4.Taller3.P3_GA.util import word_distance
 
 
 # Generar población
@@ -28,8 +28,15 @@ def evaluate_aptitude(evaluation_type, individual, objetive):
         return word_distance(individual, objetive)
 
     if evaluation_type == AptitudeType.NEW:
-        print("implement here the new evaluation")
-        return 0
+        # Evaluación nueva: combina coincidencias
+        aptitude = 0
+        for i in range(len(individual)):
+            if individual[i] == objetive[i]:
+                aptitude += 1
+        return aptitude
+
+    # Por defecto, retornar 0
+    return 0
 
 # Selección del mejor individuo
 def select_best_individual(_type: BestIndividualSelectionType, population, aptitudes):
@@ -68,5 +75,14 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
         return new_population
 
     if _type == NewGenerationType.NEW:
-        print("implement here the new generation")
-        return None
+        # Generación mejorada con selección por torneo y cruce uniforme
+        new_population = []
+        for _ in range(len(population) // 2):
+            parent1, parent2 = parent_selection(ParentSelectionType.NEW, population, aptitudes)
+            child1, child2 = crossover(CrossoverType.NEW, parent1, parent2)
+            child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
+            child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
+            new_population.extend([child1, child2])
+        return new_population
+
+    return population
