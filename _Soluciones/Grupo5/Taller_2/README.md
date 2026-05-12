@@ -3,7 +3,7 @@
 
 - **Nombre del grupo**: 5
 - **Integrantes del grupo**:
-| Integrante | Problema |
+| Integrante | Problema 
 
 | Nancy Altamirano 
 | Gustavo Berru 
