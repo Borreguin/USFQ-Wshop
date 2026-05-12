@@ -22,4 +22,8 @@
   - P1: [Laberintos (BFS, DFS, A*)](Taller2/P1)
   - P2: [Optimización de Colonia de Hormigas (ACO)](Taller2/P2)
   - Ensayo: [Ensayo Taller 2 Grupo 4](Taller2/Ensayo%20Taller%202%20Grupo%204.pdf)
+- [Taller 3](Taller3/README.md)
+  - P1: [Uso de Aprendizaje No Supervisado](Taller3/P1_UML)
+  - P2: [Investigación Operativa: Travelling Salesman Problem (TSP)](Taller3/P2_TSP)
+  - P3: [Algoritmos Genéticos](Taller3/P3_GA)
 
