@@ -15,3 +15,4 @@ for seed in seeds:
         f.write(header)
         for city, (x, y) in cities.items():
             f.write(f"{city},{x},{y}\n")
+##
