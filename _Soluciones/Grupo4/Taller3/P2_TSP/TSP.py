@@ -6,6 +6,19 @@ sys.path.append(current_dir)
 
 from util import *
 from util_nearest_neighbor import nearest_neighbor
+# Funcionalidad anadida en el Taller 3 (seccion F del notebook P2.ipynb):
+# 2-opt + deteccion de cruces (post-procesamiento) y cutting plane anti-cruces
+# (cortes "dentro del modelo"). Se importa de forma defensiva para no romper
+# escenarios donde Pyomo/GLPK no esten disponibles al cargar este modulo.
+from util_two_opt import (
+    two_opt_first_improvement,
+    two_opt_best_improvement,
+    contar_cruces,
+)
+try:
+    from tsp_anti_cruces import tsp_anti_cruces_iterativo
+except Exception:  # pragma: no cover - fallback si pyomo no esta instalado
+    tsp_anti_cruces_iterativo = None
 # https://baobabsoluciones.es/blog/2020/10/01/problema-del-viajante/
 
 class TSP:
@@ -153,6 +166,53 @@ class TSP:
     def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
         plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
 
+    # ------------------------------------------------------------------
+    # Funcionalidad anadida en el Taller 3 (seccion F)
+    # ------------------------------------------------------------------
+    def contar_cruces_en(self, ruta: List[str]) -> int:
+        """Cuenta cuantos pares de aristas se cruzan en ``ruta``.
+
+        Es un wrapper sobre :func:`util_two_opt.contar_cruces` que
+        utiliza las ciudades almacenadas en la instancia.
+        """
+        return contar_cruces(self.ciudades, ruta)
+
+    def aplicar_2opt(self, ruta: List[str], estrategia: str = "best"):
+        """Aplica 2-opt como post-procesamiento sobre ``ruta``.
+
+        Parametros
+        ----------
+        ruta : list
+            Tour inicial (cerrado o abierto).
+        estrategia : {'best', 'first'}
+            'best' usa best-improvement; 'first' usa first-improvement.
+
+        Retorna
+        -------
+        dict
+            ``{'ruta', 'distancia', 'historial', 'iteraciones',
+            'cruces_iniciales', 'cruces_finales'}``.
+        """
+        if estrategia not in ("best", "first"):
+            raise ValueError("estrategia debe ser 'best' o 'first'")
+
+        cruces_ini = contar_cruces(self.ciudades, ruta)
+        if estrategia == "best":
+            ruta_out, hist = two_opt_best_improvement(
+                self.ciudades, self.distancias, ruta)
+        else:
+            ruta_out, hist = two_opt_first_improvement(
+                self.ciudades, self.distancias, ruta)
+
+        return {
+            'ruta': ruta_out,
+            'distancia': calculate_path_distance(self.distancias, ruta_out),
+            'historial': hist,
+            'iteraciones': len(hist),
+            'cruces_iniciales': cruces_ini,
+            'cruces_finales': contar_cruces(self.ciudades, ruta_out),
+        }
+
 def study_nearest_neighbor(n_cities):
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
     ruta = nearest_neighbor(ciudades, distancias)
@@ -199,6 +259,59 @@ def study_case_3():
     tsp.plotear_resultado(ruta, False)
 
 
+# ----------------------------------------------------------------------
+# Casos de estudio anadidos para la seccion F del Taller 3.
+# ----------------------------------------------------------------------
+def study_case_F_2opt(n_cities: int = 100):
+    """Vecino mas cercano + 2-opt como post-procesamiento.
+
+    Replica la "Aplicacion 1" de la seccion F del notebook P2.ipynb:
+    se construye un tour con NN, se cuentan cruces, se aplican 2-opt
+    First y Best Improvement y se compara distancia/cruces.
+    """
+    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+    tsp = TSP(ciudades, distancias, heuristics=[])
+
+    ruta_nn = nearest_neighbor(ciudades, distancias)
+    dist_nn = calculate_path_distance(distancias, ruta_nn)
+    cruces_nn = tsp.contar_cruces_en(ruta_nn)
+    print(f"NN (n={n_cities}): dist={dist_nn:.2f}  cruces={cruces_nn}")
+
+    res_first = tsp.aplicar_2opt(ruta_nn, estrategia="first")
+    res_best = tsp.aplicar_2opt(ruta_nn, estrategia="best")
+    print(f"NN + 2-opt First : dist={res_first['distancia']:.2f}  "
+          f"cruces={res_first['cruces_finales']}  "
+          f"iter={res_first['iteraciones']}")
+    print(f"NN + 2-opt Best  : dist={res_best['distancia']:.2f}  "
+          f"cruces={res_best['cruces_finales']}  "
+          f"iter={res_best['iteraciones']}")
+
+    tsp.plotear_resultado(res_best['ruta'], mostrar_anotaciones=False)
+    return {'nn': ruta_nn, 'first': res_first, 'best': res_best}
+
+
+def study_case_F_anti_cruces(n_cities: int = 20, time_limit: int = 15,
+                             max_iter: int = 10):
+    """Cutting plane casero anti-cruces (heuristica DENTRO del modelo).
+
+    Replica la implementacion de la opcion 3 del enunciado F: resuelve
+    iterativamente un MTZ y agrega cortes ``x[a,b]+x[b,a]+x[c,d]+x[d,c] <= 1``
+    por cada par de aristas que se cruzan, hasta convergencia o
+    ``max_iter``.
+    """
+    if tsp_anti_cruces_iterativo is None:
+        raise RuntimeError(
+            "tsp_anti_cruces no esta disponible (probablemente Pyomo o GLPK "
+            "no estan instalados en el entorno)."
+        )
+    res = tsp_anti_cruces_iterativo(
+        n_cities=n_cities, time_limit=time_limit, max_iter=max_iter)
+    print(f"Distancia final: {res['distancia']:.2f}  "
+          f"convergio={res['convergio']}")
+    plotear_ruta(res['ciudades'], res['distancias'], res['ruta'], False)
+    return res
+
+
 if __name__ == "__main__":
     print("Se ha colocado un límite de tiempo de 30 segundos para la ejecución del modelo.")
     # as reference, see nearest neighbor heuristic
@@ -207,3 +320,6 @@ if __name__ == "__main__":
     # study_case_1()
     # study_case_2()
     study_case_3()
+    # Casos anadidos en el Taller 3 (seccion F):
+    # study_case_F_2opt(100)
+    # study_case_F_anti_cruces(20)
