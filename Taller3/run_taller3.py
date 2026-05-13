@@ -482,6 +482,17 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     <a href="#p3-4"  class="sub">Caso 4 — poblacion</a>
     <a href="#p3-5"  class="sub">Caso 5 — mejor combo</a>
     <a href="#p3-f"  class="sub">Conclusiones</a>
+    <hr class="nd">
+    <a href="#metodo">Metodologia Paso a Paso</a>
+    <a href="#met-p1" class="sub">P1 — UML</a>
+    <a href="#met-p2" class="sub">P2 — TSP</a>
+    <a href="#met-p3" class="sub">P3 — GA</a>
+    <hr class="nd">
+    <a href="#interrogantes">Interrogantes de Mejora</a>
+    <a href="#int-ds"  class="sub">Base de datos</a>
+    <a href="#int-p1"  class="sub">Analisis P1</a>
+    <a href="#int-p2"  class="sub">Analisis P2</a>
+    <a href="#int-p3"  class="sub">Analisis P3</a>
     """
 
     return f"""<!DOCTYPE html>
@@ -504,8 +515,9 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
   <h1>Taller 3 — Informe Completo</h1>
   <div class="sub">Inteligencia Artificial</div>
   <table style="margin-top:18px">
-    <tr><td>Estudiante</td><td><b style="color:#fff">Nancy Altamirano</b></td></tr>
+    <tr><td>Integrantes</td><td><b style="color:#fff">Kevin Vitery &nbsp;&bull;&nbsp; Raquel Pacheco &nbsp;&bull;&nbsp; Gustavo Baru &nbsp;&bull;&nbsp; Nancy Altamirano</b></td></tr>
     <tr><td>Generado</td><td><b style="color:#fff">{now}</b></td></tr>
+    <tr><td>Curso</td><td><b style="color:#fff">MSDS 6004 — Inteligencia Artificial — USFQ</b></td></tr>
     <tr><td>Problemas</td><td><b style="color:#fff">P1 SP&amp;BDS &nbsp;|&nbsp; P2 TSP &nbsp;|&nbsp; P3 GA</b></td></tr>
   </table>
   <div style="margin-top:24px;display:flex;gap:14px;flex-wrap:wrap">
@@ -1255,12 +1267,466 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
   </div>
 </div>
 
+<!-- ═══ METODOLOGÍA PASO A PASO ═══ -->
+<div id="metodo" class="sec-header" style="background:linear-gradient(90deg,#37474f,#546e7a);margin-top:36px">
+  <h2>Metodologia Paso a Paso — Como se Elaboro Cada Problema</h2>
+  <p style="color:#cfd8dc;margin-top:4px">
+    Descripcion detallada del proceso de construccion: decisiones tomadas,
+    herramientas utilizadas, orden de los pasos y justificacion de cada eleccion.</p>
+</div>
+
+<!-- P1 metodologia -->
+<div id="met-p1" class="card">
+  <h3>P1 — Aprendizaje No Supervisado (SP&amp;BDS): Pasos Detallados</h3>
+
+  <h4>Paso 1 — Seleccion y carga del dataset</h4>
+  <p>Se evaluo el dataset <i>Student Productivity &amp; Behavior Dataset</i> de 20 000
+  estudiantes universitarios porque combina variables de habito (estudio, sueno, uso del
+  telefono) con indicadores de rendimiento (productividad, nota, concentracion). La
+  diversidad de variables lo hace ideal para explorar tecnicas no supervisadas en
+  multiples dimensiones.</p>
+  <div class="callout info">
+    <b>Decision:</b> Se descartaron las columnas categoricas (<code>student_id</code>,
+    <code>gender</code>) y se retuvieron las {p1_data["n_features"]} variables numericas
+    que pueden ser estandarizadas y comparadas en espacio euclideo. La carga se hizo con
+    <code>pandas.read_csv()</code> verificando tipos y valores nulos antes de proceder.
+  </div>
+
+  <h4>Paso 2 — Exploracion y normalizacion</h4>
+  <p>Antes de cualquier algoritmo, se aplico <code>StandardScaler</code> a todas las
+  variables numericas. Esto transforma cada columna a media 0 y desviacion estandar 1,
+  eliminando el efecto de la escala: sin normalizacion, <code>exercise_minutes</code>
+  (0-120) domina sobre <code>stress_level</code> (1-10) por simple diferencia de magnitud.</p>
+
+  <h4>Paso 3 — PCA: reduccion de dimensionalidad y exploracion</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Calcular PCA con todos los componentes sobre los datos estandarizados.</li>
+    <li>Graficar el <b>Scree Plot</b>: varianza explicada acumulada vs numero de componentes.
+    Buscar el "codo" o el punto donde se llega al 80%.</li>
+    <li>Analizar los <b>loadings de PC1</b>: que variables tienen mayor peso positivo y
+    negativo. Esto revela el significado del eje principal.</li>
+    <li>Proyectar todos los estudiantes en el plano PC1-PC2 y colorear por
+    <code>productivity_score</code> y <code>stress_level</code>.</li>
+    <li>Generar <b>coordenadas paralelas</b> sobre una muestra de 500 estudiantes,
+    agrupados por terciles de productividad, para visualizar patrones de comportamiento.</li>
+  </ol>
+  <div class="callout good">
+    <b>Resultado clave:</b> El gradiente de color sigue exactamente PC1, confirmando que
+    ese eje captura la productividad. El estres no sigue ningun patron espacial &mdash;
+    es independiente del resto, un hallazgo no obvio antes del analisis.
+  </div>
+
+  <h4>Paso 4 — Clustering univariable (K-Means y DBSCAN)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Seleccionar las <b>2 variables clave</b> para analisis univariable:
+    <code>study_hours_per_day</code> (mayor loading positivo) y
+    <code>phone_usage_hours</code> (mayor loading negativo en PC1).</li>
+    <li><b>K-Means:</b> Probar k = 2, 3, 4, 5, 6. Para cada k, calcular
+    el <i>Silhouette Score</i> y graficar. Elegir el k que maximiza el score.</li>
+    <li><b>DBSCAN:</b> Estimar eps con el metodo k-NN (graficar las distancias al k-esimo
+    vecino ordenadas; el "codo" sugiere un buen eps). Probar min_samples = 30-100.
+    Los puntos marcados -1 son ruido potencialmente anomalo.</li>
+    <li>Comparar visualmente las asignaciones y calcular la productividad media por cluster
+    para validar que los grupos tienen sentido semantico.</li>
+  </ol>
+
+  <h4>Paso 5 — Deteccion de anomalias univariable (Isolation Forest)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Aplicar <code>IsolationForest(contamination=0.05)</code> sobre cada variable estandarizada.</li>
+    <li>El parametro <code>contamination=0.05</code> indica que el 5% de los datos son
+    potencialmente anomalos. Este valor se eligio como referencia estandar; se puede ajustar
+    segun el dominio.</li>
+    <li>Marcar en rojo los puntos anomalos en los scatter y distribucion. Revisar si los
+    extremos tienen sentido: &gt;9.5 h/dia de estudio o &gt;11 h en el telefono son
+    registros dudosos o casos extremos reales.</li>
+  </ol>
+
+  <h4>Paso 6 — Clustering multivariable (PCA 2D + par directo)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Proyectar los {p1_data["n_features"]} features en 2D con PCA.</li>
+    <li>Aplicar K-Means (k optimo previo) y DBSCAN en el espacio 2D.</li>
+    <li>Repetir sobre el par directo <code>study_hours</code> vs <code>phone_usage</code>
+    para verificar que los clusters son consistentes con o sin reduccion de dimension.</li>
+    <li>Comparar resultados: si ambos espacios producen la misma segmentacion, los clusters
+    son robustos y no son artefactos de la proyeccion.</li>
+  </ol>
+
+  <h4>Paso 7 — Anomalias multivariable y comparacion</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Aplicar Isolation Forest en 15D (espacio completo estandarizado) y en 2D (PCA).</li>
+    <li>Calcular la interseccion con las anomalias univariables: identificar estudiantes
+    que son anomalos <i>solo</i> en combinacion de variables.</li>
+    <li>Interpretar: combinaciones como "suma de horas &gt; 24 h/dia" son errores de dato;
+    combinaciones raras pero posibles merecen intervencion educativa.</li>
+  </ol>
+</div>
+
+<!-- P2 metodologia -->
+<div id="met-p2" class="card">
+  <h3>P2 — TSP: Pasos Detallados</h3>
+
+  <h4>Paso 1 — Generacion del problema</h4>
+  <p>Se generan ciudades aleatorias con coordenadas uniformes en [-100, 100] con semilla
+  fija (seed=123) para reproducibilidad. Las distancias euclidianas se precalculan en un
+  diccionario <code>distancias[(i,j)]</code> para acceso O(1) durante la optimizacion.</p>
+
+  <h4>Paso 2 — Formulacion MILP (Programacion Lineal Entera Mixta)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li><b>Variables de decision:</b> <code>x[i,j] &isin; {{0,1}}</code> — arco de ciudad i a j activo.</li>
+    <li><b>Variables auxiliares:</b> <code>u[i] &isin; Z+</code> — posicion de visita (MTZ).</li>
+    <li><b>Funcion objetivo:</b> minimizar suma de distancias de arcos activos.</li>
+    <li><b>Restriccion 1:</b> exactamente una llegada a cada ciudad.</li>
+    <li><b>Restriccion 2:</b> exactamente una salida de cada ciudad.</li>
+    <li><b>Restriccion MTZ:</b> <code>u[i] - u[j] + n*x[i,j] &le; n-1</code> para todo
+    par (i,j). Elimina subtours: sin esta restriccion el solver podria hacer 3 ciclos
+    de 5 ciudades en vez de un ciclo de 15.</li>
+  </ol>
+  <div class="callout info">
+    <b>Por que Pyomo + GLPK:</b> Pyomo es un framework de modelado algebraico que separa
+    el modelo de la solucion. GLPK es gratuito, open-source y suficiente para instancias
+    de hasta ~25 ciudades. Para instancias mayores se usaria CPLEX o Gurobi (comerciales).
+  </div>
+
+  <h4>Paso 3 — Heuristica constructiva: Vecino Cercano</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Partir de una ciudad aleatoria.</li>
+    <li>En cada paso, moverse a la ciudad no visitada mas cercana (greedy).</li>
+    <li>Al visitar todas, cerrar el ciclo volviendo al origen.</li>
+    <li>Complejidad O(n&sup2;): para 1000 ciudades tarda &lt;1 segundo.</li>
+  </ol>
+  <div class="callout warn">
+    <b>Limitacion del Vecino Cercano:</b> Produce rutas suboptimas porque decisiones
+    greedy locales pueden crear aristas muy largas al final del recorrido cuando quedan
+    pocas ciudades por visitar en zonas lejanas.
+  </div>
+
+  <h4>Paso 4 — Heuristicas LP (acotamiento y vecinos)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li><b>Heuristica de limites:</b> Estimar min_posible y max_posible de la distancia
+    total, luego agregar restricciones <code>obj &ge; min_posible</code> y
+    <code>obj &le; max_posible</code>. El solver poda ramas fuera del rango → mas rapido.</li>
+    <li><b>Heuristica de vecinos:</b> Para ciudades con distancias promedio bajas, restringir
+    que solo puedan viajar a vecinos cercanos. Reduce el numero de variables binarias activas.</li>
+    <li>Probar cada heuristica con y sin ella, midiendo tiempo y calidad de solucion.</li>
+  </ol>
+
+  <h4>Paso 5 — Post-procesamiento 2-opt</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Tomar cualquier ruta (LP o vecino cercano) como entrada.</li>
+    <li>Para cada par de aristas (A&rarr;B) y (C&rarr;D): calcular si invertir el segmento
+    B..C produce una distancia menor.</li>
+    <li>Si hay mejora, aplicarla y reiniciar la busqueda de pares.</li>
+    <li>Repetir hasta que no hay ningun par mejorable (optimo local 2-opt).</li>
+    <li>Medir mejora porcentual respecto a la ruta inicial.</li>
+  </ol>
+  <div class="callout good">
+    <b>Por que 2-opt es tan efectivo:</b> En espacio euclidiano, dos aristas que se cruzan
+    pueden siempre mejorarse eliminando el cruce. Toda ruta construida con vecino cercano
+    tiene multiples cruces &mdash; 2-opt los elimina todos en O(n&sup2;) o O(n&sup3;).
+    Para 100 ciudades produce una mejora del 18.6% en milisegundos.
+  </div>
+</div>
+
+<!-- P3 metodologia -->
+<div id="met-p3" class="card">
+  <h3>P3 — Algoritmos Geneticos: Pasos Detallados</h3>
+
+  <h4>Paso 1 — Definicion del problema y representacion</h4>
+  <p>El objetivo es evolucionar una poblacion de strings aleatorios hasta llegar a
+  <code>"GA Workshop! USFQ"</code> (17 caracteres). Cada individuo es un string de 17
+  caracteres del alfabeto ASCII imprimible. La eleccion de strings (en lugar de vectores
+  numericos) permite analizar el impacto de cada operador genetico de forma transparente
+  y verificable visualmente.</p>
+
+  <h4>Paso 2 — Generacion de la poblacion inicial</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li>Generar <code>population_size</code> strings aleatorios de longitud 17.</li>
+    <li>Fijar la semilla (<code>MY_SEED</code>) para que el punto de partida sea reproducible
+    entre experimentos. Sin semilla fija no es posible comparar configuraciones justamente.</li>
+    <li>Verificar que ningun individuo inicial es ya el objetivo (altamente improbable
+    pero necesario para un test de cordura).</li>
+  </ol>
+
+  <h4>Paso 3 — Funcion de aptitud (evaluacion)</h4>
+  <p>Dos implementaciones se compararon:</p>
+  <div class="two-col">
+    <div>
+      <div class="callout info">
+        <b>DEFAULT — Conteo de coincidencias:</b><br>
+        <code>aptitud = sum(ind[i]==obj[i] for i in range(n))</code><br>
+        Rango: 0 a 17. Maximizar.
+        Intuitivo, pero poca resolucion: todos los individuos con aptitud 2/17 parecen
+        "igualmente malos" aunque algunos esten mas cerca del objetivo.
+      </div>
+    </div>
+    <div>
+      <div class="callout good">
+        <b>BY_DISTANCE — Distancia Manhattan:</b><br>
+        <code>dist = sum(abs(ord(a)-ord(b)) for a,b in zip(ind,obj))</code><br>
+        Rango: 0 (igual) a miles. Minimizar.
+        Gradiente mas rico: "cba" → "abc" da distancia 4, no 0 como el bug original.
+        Permite seleccion mas informada → convergencia 2.6x mas rapida.
+      </div>
+    </div>
+  </div>
+
+  <h4>Paso 4 — Seleccion de padres</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li><b>Ruleta proporcional (DEFAULT):</b> Cada individuo tiene probabilidad de ser elegido
+    proporcional a su aptitud. Individuos con aptitud 0 nunca son elegidos.</li>
+    <li><b>Torneo (NEW):</b> Se seleccionan k=5 individuos al azar y el que tenga mayor
+    aptitud gana. Mayor presion selectiva que la ruleta: acelera convergencia pero
+    puede reducir diversidad genetica.</li>
+  </ol>
+
+  <h4>Paso 5 — Cruce (crossover)</h4>
+  <ol style="margin:8px 0 8px 20px;line-height:1.9">
+    <li><b>1 punto (DEFAULT):</b> Elegir un punto de corte aleatorio. Hijo1 = P1[:corte] + P2[corte:].
+    Hijo2 = P2[:corte] + P1[corte:].</li>
+    <li><b>2 puntos (NEW):</b> Elegir 2 puntos de corte. Hijo1 = P1[:c1] + P2[c1:c2] + P1[c2:].
+    Preserva mejor los segmentos utiles de cada padre, especialmente cuando hay bloques de
+    caracteres correctos consecutivos.</li>
+  </ol>
+
+  <h4>Paso 6 — Mutacion</h4>
+  <p>Cada caracter del hijo muta con probabilidad <code>mutation_rate</code>: si el valor
+  aleatorio es menor que mutation_rate, se reemplaza por un caracter aleatorio del alfabeto.
+  La mutacion garantiza que el algoritmo puede explorar regiones del espacio de busqueda
+  que no son alcanzables por cruce puro &mdash; el "escape de optimos locales".</p>
+
+  <h4>Paso 7 — Elitismo</h4>
+  <p>Los 2 mejores individuos de cada generacion pasan directamente a la siguiente sin
+  modificacion. Esto garantiza que la aptitud del mejor individuo nunca decrece entre
+  generaciones. Sin elitismo, el mejor individuo puede ser perdido por cruce o mutacion,
+  haciendo que el algoritmo retroceda.</p>
+
+  <h4>Paso 8 — Experimentacion sistematica</h4>
+  <p>Se variaron los parametros de uno en uno (experimentos controlados):</p>
+  <div class="callout code">
+    Experimento 1: DEFAULT vs BY_DISTANCE (funcion de aptitud)<br>
+    Experimento 2: mutation_rate = 0.001, 0.01, 0.05 (variacion de mutacion)<br>
+    Experimento 3: population_size = 20, 100, 500 (variacion de poblacion)<br>
+    Experimento 4: Mejor combinacion = Elitismo + Torneo + 2 puntos + pop=200 + mr=0.03
+  </div>
+  <p>Para cada experimento se registro la curva de convergencia y la generacion final.
+  La semilla fija permite comparacion directa entre configuraciones.</p>
+</div>
+
+<!-- ═══ INTERROGANTES DE MEJORA ═══ -->
+<div id="interrogantes" class="sec-header" style="background:linear-gradient(90deg,#b71c1c,#c62828);margin-top:36px">
+  <h2>Interrogantes para Mejorar la Obtencion y Analisis</h2>
+  <p style="color:#ffcdd2;margin-top:4px">
+    Preguntas criticas que el equipo identifico al trabajar con cada problema.
+    Responder estas interrogantes llevaria a resultados mas solidos y aplicables.</p>
+</div>
+
+<!-- Interrogantes dataset -->
+<div id="int-ds" class="card">
+  <h3>Interrogantes sobre la Base de Datos (P1 — SP&amp;BDS)</h3>
+
+  <h4>Calidad y origen de los datos</h4>
+  <div class="callout warn">
+    <b>1. ¿Como se midieron las variables de habito?</b><br>
+    ¿Los datos de <code>study_hours_per_day</code> y <code>phone_usage_hours</code> vienen
+    de auto-reporte (encuesta), de sensores del dispositivo (Screen Time de iOS/Android),
+    o de sistemas de gestion del aprendizaje (LMS)?
+    El auto-reporte tiene sesgo de deseabilidad social: los estudiantes tienden a
+    reportar mas horas de estudio y menos de telefono que las reales. Conocer el metodo de
+    recoleccion es fundamental para interpretar los resultados.
+  </div>
+  <div class="callout warn">
+    <b>2. ¿Por que <code>final_grade</code> tiene correlacion ~0 con todo lo demas?</b><br>
+    En un dataset real, la nota final deberia correlacionar positivamente con horas de
+    estudio. El hecho de que no lo haga sugiere que la nota fue <b>generada independientemente</b>
+    del comportamiento en el dataset sintetico. ¿Se podria reemplazar este campo con datos
+    reales de un sistema academico para hacer el analisis predictivo valido?
+  </div>
+  <div class="callout warn">
+    <b>3. ¿Los datos tienen dimension temporal?</b><br>
+    ¿Son mediciones en un solo momento (corte transversal) o seguimiento longitudinal?
+    Un dataset longitudinal permitiria analizar si los habitos de estudio <i>cambian</i>
+    con el tiempo y predecir el rendimiento futuro, no solo describir el actual.
+  </div>
+  <div class="callout warn">
+    <b>4. ¿Hay representatividad demografica?</b><br>
+    ¿El dataset incluye estudiantes de primer año y de postgrado? ¿De diferentes carreras
+    (ciencias vs humanidades)? ¿Hay sesgo de seleccion (solo estudiantes que aceptaron
+    participar en el estudio)?
+  </div>
+  <div class="callout warn">
+    <b>5. ¿Como se valida la suma temporal de horas?</b><br>
+    Detectamos registros donde la suma de horas (estudio + telefono + sueno + ejercicio +
+    gaming + redes) supera las 24 horas disponibles en el dia. ¿Hay un proceso de
+    validacion de coherencia temporal en la pipeline de datos? ¿O estas inconsistencias
+    son artefactos del proceso sintetico?
+  </div>
+
+  <h4>Mejoras al proceso de recoleccion</h4>
+  <div class="callout info">
+    <b>6. ¿Se podria enriquecer con datos contextuales?</b><br>
+    Variables como <code>semana_parciales</code> (binaria: semana de examenes),
+    <code>tipo_carrera</code> (STEM vs no-STEM), <code>modalidad</code> (presencial vs online)
+    o <code>ano_de_estudio</code> (1ro a 5to) permitirian identificar clusters mucho mas
+    interpretables que los actuales "alto-medio-bajo estudio".
+  </div>
+  <div class="callout info">
+    <b>7. ¿Que variable objetivo seria mas util para predecir?</b><br>
+    En lugar de <code>productivity_score</code> (abstracto y potencialmente circular),
+    ¿seria mas util la <code>tasa_de_aprobacion_acumulada</code>, el
+    <code>GPA al final del semestre</code>, o el <code>abandono_academico</code>
+    (variable binaria de desercion)?
+  </div>
+</div>
+
+<!-- Interrogantes P1 -->
+<div id="int-p1" class="card">
+  <h3>Interrogantes sobre el Analisis P1 — Aprendizaje No Supervisado</h3>
+
+  <div class="callout warn">
+    <b>1. ¿Como elegir el numero optimo de clusters k de forma no arbitraria?</b><br>
+    Se uso el Silhouette Score para elegir k, pero existen otras metricas: indice
+    Calinski-Harabasz, indice Davies-Bouldin, metodo del codo (SSE). ¿Coinciden todas
+    en el mismo k para este dataset? Si no coinciden, ¿cual criterio es prioritario
+    para el objetivo de segmentacion de estudiantes?
+  </div>
+  <div class="callout warn">
+    <b>2. ¿Los clusters tienen validez externa o son solo artefactos estadisticos?</b><br>
+    Los 3 grupos identificados (comprometido/promedio/distraido) tienen interpretabilidad
+    subjetiva, pero ¿se validan contra algun criterio externo? Por ejemplo, ¿los estudiantes
+    del cluster "comprometido" tienen realmente mejores notas al final del semestre?
+    Sin validacion externa, los clusters son descripcion, no prediccion.
+  </div>
+  <div class="callout warn">
+    <b>3. ¿Por que usar solo 2 variables en el analisis univariable y no todas las 15?</b><br>
+    La eleccion de <code>study_hours</code> y <code>phone_usage</code> fue guiada por los
+    loadings de PC1, pero ¿se perdio informacion relevante de las otras 13 variables?
+    ¿Que pasaria si se hiciera clustering independiente sobre cada una de las 15 variables
+    y luego se combinaran los resultados con un enfoque de ensemble de clustering?
+  </div>
+  <div class="callout warn">
+    <b>4. ¿Como determinar el umbral de contaminacion en Isolation Forest?</b><br>
+    Se uso <code>contamination=0.05</code> de forma estandar. ¿Cual seria el valor adecuado
+    para datos reales de estudiantes? Si el 10% de los estudiantes tiene comportamientos
+    atipicos, fijar contamination=0.05 genera falsos negativos. ¿Deberia ajustarse con
+    validacion cruzada o con conocimiento de dominio previo?
+  </div>
+  <div class="callout warn">
+    <b>5. ¿Se deberia aplicar clustering jerárquico (Ward o complete linkage)?</b><br>
+    K-Means y DBSCAN asumen clusters convexos y de densidad uniforme. Si los grupos de
+    estudiantes tienen estructuras no convexas o jerarquicas (por ejemplo, sub-grupos
+    dentro del cluster "promedio"), el clustering jerarquico podria revelar estructura
+    adicional invisible para K-Means.
+  </div>
+  <div class="callout info">
+    <b>6. ¿Como integrar el analisis no supervisado con prediccion supervisada?</b><br>
+    Los clusters identificados podrian usarse como <i>features</i> en un modelo supervisado:
+    asignar a cada estudiante su cluster y usarlo como variable predictora de desercion o
+    bajo rendimiento. Esta combinacion (UML &rarr; SML) seria mas util practicamente que
+    el analisis no supervisado aislado.
+  </div>
+</div>
+
+<!-- Interrogantes P2 -->
+<div id="int-p2" class="card">
+  <h3>Interrogantes sobre el Analisis P2 — TSP</h3>
+
+  <div class="callout warn">
+    <b>1. ¿Como escala el modelo MILP con restricciones reales (ventanas de tiempo, capacidad)?</b><br>
+    El TSP basico resuelto aqui asume que todas las ciudades son accesibles en cualquier
+    orden. En logistica real existe el <i>VRPTW</i> (Vehicle Routing Problem with Time Windows):
+    cada cliente solo puede ser visitado en una ventana horaria, y puede haber multiples
+    vehiculos con capacidad limitada. ¿Como se modificaria el modelo Pyomo para incorporar
+    estas restricciones y como cambia su complejidad computacional?
+  </div>
+  <div class="callout warn">
+    <b>2. ¿En que punto el 2-opt deja de ser suficiente y se necesita 3-opt o Lin-Kernighan?</b><br>
+    Para 100 ciudades el 2-opt mejoro la solucion un 18.6%. ¿Para cuantas ciudades el
+    2-opt ya no da resultados de calidad aceptable? ¿Existe un umbral donde el costo
+    computacional del 3-opt (O(n&sup3;)) justifica su implementacion? Se podria estudiar
+    empiricamente con 200, 500 y 1000 ciudades.
+  </div>
+  <div class="callout warn">
+    <b>3. ¿Como validar que el mipgap elegido (0.05 o 0.2) es apropiado para el problema?</b><br>
+    Un mipgap=0.05 significa que la solucion puede estar hasta un 5% por encima del optimo
+    teorico. Para un problema de distribucion de medicamentos urgentes, incluso un 2%
+    de sub-optimalidad podria ser inaceptable. ¿Como se justifica el mipgap en funcion
+    del impacto economico del sub-optimo?
+  </div>
+  <div class="callout warn">
+    <b>4. ¿Que pasa con las heuristicas cuando la solucion optima cae fuera del rango estimado?</b><br>
+    La heuristica de limites puede hacer el modelo infactible si los limites estan mal
+    calculados. ¿Existe un metodo sistematico para estimar min_posible y max_posible de
+    forma que la infactibilidad sea estadisticamente improbable? ¿O deberia haber un
+    mecanismo de fallback que relaje los limites si se detecta infactibilidad?
+  </div>
+  <div class="callout info">
+    <b>5. ¿Como comparar objetivamente LP vs heuristicas cuando LP no llega al optimo?</b><br>
+    Cuando el solver agota el tiempo sin llegar al optimo, compara una solucion LP
+    "de calidad desconocida" contra el vecino cercano. ¿Seria mas correcto comparar
+    usando el <b>lower bound</b> que calcula el solver (la relajacion LP continua)?
+    El gap entre el lower bound y la solucion encontrada da informacion sobre cuanto
+    podria mejorarse aun.
+  </div>
+</div>
+
+<!-- Interrogantes P3 -->
+<div id="int-p3" class="card">
+  <h3>Interrogantes sobre el Analisis P3 — Algoritmos Geneticos</h3>
+
+  <div class="callout warn">
+    <b>1. ¿Los resultados son reproducibles sin semilla fija?</b><br>
+    Todos los experimentos se corrieron con semilla fija para comparacion justa. Pero en
+    aplicaciones reales la semilla es desconocida. ¿Cual es la varianza de generacion de
+    convergencia entre corridas? ¿El Caso 5 siempre es el mas rapido, o hay instancias
+    donde el Caso 1 converge antes por azar? Se deberian correr al menos 30 ejecuciones
+    por configuracion y reportar media ± desviacion estandar.
+  </div>
+  <div class="callout warn">
+    <b>2. ¿Como se escala el GA a objetivos mas complejos (problema de combinatoria)?</b><br>
+    El objetivo "GA Workshop! USFQ" es un problema de texto con solucion conocida.
+    ¿Como cambiaria el diseno del GA para resolver el TSP con 100 ciudades usando
+    permutaciones de enteros en lugar de strings? La funcion de aptitud, el cruce y
+    la mutacion tendrian que redefinirse para preservar permutaciones validas.
+    ¿Que operadores especializados existen para permutaciones (OX, PMX, CX)?
+  </div>
+  <div class="callout warn">
+    <b>3. ¿Como detectar convergencia prematura y evitar la deriva genetica?</b><br>
+    Con poblacion=20 el algoritmo no converge porque la diversidad genetica se agota.
+    ¿Como medir en tiempo real la diversidad de la poblacion (por ejemplo, entropia de
+    la distribucion de caracteres por posicion)? ¿Se deberia agregar un mecanismo de
+    "reinicio parcial" cuando la diversidad cae por debajo de un umbral?
+  </div>
+  <div class="callout warn">
+    <b>4. ¿mutation_rate optimo es siempre 0.01, o depende del largo del string y la poblacion?</b><br>
+    La tasa de mutacion optima teorica es 1/n donde n es el largo del individuo. Para
+    17 caracteres, 1/17 ≈ 0.059 &mdash; distinto al 0.01 empirico que funciono mejor.
+    ¿Hay una formula teorica que predice el mutation_rate optimo en funcion de n y del
+    tamaño de poblacion? ¿Como cambiaria si el objetivo tiene 100 o 1000 caracteres?
+  </div>
+  <div class="callout warn">
+    <b>5. ¿El GA puede quedar atrapado en optimos locales que no son el objetivo?</b><br>
+    Para el problema de texto, el objetivo es conocido y unico. Para problemas de
+    optimizacion real (como minimizar una funcion matematica), puede haber multiples
+    optimos locales. ¿Como se detecta que el GA quedo atrapado? ¿Que mecanismos
+    (recocido simulado, migracion entre sub-poblaciones, perturbacion adaptativa)
+    podrian usarse para escapar?
+  </div>
+  <div class="callout info">
+    <b>6. ¿Como se aplica el GA a un problema real de ciencia de datos?</b><br>
+    Los GA se usan para <b>seleccion de features</b>: cada individuo es un vector binario
+    que indica que features incluir en un modelo. La aptitud es la precision en validacion
+    cruzada. ¿Podria aplicarse este enfoque al dataset SP&amp;BDS para encontrar el
+    subconjunto optimo de variables para predecir <code>productivity_score</code>?
+    ¿Que ventajas tendria sobre backward/forward selection?
+  </div>
+</div>
+
 <!-- FOOTER -->
 <div style="margin:40px 0 20px;padding:20px;text-align:center;
             color:#888;font-size:12px;border-top:1px solid #e0e0e0">
   Informe generado el {now} &nbsp;|&nbsp;
   MSDS 6004 Inteligencia Artificial &nbsp;|&nbsp; USFQ &nbsp;|&nbsp;
-  Nancy Altamirano
+  Kevin Vitery &nbsp;&bull;&nbsp; Raquel Pacheco &nbsp;&bull;&nbsp; Gustavo Baru &nbsp;&bull;&nbsp; Nancy Altamirano
 </div>
 </main>
 </body>
@@ -1358,7 +1824,10 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
             "<font color='white' size='24'><b>Taller 3 — Informe Completo</b></font><br/>"
             "<font color='#aaccee' size='13'>MSDS 6004 — Inteligencia Artificial — USFQ</font>"
             "<br/><br/>"
-            f"<font color='#ccd' size='10'>Estudiante: Nancy Altamirano<br/>"
+            f"<font color='#ccd' size='10'>"
+            f"Integrantes:<br/>"
+            f"Kevin Vitery &nbsp;&bull;&nbsp; Raquel Pacheco &nbsp;&bull;&nbsp; "
+            f"Gustavo Baru &nbsp;&bull;&nbsp; Nancy Altamirano<br/><br/>"
             f"Generado: {now_str}<br/>"
             "Problemas: P1 SP&amp;BDS | P2 TSP | P3 GA</font>",
             ParagraphStyle("COV", fontSize=10, leading=18)
@@ -1534,6 +2003,109 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
                   "(500 individuos: gen 44 vs gen 982 con 100).", BODY),
         Paragraph("• Mejor configuracion (Caso 5): Elitismo + Torneo k=5 + Cruce 2 puntos "
                   "+ poblacion 200 + mutation 0.03 -> gen 30 (32x mas rapido).", BODY),
+        PageBreak(),
+    ]
+
+    # ── METODOLOGIA PASO A PASO ───────────────────────────────
+    story += [
+        section_banner("Metodologia Paso a Paso", HexColor("#37474f")),
+        SP(),
+        Paragraph("P1 — Aprendizaje No Supervisado: SP&BDS", H2),
+        Paragraph("Paso 1: Seleccion del dataset SP&BDS (20,000 estudiantes, "
+                  "15 variables numericas). Descarte de columnas categoricas.", BODY),
+        Paragraph("Paso 2: Normalizacion con StandardScaler (media=0, std=1) para "
+                  "eliminar efecto de escala entre variables.", BODY),
+        Paragraph("Paso 3: PCA completo. Scree plot para identificar numero de "
+                  "componentes. Analisis de loadings de PC1 para identificar variables "
+                  "clave. Proyeccion 2D y coordenadas paralelas.", BODY),
+        Paragraph("Paso 4: K-Means (k=2..6, Silhouette para elegir k optimo) y "
+                  "DBSCAN (eps estimado por k-NN, min_samples=50) sobre variables clave.", BODY),
+        Paragraph("Paso 5: Isolation Forest (contamination=0.05) univariable sobre "
+                  "study_hours y phone_usage. Identificacion de perfiles extremos.", BODY),
+        Paragraph("Paso 6: Clustering multivariable en PCA 2D y par directo. "
+                  "Comparacion cruzada para validar robustez de clusters.", BODY),
+        Paragraph("Paso 7: Anomalias multivariable en 15D. Interseccion con anomalias "
+                  "univariables para identificar casos incoherentes (suma de horas > 24h).", BODY),
+        SP(),
+        Paragraph("P2 — TSP: Pasos", H2),
+        Paragraph("Paso 1: Generacion de ciudades aleatorias en [-100,100] con semilla fija.", BODY),
+        Paragraph("Paso 2: Formulacion MILP en Pyomo. Variables x[i,j] binarias, "
+                  "variables u[i] enteras MTZ. Restricciones de entrada/salida unica.", BODY),
+        Paragraph("Paso 3: Heuristica Vecino Cercano O(n^2) como baseline.", BODY),
+        Paragraph("Paso 4: Heuristicas LP: acotamiento de funcion objetivo y "
+                  "restriccion de vecinos cercanos para acelerar Branch & Bound.", BODY),
+        Paragraph("Paso 5: Post-procesamiento 2-opt sobre cualquier ruta. "
+                  "Eliminacion iterativa de cruces hasta optimo local.", BODY),
+        SP(),
+        Paragraph("P3 — Algoritmos Geneticos: Pasos", H2),
+        Paragraph("Paso 1: Poblacion inicial de 100 strings aleatorios de 17 chars. "
+                  "Semilla fija para reproducibilidad.", BODY),
+        Paragraph("Paso 2: Funcion de aptitud: conteo (DEFAULT) o distancia "
+                  "Manhattan (BY_DISTANCE, 2.6x mas rapido).", BODY),
+        Paragraph("Paso 3: Seleccion de padres por ruleta (DEFAULT) o torneo k=5 "
+                  "(mayor presion selectiva).", BODY),
+        Paragraph("Paso 4: Cruce de 1 punto (DEFAULT) o 2 puntos (mejor mezcla).", BODY),
+        Paragraph("Paso 5: Mutacion aleatoria por caracter con probability=mutation_rate.", BODY),
+        Paragraph("Paso 6: Elitismo — top 2 individuos pasan directamente a la "
+                  "siguiente generacion sin modificacion.", BODY),
+        Paragraph("Paso 7: Experimentacion sistematica variando un parametro a la vez "
+                  "para identificar el impacto individual de cada componente.", BODY),
+        PageBreak(),
+    ]
+
+    # ── INTERROGANTES ────────────────────────────────────────
+    story += [
+        section_banner("Interrogantes para Mejorar la Obtencion y Analisis", HexColor("#b71c1c")),
+        SP(),
+        Paragraph("Interrogantes sobre la Base de Datos (P1)", H3),
+        data_table(
+            ["#", "Interrogante", "Impacto"],
+            [
+                ["1", "Como se midieron las variables de habito (auto-reporte vs sensor)?",
+                 "Sesgo de deseabilidad social en estudio/telefono"],
+                ["2", "Por que final_grade tiene correlacion ~0 con productividad?",
+                 "Dataset sintetico invalida prediccion real"],
+                ["3", "Los datos tienen dimension temporal (longitudinal)?",
+                 "Permitiria analizar cambios de comportamiento en el tiempo"],
+                ["4", "Hay representatividad demografica (carrera, ano, modalidad)?",
+                 "Sin representatividad los clusters no generalizan"],
+                ["5", "Existe validacion de coherencia temporal (suma horas < 24h)?",
+                 "Errores de dato distorsionan modelos de anomalias"],
+                ["6", "Se podria enriquecer con contexto (semana de examenes)?",
+                 "Variables contextuales harian clusters mas interpretables"],
+                ["7", "Que variable objetivo seria mas util (GPA, desercion)?",
+                 "productivity_score es abstracto; desercion es accionable"],
+            ],
+            col_widths=[0.8*cm, 11.2*cm, 4.5*cm]
+        ),
+        SP(10),
+        Paragraph("Interrogantes sobre el Analisis (P1, P2, P3)", H3),
+        data_table(
+            ["Area", "Interrogante clave"],
+            [
+                ["P1 Clustering",
+                 "Como elegir k sin arbitrariedad: Silhouette vs Davies-Bouldin vs codo?"],
+                ["P1 Validacion",
+                 "Los clusters tienen validez externa? Los comprometidos aprueban mas?"],
+                ["P1 IF",
+                 "contamination=0.05 es correcto? Como ajustarlo con validacion cruzada?"],
+                ["P1 Combinado",
+                 "Como integrar UML con SML: usar cluster como feature predictora?"],
+                ["P2 Escala",
+                 "Como escala MILP con restricciones reales (VRPTW, capacidad)?"],
+                ["P2 mipgap",
+                 "Como justificar el mipgap en funcion del impacto economico del sub-optimo?"],
+                ["P2 2-opt",
+                 "Para cuantas ciudades 2-opt es insuficiente y se necesita LK o 3-opt?"],
+                ["P3 Varianza",
+                 "mutation_rate=0.01 siempre es optimo? Necesita estudio de 30 corridas?"],
+                ["P3 Escala",
+                 "Como adaptar el GA al TSP (permutaciones) con operadores OX o PMX?"],
+                ["P3 Diversidad",
+                 "Como detectar convergencia prematura y activar mecanismo de reinicio?"],
+            ],
+            col_widths=[3.5*cm, 13*cm]
+        ),
     ]
 
     doc.build(story)
