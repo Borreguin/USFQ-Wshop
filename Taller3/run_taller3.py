@@ -459,6 +459,7 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
              "<th style='width:11%'>Generacion</th>"
              "<th style='width:34%'>Mejor individuo</th>"
              "</tr>")
+        _td = "style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'"
         rows_html = ""
         for r in p3_data["summary"]:
             status = "SI" if r["converged"] else "NO"
@@ -467,12 +468,13 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
             # Usa solo la primera linea del label para la columna Caso
             label = r["label"].split("\n")[0]
             rows_html += (
-                f'<tr class="{cls}"><td>{label}</td>'
-                f'<td>{r["pop"]}</td><td>{r["mr"]}</td>'
-                f'<td><b>{status}</b></td><td>{gen}</td>'
-                f'<td style="font-family:monospace">{r["best"]!r}</td></tr>'
+                f'<tr class="{cls}"><td {_td}>{label}</td>'
+                f'<td {_td}>{r["pop"]}</td><td {_td}>{r["mr"]}</td>'
+                f'<td {_td}><b>{status}</b></td><td {_td}>{gen}</td>'
+                f'<td style="font-family:monospace;overflow:hidden;text-overflow:ellipsis;'
+                f'white-space:nowrap">{r["best"]!r}</td></tr>'
             )
-        return (f"<table class='data' style='table-layout:fixed;word-break:break-word'>"
+        return (f"<table class='data' style='table-layout:fixed;width:100%'>"
                 f"{h}{rows_html}</table>")
 
     # NAV
