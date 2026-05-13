@@ -1,0 +1,14 @@
+Pregunta 1
+El problema estaba en find_best_path(). El código original solo ordenaba los caminos por tamaño y tomaba el más corto, sin verificar si ese camino realmente llegó al destino
+
+En el Caso 2 la barrera bloquea columnas 0,1,2,3 en y=2, entonces muchas hormigas quedan atrapadas y hacen break con caminos de 3 o 4 pasos. Esos caminos incompletos ganaban el ranking por ser los más cortos, y las feromonas se reforzaban en celdas incorrectas. Resultado: best_path = [(0,0),(1,0),(1,1),(0,1)] — nunca llegó a (4,7).
+La corrección fue filtrar primero solo los caminos válidos
+
+Pregunta 2
+
+| Parámetro | Original | Corregido | Razón |
+|---|---|---|---|
+| `num_ants` | `10` | `30` | Más hormigas exploran más caminos en paralelo, mayor probabilidad de rodear la barrera |
+| `evaporation_rate` | `0.1` | `0.3` | Las feromonas se borran más rápido, el algoritmo no queda atascado en rutas malas |
+| `alpha` | `0.1` | `1.0` | Con 0.1 las feromonas casi no influían en la decisión, el aprendizaje colectivo no funcionaba |
+| `beta` | `15` | `5.0` | Con beta=15 y alpha=0.1 el algoritmo era greedy puro, ignoraba completamente las feromonas |

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Granjero — Grafo de Estados</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#0f1117;color:#e0e0e0;padding:16px}
+#layout{display:flex;gap:14px;align-items:flex-start}
+#left{flex:1;min-width:0}
+#right{width:260px;flex-shrink:0;background:#161922;border:1px solid #252a38;
+       border-radius:10px;padding:14px;font-size:12px}
+#right h3{font-size:12px;font-weight:600;color:#9fa8da;margin-bottom:10px;
+          padding-bottom:6px;border-bottom:1px solid #1e2535}
+#toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+button{padding:5px 14px;border:1px solid #333;border-radius:6px;cursor:pointer;
+       font-size:12px;background:#1e2130;color:#ccc}
+button.primary{background:#5c6bc0;border-color:#7986cb;color:white}
+button:disabled{opacity:.35;cursor:not-allowed}
+#info{font-size:12px;color:#aaa;background:#161922;border:1px solid #252a38;
+      border-radius:6px;padding:8px 12px;margin-bottom:10px;
+      border-left:3px solid #5c6bc0;min-height:36px;line-height:1.6}
+#wrap{overflow-x:auto}
+canvas{display:block;background:#0d0f18;border-radius:10px;
+       border:1px solid #1e2130;cursor:pointer;image-rendering:crisp-edges}
+#leyenda{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.ld{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
+.lc{width:10px;height:10px;border-radius:50%}
+.paso-card{background:#1a1f30;border:1px solid #252a3a;border-radius:7px;
+           padding:8px 10px;margin-bottom:7px;transition:all .2s;cursor:pointer}
+.paso-card:hover{border-color:#5c6bc0}
+.paso-card.activo{border-color:#9c27b0;background:#1e1430}
+.paso-num{font-size:10px;color:#555;margin-bottom:3px}
+.paso-accion{font-size:12px;color:#ce93d8;font-weight:500;margin-bottom:4px}
+.paso-estado{font-size:11px;color:#666;line-height:1.5}
+.paso-estado span{color:#aaa}
+.paso-iconos{font-size:15px;margin-bottom:2px}
+#sol-dist{font-size:11px;color:#7986cb;margin-bottom:10px;
+          padding:6px 8px;background:#1a1f30;border-radius:6px;text-align:center}
+#no-sol{color:#555;font-size:11px;text-align:center;padding:20px 0}
+</style>
+</head>
+<body>
+
+<div id="leyenda">
+  <div class="ld"><div class="lc" style="background:#4caf50"></div>Inicio</div>
+  <div class="ld"><div class="lc" style="background:#2196f3"></div>Objetivo</div>
+  <div class="ld"><div class="lc" style="background:#9c27b0"></div>Solución BFS</div>
+  <div class="ld"><div class="lc" style="background:#ffb300"></div>Explorado</div>
+  <div class="ld"><div class="lc" style="background:#263040"></div>No explorado</div>
+</div>
+
+<div id="toolbar">
+  <button class="primary" id="btn-anim" onclick="animarBFS()">&#9654; Animar BFS</button>
+  <button id="btn-reset" onclick="resetear()">&#8635; Reset</button>
+  <button id="btn-prev" onclick="paso(-1)" disabled>&#8592;</button>
+  <button id="btn-next" onclick="paso(1)"  disabled>&#8594;</button>
+  <span id="paso-lbl" style="font-size:11px;color:#555"></span>
+</div>
+
+<div id="info">Haz clic en un nodo · Animar BFS para explorar el grafo</div>
+
+<div id="layout">
+  <div id="left">
+    <div id="wrap"><canvas id="c"></canvas></div>
+  </div>
+  <div id="right">
+    <h3>Ruta óptima — BFS</h3>
+    <div id="sol-dist" style="display:none"></div>
+    <div id="panel-sol"><div id="no-sol">Presiona "Animar BFS"<br>para ver la solución</div></div>
+  </div>
+</div>
+
+<script>
+// ── Canvas HiDPI ─────────────────────────────────────────────────
+const CV = document.getElementById('c');
+const ctx = CV.getContext('2d');
+const DPR = window.devicePixelRatio || 1;
+const CW = 680, CH = 500;
+CV.width  = CW * DPR;
+CV.height = CH * DPR;
+CV.style.width  = CW + 'px';
+CV.style.height = CH + 'px';
+ctx.scale(DPR, DPR);
+
+// ── Constantes ───────────────────────────────────────────────────
+const ITEMS = ['G','L','C','Col'];
+const EMOJIS = { G:'👨‍🌾', L:'🐺', C:'🐐', Col:'🥬' };
+const R = 32, Ri = 10;
+
+function prop(k){ return k==='Col'?'k':k.toLowerCase(); }
+function esValido(g,l,c,k){ return !((l===c&&g!==l)||(c===k&&g!==c)); }
+function clave(g,l,c,k){ return `${g}${l}${c}${k}`; }
+
+// ── Modelo ───────────────────────────────────────────────────────
+const ESTADOS=[], MAP={};
+for(let g=0;g<2;g++) for(let l=0;l<2;l++) for(let c=0;c<2;c++) for(let k=0;k<2;k++){
+  const id=clave(g,l,c,k);
+  const n={id,g,l,c,k,
+    valido:esValido(g,l,c,k),
+    inicio:g+l+c+k===0,
+    objetivo:g+l+c+k===4,
+    nivel:g+l+c+k};
+  ESTADOS.push(n); MAP[id]=n;
+}
+
+const EDGES=[];
+for(const e of ESTADOS){
+  if(!e.valido) continue;
+  const {g,l,c,k}=e, ng=1-g;
+  const mvs=[
+    {a:'solo',  s:[ng,l,c,k]},
+    ...(l===g?[{a:'lobo',  s:[ng,ng,c,k]}]:[]),
+    ...(c===g?[{a:'cabra', s:[ng,l,ng,k]}]:[]),
+    ...(k===g?[{a:'col',   s:[ng,l,c,ng]}]:[])
+  ];
+  for(const m of mvs){
+    const [g2,l2,c2,k2]=m.s;
+    if(esValido(g2,l2,c2,k2))
+      EDGES.push({src:clave(g,l,c,k),tgt:clave(g2,l2,c2,k2),accion:m.a});
+  }
+}
+
+// BFS
+function bfs(){
+  const cola=[['0000']], vis=new Set(['0000']);
+  while(cola.length){
+    const cam=cola.shift(), act=cam[cam.length-1];
+    if(act==='1111') return cam;
+    for(const e of EDGES) if(e.src===act&&!vis.has(e.tgt)){
+      vis.add(e.tgt); cola.push([...cam,e.tgt]);
+    }
+  }
+  return [];
+}
+const SOL=bfs();
+const solSet=new Set(SOL);
+const solEdgeSet=new Set();
+for(let i=0;i<SOL.length-1;i++) solEdgeSet.add(SOL[i]+'>'+SOL[i+1]);
+
+// ── Layout capas ─────────────────────────────────────────────────
+const xCapa=[70,210,370,530,650];
+const porNivel={0:[],1:[],2:[],3:[],4:[]};
+for(const e of ESTADOS) porNivel[e.nivel].push(e);
+
+for(let niv=0;niv<5;niv++){
+  const val=porNivel[niv].filter(e=>e.valido);
+  const inv=porNivel[niv].filter(e=>!e.valido);
+  const x=xCapa[niv];
+  const gap=Math.min(95,(CH-120)/Math.max(val.length-1,1));
+  const totalH=gap*(val.length-1);
+  const startY=(CH-totalH)/2;
+  val.forEach((e,i)=>{e.x=x;e.y=startY+i*gap;});
+  inv.forEach((e,i)=>{e.x=x+(i-inv.length/2+.5)*26;e.y=CH-18;});
+}
+
+// ── Animación ────────────────────────────────────────────────────
+let explorados=new Set(), bfsOrden=[], bfsIdx=-1,
+    timer=null, selId=null, solVisible=false, pasoActivo=-1;
+
+{
+  const cola=['0000'], vis=new Set(['0000']);
+  while(cola.length){
+    const a=cola.shift(); bfsOrden.push(a);
+    for(const e of EDGES) if(e.src===a&&!vis.has(e.tgt)){vis.add(e.tgt);cola.push(e.tgt);}
+  }
+}
+
+// ── Panel lateral: construir pasos de la solución ────────────────
+function accionLabel(accion, esRegreso){
+  const dir = esRegreso ? '← regresa' : '→ cruza';
+  if(accion==='solo') return `Granjero ${dir} solo`;
+  const em = EMOJIS[accion.charAt(0).toUpperCase()+accion.slice(1)] || '';
+  return `Granjero ${dir} con ${em} ${accion}`;
+}
+
+function construirPanelSolucion(){
+  const panel = document.getElementById('panel-sol');
+  const dist  = document.getElementById('sol-dist');
+  if(!SOL.length){ panel.innerHTML='<div id="no-sol">Sin solución</div>'; return; }
+
+  dist.style.display='block';
+  dist.textContent=`Camino óptimo · ${SOL.length-1} pasos`;
+
+  let html='';
+  for(let i=0;i<SOL.length;i++){
+    const e=MAP[SOL[i]];
+    if(!e) continue;
+    const izqItems=ITEMS.filter(k=>e[prop(k)]===0);
+    const derItems=ITEMS.filter(k=>e[prop(k)]===1);
+    const izqIco=izqItems.map(k=>EMOJIS[k]).join('');
+    const derIco=derItems.map(k=>EMOJIS[k]).join('');
+    const izqNom=izqItems.map(k=>k).join(', ')||'—';
+    const derNom=derItems.map(k=>k).join(', ')||'—';
+
+    let accionHtml='';
+    if(i>0){
+      const edge=EDGES.find(ed=>ed.src===SOL[i-1]&&ed.tgt===SOL[i]);
+      if(edge){
+        const esReg=e.g < MAP[SOL[i-1]].g;
+        accionHtml=`<div class="paso-accion">${accionLabel(edge.accion,esReg)}</div>`;
+      }
+    }
+
+    html+=`<div class="paso-card" id="pc-${i}" onclick="irPasoSol(${i})">
+      <div class="paso-num">Paso ${i}${i===0?' · inicio':i===SOL.length-1?' · objetivo':''}</div>
+      ${accionHtml}
+      <div class="paso-iconos">${izqIco||'·'} | ${derIco||'·'}</div>
+      <div class="paso-estado">
+        Izq: <span>${izqNom}</span><br>
+        Der: <span>${derNom}</span>
+      </div>
+    </div>`;
+  }
+  panel.innerHTML=html;
+}
+
+function irPasoSol(i){
+  clearInterval(timer);
+  pasoActivo=i;
+  // Marcar en el grafo el nodo de ese paso
+  selId=SOL[i];
+  solVisible=true;
+  explorados=new Set(SOL.slice(0,i+1));
+  // Highlight la card
+  document.querySelectorAll('.paso-card').forEach((c,j)=>{
+    c.classList.toggle('activo',j===i);
+  });
+  const e=MAP[SOL[i]];
+  if(e){
+    const izqItems=ITEMS.filter(k=>e[prop(k)]===0).map(k=>EMOJIS[k]+k).join(' ');
+    const derItems=ITEMS.filter(k=>e[prop(k)]===1).map(k=>EMOJIS[k]+k).join(' ');
+    document.getElementById('info').innerHTML=
+      `Paso ${i}: Izq [<strong>${izqItems||'—'}</strong>] | Der [<strong>${derItems||'—'}</strong>]`;
+  }
+  dibujar();
+}
+
+// ── Render ───────────────────────────────────────────────────────
+function fillNodo(e){
+  if(e.inicio)   return {bg:'#1b5e20',border:'#4caf50',glow:'#4caf50',text:'#e8f5e9'};
+  if(e.objetivo) return {bg:'#0d47a1',border:'#2196f3',glow:'#2196f3',text:'#e3f2fd'};
+  if(solVisible&&solSet.has(e.id)) return {bg:'#4a148c',border:'#ab47bc',glow:'#9c27b0',text:'#f3e5f5'};
+  if(explorados.has(e.id)) return {bg:'#3e2800',border:'#ffb300',glow:'#ffb300',text:'#fff8e1'};
+  return {bg:'#151d2e',border:'#2e3a52',glow:null,text:'#7986cb'};
+}
+
+function drawArrow(x1,y1,x2,y2,color,width,curva=14){
+  const dx=x2-x1,dy=y2-y1,d=Math.sqrt(dx*dx+dy*dy);
+  if(d<2) return;
+  const ux=dx/d,uy=dy/d;
+  const sx=x1+ux*R,sy=y1+uy*R;
+  const ex=x2-ux*(R+6),ey=y2-uy*(R+6);
+  const mx=(sx+ex)/2-uy*curva,my=(sy+ey)/2+ux*curva;
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width;
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.quadraticCurveTo(mx,my,ex,ey); ctx.stroke();
+  const ang=Math.atan2(ey-my,ex-mx);
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-9*Math.cos(ang-.4),ey-9*Math.sin(ang-.4));
+  ctx.lineTo(ex-9*Math.cos(ang+.4),ey-9*Math.sin(ang+.4));
+  ctx.closePath(); ctx.fill();
+}
+
+function dibujar(){
+  ctx.clearRect(0,0,CW,CH);
+
+  // Bandas de capa
+  for(let i=0;i<5;i++){
+    ctx.fillStyle='rgba(255,255,255,0.018)';
+    ctx.beginPath(); ctx.roundRect(xCapa[i]-44,26,88,CH-48,8); ctx.fill();
+    ctx.fillStyle='#2a3040'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(`Capa ${i}`,xCapa[i],20);
+  }
+
+  // Separadores
+  for(let i=0;i<4;i++){
+    const xm=(xCapa[i]+xCapa[i+1])/2;
+    ctx.strokeStyle='#181e2c'; ctx.lineWidth=1; ctx.setLineDash([4,7]);
+    ctx.beginPath(); ctx.moveTo(xm,28); ctx.lineTo(xm,CH-30); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Aristas normales
+  for(const e of EDGES){
+    const s=MAP[e.src],t=MAP[e.tgt];
+    if(!s||!t||!s.valido||!t.valido) continue;
+    if(solVisible&&solEdgeSet.has(e.src+'>'+e.tgt)) continue;
+    const activa=explorados.has(s.id)&&explorados.has(t.id);
+    ctx.globalAlpha=activa?.5:.18;
+    drawArrow(s.x,s.y,t.x,t.y,activa?'#37474f':'#1a2030',activa?1.1:.6);
+    ctx.globalAlpha=1;
+  }
+
+  // Aristas solución
+  if(solVisible){
+    for(const e of EDGES){
+      if(!solEdgeSet.has(e.src+'>'+e.tgt)) continue;
+      const s=MAP[e.src],t=MAP[e.tgt]; if(!s||!t) continue;
+      ctx.globalAlpha=.9;
+      drawArrow(s.x,s.y,t.x,t.y,'#ce93d8',3,20);
+      ctx.globalAlpha=1;
+      const dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy);
+      const mx=(s.x+t.x)/2-(dy/d)*22,my=(s.y+t.y)/2+(dx/d)*22;
+      ctx.fillStyle='#9c27b0'; ctx.font='500 9px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(e.accion,mx,my);
+    }
+  }
+
+  // Nodos inválidos
+  for(const e of ESTADOS){
+    if(e.valido) continue;
+    ctx.fillStyle='#1a0a0a'; ctx.strokeStyle='#3d1a1a'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.roundRect(e.x-Ri,e.y-Ri,Ri*2,Ri*2,3); ctx.fill(); ctx.stroke();
+    const izqI=ITEMS.filter(k=>e[prop(k)]===0).map(k=>EMOJIS[k]).join('');
+    const derI=ITEMS.filter(k=>e[prop(k)]===1).map(k=>EMOJIS[k]).join('');
+    ctx.fillStyle='#5a3030'; ctx.font='6px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(izqI+'|'+derI,e.x,e.y+2);
+  }
+
+  // Nodos válidos
+  for(const e of ESTADOS){
+    if(!e.valido) continue;
+    const col=fillNodo(e);
+    const sel=selId===e.id;
+    if(col.glow){ ctx.shadowColor=col.glow; ctx.shadowBlur=sel?22:12; }
+    ctx.fillStyle=col.bg; ctx.strokeStyle=col.border;
+    ctx.lineWidth=sel?2.5:1.5;
+    ctx.beginPath(); ctx.arc(e.x,e.y,sel?R+4:R,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.shadowBlur=0;
+
+    const izqI=ITEMS.filter(k=>e[prop(k)]===0).map(k=>EMOJIS[k]).join('');
+    const derI=ITEMS.filter(k=>e[prop(k)]===1).map(k=>EMOJIS[k]).join('');
+    ctx.font='13px sans-serif'; ctx.textAlign='center';
+    if(izqI){ ctx.fillStyle='rgba(255,255,255,.85)'; ctx.fillText(izqI,e.x,e.y-(derI?6:1)); }
+    if(derI){ ctx.fillStyle='rgba(180,220,255,.9)';  ctx.fillText(derI,e.x,e.y+(izqI?14:7)); }
+    ctx.font='600 8px sans-serif'; ctx.fillStyle=col.text;
+    ctx.fillText(e.g===0?'G◄':'►G',e.x,e.y+(izqI&&derI?28:21));
+  }
+
+  // Nombres capa
+  const n2=['Todo izq','1 en der','2 en der','3 en der','Todo der'];
+  for(let i=0;i<5;i++){
+    ctx.fillStyle='#252d3e'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(n2[i],xCapa[i],CH-5);
+  }
+}
+
+// ── Click canvas ──────────────────────────────────────────────────
+CV.addEventListener('click',ev=>{
+  const rect=CV.getBoundingClientRect();
+  const mx=(ev.clientX-rect.left)*(CW/rect.width);
+  const my=(ev.clientY-rect.top)*(CH/rect.height);
+  let found=null;
+  for(const e of ESTADOS){
+    if(!e.valido) continue;
+    if(Math.hypot(e.x-mx,e.y-my)<R+6){found=e;break;}
+  }
+  if(!found){selId=null;dibujar();return;}
+  selId=found.id;
+  const izqI=ITEMS.filter(k=>found[prop(k)]===0).map(k=>EMOJIS[k]+k).join(' ');
+  const derI=ITEMS.filter(k=>found[prop(k)]===1).map(k=>EMOJIS[k]+k).join(' ');
+  const enSol=solSet.has(found.id);
+  document.getElementById('info').innerHTML=
+    `<strong style="color:${found.inicio?'#4caf50':found.objetivo?'#2196f3':enSol?'#ab47bc':'#ccc'}">
+      ${found.inicio?'INICIO':found.objetivo?'OBJETIVO':enSol?'En solución':'Capa '+found.nivel}
+    </strong> &nbsp;·&nbsp;
+    Izq: <strong>${izqI||'—'}</strong> &nbsp;|&nbsp; Der: <strong>${derI||'—'}</strong>`;
+
+  // Si el nodo está en la solución, resaltar su paso en el panel
+  if(enSol){
+    const idx=SOL.indexOf(found.id);
+    if(idx>=0){
+      document.querySelectorAll('.paso-card').forEach((c,j)=>c.classList.toggle('activo',j===idx));
+      document.getElementById('pc-'+idx)?.scrollIntoView({block:'nearest'});
+    }
+  }
+  dibujar();
+});
+
+// ── BFS animado ───────────────────────────────────────────────────
+function resetear(){
+  clearInterval(timer);
+  explorados=new Set(); bfsIdx=-1; selId=null; solVisible=false; pasoActivo=-1;
+  document.getElementById('info').textContent='Haz clic en un nodo · Animar BFS para explorar';
+  document.getElementById('btn-anim').disabled=false;
+  document.getElementById('btn-prev').disabled=true;
+  document.getElementById('btn-next').disabled=true;
+  document.getElementById('paso-lbl').textContent='';
+  document.getElementById('panel-sol').innerHTML='<div id="no-sol">Presiona "Animar BFS"<br>para ver la solución</div>';
+  document.getElementById('sol-dist').style.display='none';
+  dibujar();
+}
+
+function aplicarPaso(idx){
+  explorados=new Set(bfsOrden.slice(0,idx+1));
+  const e=MAP[bfsOrden[idx]];
+  if(e?.objetivo){
+    solVisible=true;
+    construirPanelSolucion();
+  }
+  const izqI=e?ITEMS.filter(k=>e[prop(k)]===0).map(k=>EMOJIS[k]+k).join(' '):'';
+  const derI=e?ITEMS.filter(k=>e[prop(k)]===1).map(k=>EMOJIS[k]+k).join(' '):'';
+  document.getElementById('info').innerHTML=e?.objetivo
+    ?`<strong style="color:#ab47bc">Objetivo encontrado</strong> — ${SOL.length-1} pasos · solución en el panel →`
+    :`BFS: Izq [<strong>${izqI||'—'}</strong>] | Der [<strong>${derI||'—'}</strong>] · ${idx+1}/${bfsOrden.length}`;
+  document.getElementById('paso-lbl').textContent=`${idx+1}/${bfsOrden.length}`;
+  document.getElementById('btn-prev').disabled=idx<=0;
+  document.getElementById('btn-next').disabled=idx>=bfsOrden.length-1;
+  dibujar();
+}
+
+function animarBFS(){
+  resetear();
+  document.getElementById('btn-anim').disabled=true;
+  document.getElementById('btn-prev').disabled=false;
+  document.getElementById('btn-next').disabled=false;
+  bfsIdx=0;
+  timer=setInterval(()=>{
+    aplicarPaso(bfsIdx++);
+    if(bfsIdx>=bfsOrden.length) clearInterval(timer);
+  },400);
+}
+
+function paso(d){
+  clearInterval(timer);
+  bfsIdx=Math.max(0,Math.min(bfsOrden.length-1,(bfsIdx<0?0:bfsIdx)+d));
+  aplicarPaso(bfsIdx);
+}
+
+dibujar();
+</script>
+</body>
+</html>

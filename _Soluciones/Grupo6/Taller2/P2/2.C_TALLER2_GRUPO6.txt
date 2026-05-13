@@ -1,0 +1,14 @@
+El modelo ACO recibe varios parámetros que en conjunto definen tanto el entorno de búsqueda como el comportamiento de las hormigas.
+start y end simplemente definen el punto de origen y el destino en la grilla. Todas las hormigas nacen en start y el algoritmo termina exitoso cuando alguna llega a end.
+
+obstacles es la lista de celdas bloqueadas que ninguna hormiga puede pisar. Simulan paredes o barreras físicas en el entorno, y el método _get_neighbors() se encarga de excluirlas automáticamente al calcular los movimientos válidos.
+grid_size define el tamaño del espacio de búsqueda, en este caso una grilla de 10x10. A mayor grilla, mayor complejidad computacional porque hay más celdas posibles que explorar.
+
+num_ants controla cuántas hormigas exploran en paralelo en cada iteración. Con pocas hormigas el algoritmo explora poco el espacio y puede no encontrar caminos válidos, especialmente cuando hay barreras complejas como en el Caso 2. Aumentarlo a 30 fue clave para que suficientes hormigas lograran rodear la barrera.
+
+evaporation_rate determina qué tan rápido desaparecen las feromonas en cada iteración, aplicando pheromones *= (1 - evaporation_rate). Un valor bajo hace que las feromonas persistan mucho y el algoritmo converja rápido pero arriesgándose a quedarse atascado en una ruta subóptima. Un valor más alto como 0.3 hace que el algoritmo olvide más rápido las rutas malas y explore con más libertad.
+alpha es el exponente que controla el peso de las feromonas en la fórmula de probabilidad. En el código original estaba en 0.1, lo que prácticamente anulaba la influencia de las feromonas y hacía que el aprendizaje colectivo entre iteraciones no funcionara. Al subirlo a 1.0 las feromonas pasan a tener un peso real en la decisión de cada hormiga.
+
+beta es el exponente que controla el peso de la heurística, que en este caso es la distancia euclidiana al destino. Con el valor original de 15 y un alpha de apenas 0.1, la heurística dominaba completamente la decisión y el algoritmo se comportaba como un simple greedy que siempre elige el vecino más cercano al destino, ignorando por completo las feromonas acumuladas. Al bajarlo a 5.0 se logra un balance real entre seguir el rastro de feromonas y avanzar hacia el destino.
+
+Finalmente, pheromones es la matriz que actúa como memoria colectiva del algoritmo. Se inicializa en 1.0 para todas las celdas y se va actualizando en cada iteración: las celdas que forman parte de buenos caminos acumulan más feromona, atrayendo a las hormigas siguientes hacia esas rutas. Es el mecanismo central que hace que ACO aprenda con el tiempo.
