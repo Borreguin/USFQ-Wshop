@@ -1,0 +1,11 @@
+dataset,n_ciudades,ciudades_duplicadas_en_entrada,ruta_nn_valida,ruta_nn_2opt_valida,ruta_ag_valida,ruta_ag_2opt_valida,hijos_invalidos_generados,hijos_reparados,generaciones_con_poblacion_invalida,sin_ciudades_repetidas,sin_ciudades_faltantes
+cities_100_101112,85,0,True,True,True,True,0,0,0,True,True
+cities_100_123,82,0,True,True,True,True,0,0,0,True,True
+cities_100_131415,88,0,True,True,True,True,0,0,0,True,True
+cities_100_161718,80,0,True,True,True,True,0,0,0,True,True
+cities_100_192021,80,0,True,True,True,True,0,0,0,True,True
+cities_100_222324,82,0,True,True,True,True,0,0,0,True,True
+cities_100_252627,84,0,True,True,True,True,0,0,0,True,True
+cities_100_282930,83,0,True,True,True,True,0,0,0,True,True
+cities_100_456,84,0,True,True,True,True,0,0,0,True,True
+cities_100_789,80,0,True,True,True,True,0,0,0,True,True

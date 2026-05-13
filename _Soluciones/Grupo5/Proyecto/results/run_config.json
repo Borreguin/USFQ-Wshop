@@ -1,0 +1,32 @@
+{
+  "master_seed": 20260513,
+  "base_config": {
+    "population_size": 100,
+    "generations": 250,
+    "crossover": "OX",
+    "crossover_probability": 0.9,
+    "mutation": "inversion",
+    "mutation_probability": 0.15,
+    "elitism": 2,
+    "tournament_k": 3,
+    "diversity_pair_samples": 40,
+    "final_two_opt_passes": 60
+  },
+  "n_datasets": 10,
+  "datasets": [
+    "cities_100_101112",
+    "cities_100_123",
+    "cities_100_131415",
+    "cities_100_161718",
+    "cities_100_192021",
+    "cities_100_222324",
+    "cities_100_252627",
+    "cities_100_282930",
+    "cities_100_456",
+    "cities_100_789"
+  ],
+  "fitness_definition": "fitness = 1 / total_route_distance",
+  "distance_definition": "Euclidean closed tour distance including return to origin",
+  "main_algorithm": "Algoritmo Genetico Generacional Elitista con representacion por permutaciones, OX, inversion y refinamiento final 2-opt",
+  "parameter_experiment": "largest dataset, pop_size in [60,100,140], crossover in [OX,PMX], crossover_prob in [0.80,0.90], mutation_prob in [0.05,0.20], 40 generations, final 2-opt max 15 passes"
+}
