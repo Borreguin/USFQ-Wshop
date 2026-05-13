@@ -1,95 +1,56 @@
-# WorkShop-USFQ
-## Taller 2 de inteligencia artificial
+# Resolución del TSP mediante Algoritmos Genéticos
 
-- **Nombre del grupo**: 5
-- **Integrantes del grupo**:
-| Integrante | Problema 
+Proyecto final de Inteligencia Artificial / Ciencia de Datos.
 
-| Nancy Altamirano 
-| Gustavo Berru 
-| Raquel Pacheco 
-| Kevin Viteri 
+## Objetivo
+Diseñar, implementar y analizar un Algoritmo Genético para resolver instancias del Traveling Salesman Problem (TSP), evaluando la calidad de las soluciones y el comportamiento del algoritmo mediante fitness, diversidad, comparación contra una heurística y análisis experimental de parámetros.
 
-## P1. Algoritmos de búsqueda en laberintos
+## Estructura del paquete
 
-### Resultados del laberinto 1
+```text
+tsp_ga_project/
+├── code/
+│   └── tsp_ga_analysis.py
+├── data/
+│   └── cities_100_*.csv
+├── figures/
+│   ├── *_convergencia.png
+│   ├── *_diversidad.png
+│   ├── *_ruta.png
+│   ├── parametros_distancia.png
+│   └── parametros_diversidad_unica.png
+├── results/
+│   ├── summary_all_datasets.csv
+│   ├── parameter_experiment_largest_dataset.csv
+│   ├── *_history.csv
+│   └── *_best_route.csv
+└── report/
+    ├── informe_tsp_algoritmos_geneticos.docx
+    └── informe_tsp_algoritmos_geneticos.pdf
+```
 
-**BFS**
+## Datos
+Los CSV tienen columnas `city`, `x`, `y`. Aunque el enunciado original menciona instancias de más de 100 ciudades, los archivos entregados contienen entre 80 y 88 ciudades. El proyecto trabaja con cada dataset real sin agregar ciudades artificiales.
 
-![Laberinto 1 BFS](P1/results/laberinto1_bfs.png)
+## Configuración principal del AG
+- Representación: permutación de índices de ciudades.
+- Fitness: distancia total del tour cerrado; menor es mejor.
+- Selección: torneo k=3.
+- Crossover base: OX.
+- Crossover experimental: PMX.
+- Mutación: inversión.
+- Elitismo: 3 individuos.
+- Comparación: Nearest Neighbor y Nearest Neighbor + 2-opt.
+- Métricas de diversidad: porcentaje de individuos únicos y distancia Hamming promedio.
 
-**DFS**
+## Ejecución
+Desde la carpeta raíz del proyecto:
 
-![Laberinto 1 DFS](P1/results/laberinto1_dfs.png)
+```bash
+python code/tsp_ga_analysis.py
+```
 
-**A\***
+El script genera archivos CSV de resultados y figuras PNG. El informe principal ya resume los resultados obtenidos para los diez datasets.
 
-![Laberinto 1 A*](P1/results/laberinto1_astar.png)
-
----
-
-### Resultados del laberinto 2
-
-**BFS**
-
-![Laberinto 2 BFS](P1/results/laberinto2_bfs.png)
-
-**DFS**
-
-![Laberinto 2 DFS](P1/results/laberinto2_dfs.png)
-
-**A\***
-
-![Laberinto 2 A*](P1/results/laberinto2_astar.png)
-
----
-
-### Resultados del laberinto 3
-
-**BFS**
-
-![Laberinto 3 BFS](P1/results/laberinto3_bfs.png)
-
-**DFS**
-
-![Laberinto 3 DFS](P1/results/laberinto3_dfs.png)
-
-**A\***
-
-![Laberinto 3 A*](P1/results/laberinto3_astar.png)
-
----
-
-### Resultados del laberinto 4
-
-**BFS**
-
-![Laberinto 4 BFS](P1/results/laberinto4_bfs.png)
-
-**DFS**
-
-![Laberinto 4 DFS](P1/results/laberinto4_dfs.png)
-
-**A\***
-
-![Laberinto 4 A*](P1/results/laberinto4_astar.png)
-
----
-
-## P2. Optimización por colonia de hormigas
-
-### Caso de estudio 1
-
-![ACO Caso 1](P2/results/aco_case_1.png)
-
----
-
-### Caso de estudio 2 corregido
-
-![ACO Caso 2 corregido](P2/results/aco_case_2_fixed.png)
-
----
-
-### Mejor resultado con Random Search
-
-![ACO Random Search](P2/results/aco_case_2_random_search_best.png)
+## Resultado general
+En los resultados generados, el AG + 2-opt produjo soluciones válidas en todos los datasets y redujo la distancia promedio frente a Nearest Neighbor aproximadamente en 7.84%.
