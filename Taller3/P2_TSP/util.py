@@ -1,7 +1,7 @@
 import random
 import string
 import math
-from typing import List
+from typing import List, Sequence
 import datetime as dt
 
 from matplotlib import pyplot as plt
@@ -83,12 +83,57 @@ def get_path(edges: dict, initial_city: str, path: List[str]):
     path.append(next_node)
     return get_path(edges, next_node, path)
 
-def calculate_path_distance(distances: dict, path: List[str]):
+def calculate_path_distance(distances: dict, path: Sequence[str | None]):
     distance = 0
     for i in range(len(path) - 1):
         if path[i] is not None and path[i+1] is not None:
             distance += distances[(path[i], path[i+1])]
     return distance
+
+
+def two_opt_improve(path: Sequence[str | None], distances: dict) -> List[str]:
+    """
+    Algoritmo 2-opt: mejora una ruta existente eliminando cruces de caminos.
+
+    Idea central:
+      Si dos aristas del recorrido se cruzan en el plano, eliminarlas y
+      reconectar los extremos sin cruce SIEMPRE acorta la distancia total
+      (en espacio Euclidiano). El algoritmo prueba todos los pares de aristas
+      y aplica el intercambio cuando hay mejora, repitiendo hasta que no hay
+      ninguna mejora posible.
+
+    Operacion 2-opt:
+      Dado el recorrido [..., A, B, ..., C, D, ...]:
+        - Elimina las aristas A->B y C->D
+        - Invierte el segmento entre B y C: [..., A, C, ..., B, D, ...]
+        - Si la nueva distancia es menor, acepta el cambio
+
+    Complejidad: O(n^2) por iteracion, O(n^3) en el peor caso total.
+    Para 100 ciudades es practicamente instantaneo.
+    """
+    # Trabajar con el ciclo sin el nodo de cierre repetido
+    route = list(path[:-1])
+    n = len(route)
+    best_dist = calculate_path_distance(distances, route + [route[0]])
+
+    improved = True
+    while improved:
+        improved = False
+        for i in range(n - 1):
+            for j in range(i + 2, n):
+                # Evitar invertir toda la ruta (caso borde)
+                if i == 0 and j == n - 1:
+                    continue
+                # Nuevo recorrido con el segmento [i+1 .. j] invertido
+                new_route = route[:i+1] + route[i+1:j+1][::-1] + route[j+1:]
+                new_dist = calculate_path_distance(
+                    distances, new_route + [new_route[0]])
+                if new_dist < best_dist - 1e-10:
+                    route = new_route
+                    best_dist = new_dist
+                    improved = True
+
+    return route + [route[0]]
 
 def delta_time_mm_ss(delta_time: dt.timedelta):
     minutes, seconds = divmod(delta_time.seconds, 60)

@@ -40,7 +40,7 @@ def prepare_data():
     # pd.to_datetime reconoce automaticamente el formato del timestamp
     df[lb_timestamp] = df[lb_timestamp].astype(str)
     import pandas as pd
-    df[lb_timestamp] = pd.to_datetime(df[lb_timestamp], infer_datetime_format=True)
+    df[lb_timestamp] = pd.to_datetime(df[lb_timestamp], dayfirst=True)
     df.set_index(lb_timestamp, inplace=True)
     df.sort_index(inplace=True)         # garantizar orden cronologico
     df = df.apply(pd.to_numeric, errors='coerce')  # forzar columnas a numerico

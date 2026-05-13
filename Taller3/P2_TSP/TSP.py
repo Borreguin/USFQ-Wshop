@@ -2,12 +2,30 @@ import pyomo.environ as pyo
 import re
 import sys
 import os
-current_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(current_dir)
-
-from util import *
-from util_nearest_neighbor import nearest_neighbor
+import datetime as dt
+from typing import List, Sequence
 # Referencia: https://baobabsoluciones.es/blog/2020/10/01/problema-del-viajante/
+
+# Imports compatibles con ejecucion directa (python TSP.py) e importacion como paquete
+try:
+    from Taller3.P2_TSP.util import (
+        generar_ciudades_con_distancias, get_min_distance, get_max_distance,
+        get_average_distance, get_average_distance_for_city, get_min_distances,
+        get_max_distances, delta_time_mm_ss, get_path, calculate_path_distance,
+        plotear_ruta, two_opt_improve,
+    )
+    from Taller3.P2_TSP.util_nearest_neighbor import nearest_neighbor
+except ImportError:
+    _dir = os.path.dirname(os.path.realpath(__file__))
+    if _dir not in sys.path:
+        sys.path.append(_dir)
+    from util import (                                          # type: ignore[import]
+        generar_ciudades_con_distancias, get_min_distance, get_max_distance,
+        get_average_distance, get_average_distance_for_city, get_min_distances,
+        get_max_distances, delta_time_mm_ss, get_path, calculate_path_distance,
+        plotear_ruta, two_opt_improve,
+    )
+    from util_nearest_neighbor import nearest_neighbor         # type: ignore[import]
 
 
 class TSP:
@@ -166,7 +184,7 @@ class TSP:
         print(f"  Distancia total LP      : {distance:.2f}")
         return path
 
-    def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
+    def plotear_resultado(self, ruta: Sequence[str | None], mostrar_anotaciones: bool = True):
         plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
 
 
@@ -274,6 +292,77 @@ def study_nearest_neighbor(n_cities):
     plotear_ruta(ciudades, distancias, ruta, True)
 
 
+# =============================================================================
+# LITERAL F (OPCIONAL): Heuristica 2-opt — eliminar cruces de caminos
+#
+# Problema: el solver LP y el vecino cercano pueden generar rutas con aristas
+# que se cruzan. Cuando dos aristas se cruzan en el plano Euclidiano, siempre
+# es posible eliminar el cruce invirtiendo el segmento entre ellas, obteniendo
+# una ruta estrictamente mas corta.
+#
+# Algoritmo 2-opt:
+#   1. Para cada par de aristas (A->B) y (C->D) de la ruta actual:
+#      - Eliminar ambas aristas
+#      - Reconectar invirtiendo el segmento: A->C ... B->D
+#   2. Si la nueva distancia es menor, aceptar el cambio
+#   3. Repetir hasta que no haya ningun par de aristas que mejore la ruta
+#
+# Complejidad: O(n^2) por iteracion, practico hasta ~1000 ciudades.
+# No garantiza optimo global, pero elimina todos los cruces detectables
+# mediante intercambios de 2 aristas.
+#
+# Implementacion: funcion two_opt_improve() en util.py, aplicada como
+# pos-procesamiento sobre cualquier ruta (LP, vecino cercano, etc.).
+# =============================================================================
+def study_case_f():
+    n_cities = 100
+    print(f"\n{'='*60}")
+    print("CASO F - Heuristica 2-opt: eliminar cruces de caminos")
+    print("="*60)
+
+    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+
+    # --- Baseline: vecino cercano sin 2-opt ---
+    ruta_nn = nearest_neighbor(ciudades, distancias)
+    dist_nn = calculate_path_distance(distancias, ruta_nn)
+    print(f"\n  Vecino cercano (sin 2-opt): {dist_nn:.2f}")
+
+    # --- Vecino cercano + 2-opt ---
+    start = dt.datetime.now()
+    ruta_nn_2opt = two_opt_improve(ruta_nn, distancias)
+    elapsed = dt.datetime.now() - start
+    dist_nn_2opt = calculate_path_distance(distancias, ruta_nn_2opt)
+    mejora_nn = (dist_nn - dist_nn_2opt) / dist_nn * 100
+    print(f"  Vecino cercano + 2-opt    : {dist_nn_2opt:.2f}  "
+          f"(mejora: {mejora_nn:.1f}%,  t={delta_time_mm_ss(elapsed)})")
+    plotear_ruta(ciudades, distancias, ruta_nn_2opt, mostrar_anotaciones=False)
+
+    # --- LP (con heuristica vecino cercano) + 2-opt ---
+    print(f"\n  Ejecutando LP (mipgap=0.05, limite=60s) ...")
+    heuristics = ['vecino_cercano']
+    tsp = TSP(ciudades, distancias, heuristics)
+    ruta_lp = tsp.encontrar_la_ruta_mas_corta(mipgap=0.05, time_limit=60, tee=False)
+
+    if ruta_lp:
+        dist_lp = calculate_path_distance(distancias, ruta_lp)
+        print(f"  LP (sin 2-opt)            : {dist_lp:.2f}")
+
+        start = dt.datetime.now()
+        ruta_lp_2opt = two_opt_improve(ruta_lp, distancias)
+        elapsed = dt.datetime.now() - start
+        dist_lp_2opt = calculate_path_distance(distancias, ruta_lp_2opt)
+        mejora_lp = (dist_lp - dist_lp_2opt) / dist_lp * 100
+        print(f"  LP + 2-opt                : {dist_lp_2opt:.2f}  "
+              f"(mejora: {mejora_lp:.1f}%,  t={delta_time_mm_ss(elapsed)})")
+
+        print(f"\n  Resumen comparativo ({n_cities} ciudades):")
+        print(f"    Vecino cercano           : {dist_nn:.2f}")
+        print(f"    Vecino cercano + 2-opt   : {dist_nn_2opt:.2f}  ({mejora_nn:.1f}% mejor)")
+        print(f"    LP                       : {dist_lp:.2f}")
+        print(f"    LP + 2-opt               : {dist_lp_2opt:.2f}  ({mejora_lp:.1f}% mejor)")
+        plotear_ruta(ciudades, distancias, ruta_lp_2opt, mostrar_anotaciones=False)
+
+
 if __name__ == "__main__":
     print("Referencia: vecino cercano con 100 ciudades")
     study_nearest_neighbor(100)
@@ -282,3 +371,4 @@ if __name__ == "__main__":
     study_case_1_tee()    # Literal B: activar tee
     study_case_2()        # Literal C: heuristica de limites
     study_case_3()        # Literal D: heuristica vecino cercano
+    study_case_f()        # Literal F: heuristica 2-opt (eliminar cruces)
