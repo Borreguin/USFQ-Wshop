@@ -1947,8 +1947,15 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
                 fontName="Helvetica-Bold", spaceBefore=10, spaceAfter=4)
     BODY = sty("BODY", fontSize=9.5, leading=14, spaceAfter=6,
                fontName="Helvetica")
-    MONO = sty("MONO", fontSize=8.5, leading=12, fontName="Courier",
-               backColor=HexColor("#f3f4f6"), leftIndent=10, spaceAfter=4)
+    MONO  = sty("MONO",  fontSize=8.5, leading=12, fontName="Courier",
+                backColor=HexColor("#f3f4f6"), leftIndent=10, spaceAfter=4)
+    H_FIG = sty("H_FIG", fontSize=10, leading=14, fontName="Helvetica-Bold",
+                textColor=HexColor("#1a237e"), spaceBefore=12, spaceAfter=3)
+    EXPL  = sty("EXPL",  fontSize=8.5, leading=12, fontName="Helvetica",
+                backColor=HexColor("#e3f2fd"), leftIndent=8, rightIndent=8,
+                spaceBefore=3, spaceAfter=8)
+    CAP   = sty("CAP",   fontSize=8,   leading=10, fontName="Helvetica-Oblique",
+                textColor=HexColor("#666666"), alignment=1, spaceAfter=2)
 
     def fig_img(tag: str, width_cm: float = 15.0):
         if tag not in _FIGS:
@@ -2059,26 +2066,74 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
         ),
         SP(),
     ]
-    for tag, cap in [
-        ("spbds_01", "A.1 Scree Plot y loadings PC1"),
-        ("spbds_02", "A.2 Proyeccion PCA 2D (productividad / estres)"),
-        ("spbds_03", "A.3 Coordenadas Paralelas — 500 estudiantes"),
-        ("spbds_04", "A.4 Distribuciones study_hours y phone_usage"),
-        ("spbds_05", "A.5 Scatter: relacion entre variables clave"),
-        ("spbds_06", "B.1 Clustering univariable — study_hours_per_day"),
-        ("spbds_07", "B.2 Clustering univariable — phone_usage_hours"),
-        ("spbds_08", "C.1 Anomalias univariable — Isolation Forest"),
-        ("spbds_09", "D.1 Clustering multivariable — espacio PCA 2D"),
-        ("spbds_10", "D.2 Clustering multivariable — par directo"),
-        ("spbds_11", "E.1 Anomalias multivariable — Isolation Forest"),
-    ]:
+    _p1_figs = [
+        ("spbds_01",
+         "A.1 — Scree Plot y Contribucion de Variables al PC1",
+         "El Scree Plot muestra cuantos componentes principales se necesitan para explicar la varianza. "
+         "La curva de varianza acumulada indica el punto de codo a partir del cual agregar mas "
+         "componentes aporta poco. Los loadings del PC1 revelan que estudio y distraccion son los "
+         "ejes principales de diferenciacion entre estudiantes."),
+        ("spbds_02",
+         "A.2 — Proyeccion PCA 2D: Productividad vs. Distraccion",
+         "Cada punto representa un estudiante proyectado en el plano formado por PC1 (productividad) "
+         "y PC2 (estres). La dispersion uniforme confirma el caracter sintetico del dataset. "
+         "Se identifican tres zonas: alta productividad, zona media y alta distraccion."),
+        ("spbds_03",
+         "A.3 — Coordenadas Paralelas: 500 Estudiantes",
+         "Las lineas paralelas muestran el perfil multivariable de 500 estudiantes seleccionados. "
+         "Los perfiles altos en study_hours y bajo en phone_usage corresponden a estudiantes con "
+         "mayor rendimiento academico, mientras que el patron inverso indica distraccion."),
+        ("spbds_04",
+         "A.4 — Distribuciones de study_hours y phone_usage",
+         "Los histogramas muestran la distribucion de las dos variables univariables clave. "
+         "La distribucion uniforme (sintetica) implica que no hay un perfil 'tipico'; todos los "
+         "valores son igualmente probables. Esto reduce el silhouette score en clustering."),
+        ("spbds_05",
+         "A.5 — Scatter: Relacion entre Variables Clave",
+         "El scatter plot entre study_hours_per_day y phone_usage_hours muestra una correlacion "
+         "negativa debil, consistente con la hipotesis de que mayor uso del telefono se asocia "
+         "a menor tiempo de estudio. Puntos en las esquinas son candidatos a anomalias."),
+        ("spbds_06",
+         "B.1 — Clustering Univariable: study_hours_per_day",
+         "K-Means sobre una sola variable (study_hours_per_day) agrupa estudiantes en perfiles "
+         "de dedicacion. El silhouette score optimo indica el k que maximiza la separacion "
+         "intracluster. El clustering revela grupos: estudio bajo, medio y alto."),
+        ("spbds_07",
+         "B.2 — Clustering Univariable: phone_usage_hours",
+         "Similar al anterior pero sobre phone_usage_hours. Los clusters de uso del telefono "
+         "complementan los de estudio, identificando perfiles de distraccion. La interseccion "
+         "de ambos clusterings permite construir una matriz de perfil bidimensional."),
+        ("spbds_08",
+         "C.1 — Anomalias Univariable: Isolation Forest",
+         "Isolation Forest con contamination=0.05 detecta el 5% de estudiantes con perfiles "
+         "extremos en study_hours o phone_usage. Los puntos rojos son anomalias: valores "
+         "atipicos que se separan facilmente del arbol de decision aleatorio."),
+        ("spbds_09",
+         "D.1 — Clustering Multivariable: Espacio PCA 2D",
+         "K-Means aplicado sobre las dos primeras componentes principales. La reduccion "
+         "dimensional facilita la visualizacion. Los clusters en PCA 2D capturan patrones "
+         "globales de comportamiento que no son visibles en variables individuales."),
+        ("spbds_10",
+         "D.2 — Clustering Multivariable: Par Directo (study_hours vs phone_usage)",
+         "Clustering directamente sobre el par de variables mas relevantes sin PCA. "
+         "Comparando con D.1, se valida la robustez de los clusters: si ambas representaciones "
+         "producen grupos similares, los patrones son genuinos en los datos."),
+        ("spbds_11",
+         "E.1 — Anomalias Multivariable: Isolation Forest en 15D",
+         "Isolation Forest en el espacio completo de 15 variables detecta combinaciones "
+         "atipicas imposibles en la realidad (p.ej. suma de horas > 24h). Estas anomalias "
+         "son invisibles en analisis univariable y requieren deteccion multidimensional."),
+    ]
+    for tag, title, expl in _p1_figs:
         img = fig_img(tag, 13.5)
         if img:
-            story += [img,
-                      Paragraph(f"<i>{cap}</i>",
-                                ParagraphStyle("C", fontSize=8, leading=10,
-                                               textColor=HexColor("#666"),
-                                               alignment=1)), SP(4)]
+            story += [
+                Paragraph(title, H_FIG),
+                img,
+                Paragraph(f"<i>Fig. {title}</i>", CAP),
+                Paragraph(expl, EXPL),
+                SP(4),
+            ]
 
     story += [
         HR(), Paragraph("Conclusiones P1", H3),
@@ -2118,16 +2173,33 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
         ),
         SP(),
     ]
-    for tag, cap in [("tsp_01", "Ruta Vecino Cercano (2006.73)"),
-                     ("tsp_02", "Ruta NN + 2-opt (1632.85, -18.6%)"),
-                     ("tsp_03", "Comparacion por numero de ciudades")]:
+    _p2_figs = [
+        ("tsp_01",
+         "F.1 — Ruta Vecino Cercano (Distancia: 2006.73)",
+         "La heuristica del Vecino Cercano construye la ruta eligiendo siempre la ciudad mas "
+         "cercana no visitada. Es rapida (O(n^2)) pero produce rutas suboptimas con cruces "
+         "visibles. Esta ruta base sirve como punto de partida para la optimizacion 2-opt."),
+        ("tsp_02",
+         "F.2 — Ruta NN + 2-opt (Distancia: 1632.85, Mejora: -18.6%)",
+         "El post-procesamiento 2-opt elimina cruces de aristas intercambiando pares de "
+         "segmentos hasta no encontrar mejora. La reduccion del 18.6% demuestra que la "
+         "ruta inicial tenia cruces significativos eliminables en tiempo polinomial."),
+        ("tsp_03",
+         "F.3 — Comparacion de Distancias por Numero de Ciudades",
+         "A medida que aumenta el numero de ciudades, la brecha entre NN y NN+2-opt crece. "
+         "El 2-opt mejora consistentemente entre 3-21% independientemente del tamano del "
+         "problema, confirmando que es una optimizacion local efectiva y escalable."),
+    ]
+    for tag, title, expl in _p2_figs:
         img = fig_img(tag, 14)
         if img:
-            story += [img,
-                      Paragraph(f"<i>{cap}</i>",
-                                ParagraphStyle("C", fontSize=8, leading=10,
-                                               textColor=HexColor("#666"),
-                                               alignment=1)), SP(4)]
+            story += [
+                Paragraph(title, H_FIG),
+                img,
+                Paragraph(f"<i>Fig. {title}</i>", CAP),
+                Paragraph(expl, EXPL),
+                SP(4),
+            ]
 
     story += [
         HR(), Paragraph("Conclusiones P2", H3),
@@ -2158,16 +2230,31 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
         ),
         SP(),
     ]
-    for tag, cap in [("ga_convergence", "Curvas de convergencia por caso de estudio"),
-                     ("ga_bar", "Generacion de convergencia "
-                      "(casos que alcanzan el objetivo)")]:
+    _p3_figs = [
+        ("ga_convergence",
+         "G.1 — Curvas de Convergencia por Caso de Estudio",
+         "Cada linea muestra como evoluciona el fitness del mejor individuo a lo largo de las "
+         "generaciones para cada configuracion experimental. Las curvas mas escarpadas indican "
+         "convergencia mas rapida. El Caso 5 (Elitismo + Torneo + Cruce 2pts) destaca como "
+         "el mas eficiente, alcanzando el objetivo en generacion 30."),
+        ("ga_bar",
+         "G.2 — Generacion de Convergencia por Caso (Solo Casos Convergentes)",
+         "Grafico de barras comparando la generacion en que cada configuracion alcanza el objetivo "
+         "'GA Workshop! USFQ'. Las barras mas cortas indican mayor eficiencia. "
+         "Los casos que no convergen dentro del limite maximo quedan excluidos. "
+         "La comparacion directa valida que el elitismo y la distancia Manhattan son los "
+         "factores mas determinantes para la velocidad de convergencia."),
+    ]
+    for tag, title, expl in _p3_figs:
         img = fig_img(tag, 14)
         if img:
-            story += [img,
-                      Paragraph(f"<i>{cap}</i>",
-                                ParagraphStyle("C", fontSize=8, leading=10,
-                                               textColor=HexColor("#666"),
-                                               alignment=1)), SP(4)]
+            story += [
+                Paragraph(title, H_FIG),
+                img,
+                Paragraph(f"<i>Fig. {title}</i>", CAP),
+                Paragraph(expl, EXPL),
+                SP(4),
+            ]
 
     story += [
         HR(), Paragraph("Conclusiones P3", H3),
