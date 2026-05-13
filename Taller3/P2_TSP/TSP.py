@@ -1,6 +1,7 @@
 import pyomo.environ as pyo
 import re
 import sys, os
+from typing import List
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
 
@@ -147,9 +148,7 @@ class TSP:
         distance = calculate_path_distance(self.distancias, path)
         print("Distancia total recorrida:", distance)
         return path
-
-
-
+    
     def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
         plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
 
@@ -160,27 +159,44 @@ def study_nearest_neighbor(n_cities):
 
 def study_case_1():
     # tal vez un loop para probar 10, 20, 30, 40, 50 ciudades?
-    n_cities = 50
-    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
-    heuristics = []
-    mipgap = 0.05
-    time_limit = 30
-    tee = False
-    tsp = TSP(ciudades, distancias, heuristics)
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta)
+    for n_cities in [10, 20, 30, 40, 50]:
+        print(f"\n========== Ejecutando con {n_cities} ciudades ==========")
+
+        ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+        heuristics = []
+        mipgap = 0.05
+        time_limit = 30
+        tee = True
+
+        tsp = TSP(ciudades, distancias, heuristics)
+        ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
+        tsp.plotear_resultado(ruta)
+        ruta_nn = nearest_neighbor(ciudades, distancias)
+        distancia_nn = calculate_path_distance(distancias, ruta_nn)
+
+        print("Distancia vecino cercano:", distancia_nn)
+
+    #n_cities = 50
+    #ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+    #heuristics = []
+    #mipgap = 0.05
+    #time_limit = 30
+    #tee = False
+    #tsp = TSP(ciudades, distancias, heuristics)
+    #ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
+    #tsp.plotear_resultado(ruta)
 
 def study_case_2():
     n_cities = 70
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
     # con heuristicas
-    heuristics = ['limitar_funcion_objetivo']
+    #heuristics = ['limitar_funcion_objetivo']
     # sin heuristicas
-    # heuristics = []
+    heuristics = []
     tsp = TSP(ciudades, distancias, heuristics)
     mipgap = 0.2
     time_limit = 40
-    tee = True
+    tee = False
     ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
     tsp.plotear_resultado(ruta, False)
 
@@ -194,7 +210,7 @@ def study_case_3():
     tsp = TSP(ciudades, distancias, heuristics)
     mipgap = 0.05
     time_limit = 60
-    tee = True
+    tee = False
     ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
     tsp.plotear_resultado(ruta, False)
 
@@ -202,8 +218,8 @@ def study_case_3():
 if __name__ == "__main__":
     print("Se ha colocado un límite de tiempo de 30 segundos para la ejecución del modelo.")
     # as reference, see nearest neighbor heuristic
-    study_nearest_neighbor(100)
+    # study_nearest_neighbor(100)
     # Solve the TSP problem
     # study_case_1()
-    # study_case_2()
-    study_case_3()
+    study_case_2()
+    # study_case_3()
