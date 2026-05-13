@@ -329,7 +329,7 @@ def section_b_clustering_univariate(df):
         for k in k_range:
             km = KMeans(n_clusters=k, random_state=42, n_init=10)
             lbl = km.fit_predict(X_scaled)
-            scores.append(silhouette_score(X_scaled, lbl))
+            scores.append(silhouette_score(X_scaled, lbl, sample_size=2000, random_state=42))
 
         best_k = k_range.start + scores.index(max(scores))
         print(f"\n[K-Means — {var}]")
@@ -496,7 +496,7 @@ def _multivariate_cluster(X_scaled, df, label, x_label, y_label,
     for k in k_range:
         km = KMeans(n_clusters=k, random_state=42, n_init=10)
         lbl = km.fit_predict(X_scaled)
-        scores.append(silhouette_score(X_scaled, lbl))
+        scores.append(silhouette_score(X_scaled, lbl, sample_size=2000, random_state=42))
 
     best_k = k_range.start + scores.index(max(scores))
     km_best = KMeans(n_clusters=best_k, random_state=42, n_init=10)
@@ -517,7 +517,7 @@ def _multivariate_cluster(X_scaled, df, label, x_label, y_label,
     print(f"\n[DBSCAN {label}] Clusters={n_db}, Ruido={n_noise_db}")
     if n_db > 1:
         mask_valid = labels_db != -1
-        sil_db = silhouette_score(X_scaled[mask_valid], labels_db[mask_valid])
+        sil_db = silhouette_score(X_scaled[mask_valid], labels_db[mask_valid], sample_size=2000, random_state=42)
         print(f"  Silhouette (sin ruido): {sil_db:.4f}")
 
     # --- Gráfico ---

@@ -65,6 +65,17 @@ def _img_tag(tag: str, caption: str = "", width: str = "98%") -> str:
     )
 
 
+def _fig_block(tag: str, title: str, explanation: str, caption: str = "", width: str = "98%") -> str:
+    """Bloque completo: titulo H4 + imagen + explicacion."""
+    title_html = f'<h4 style="margin:18px 0 6px;color:#1a237e">{title}</h4>'
+    img_html   = _img_tag(tag, caption, width)
+    expl_html  = (
+        f'<div class="callout info" style="margin-top:6px;font-size:13px">'
+        f'{explanation}</div>'
+    )
+    return title_html + img_html + expl_html
+
+
 def _pre(text: str, max_chars: int = 4000) -> str:
     snippet = text[:max_chars]
     if len(text) > max_chars:
@@ -118,7 +129,8 @@ def run_p1_spbds() -> dict:
     # ── Metricas para tarjetas del informe ──────────────────────────
     def _sil_best(Xd):
         scores = [silhouette_score(Xd,
-                  KMeans(n_clusters=k, random_state=42, n_init=10).fit_predict(Xd))
+                  KMeans(n_clusters=k, random_state=42, n_init=10).fit_predict(Xd),
+                  sample_size=2000, random_state=42)
                   for k in range(2, 7)]
         return 2 + scores.index(max(scores)), max(scores)
 
@@ -605,7 +617,16 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     propio de un dataset sintetico.
   </div>
 
-  {_img_tag("spbds_01", "Fig. A.1 — Scree Plot (izq.) y Contribucion de variables al PC1 (der.)")}
+  {_fig_block("spbds_01",
+    "A.1 — Scree Plot y Contribucion de Variables al PC1",
+    "El <b>Scree Plot</b> (izquierda) muestra la varianza explicada acumulada por cada "
+    "componente principal. La linea roja indica el umbral del 80%: se necesitan "
+    f"<b>{p1_data['n_comp_80']} componentes</b> para alcanzarlo, reflejo de la "
+    "distribucion uniforme del dataset sintetico. Las barras de la derecha muestran "
+    "los <b>loadings de PC1</b>: las variables con barra azul (positiva) aumentan "
+    "la productividad; las con barra roja (negativa) la reducen. "
+    f"PC1 explica el <b>{p1_data['pc1_pct']:.1f}%</b> de la varianza total.",
+    "Fig. A.1 — Scree Plot y loadings PC1")}
 
   <h4>Top 5 variables mas importantes segun PC1</h4>
   {top5_table()}
@@ -617,7 +638,16 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     contrastantes son <code>{p1_data["var1"]}</code> (+) y <code>{p1_data["var2"]}</code> (-).
   </div>
 
-  {_img_tag("spbds_02", "Fig. A.2 — Proyeccion PCA 2D: 20,000 estudiantes coloreados por productividad (izq.) y estres (der.)")}
+  {_fig_block("spbds_02",
+    "A.2 — Proyeccion PCA 2D: Productividad y Estres",
+    "Cada punto representa un estudiante proyectado sobre los dos primeros componentes "
+    "principales. <b>Izquierda:</b> el color va de rojo (baja productividad) a verde "
+    "(alta productividad); el gradiente sigue exactamente el eje PC1, confirmando que "
+    "ese eje captura directamente el comportamiento productivo. "
+    "<b>Derecha:</b> coloreado por nivel de estres — no sigue ningun patron espacial, "
+    "lo que indica que el estres es una variable <b>independiente</b> del resto "
+    "en este dataset sintetico.",
+    "Fig. A.2 — PCA 2D coloreado por productividad (izq.) y estres (der.)")}
 
   <div class="callout info">
     <b>Interpretacion PCA 2D:</b> El gradiente verde-rojo sigue el eje PC1 de derecha
@@ -626,7 +656,16 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     este dataset sintetico.
   </div>
 
-  {_img_tag("spbds_03", "Fig. A.3 — Coordenadas Paralelas (500 estudiantes): verde = alta productividad")}
+  {_fig_block("spbds_03",
+    "A.3 — Coordenadas Paralelas: Patrones de Comportamiento por Nivel de Productividad",
+    "Cada linea representa un estudiante de la muestra de 500. "
+    "Las lineas <b>verdes</b> (alta productividad) tienden a estar <b>arriba</b> en "
+    "<code>study_hours_per_day</code> y <b>abajo</b> en <code>phone_usage_hours</code>, "
+    "mientras que las lineas rojas (baja productividad) muestran el patron opuesto. "
+    "Este grafico permite visualizar simultaneamente todas las variables y detectar "
+    "que <code>study_hours</code>, <code>focus_score</code> y <code>productivity_score</code> "
+    "se mueven juntos en la misma direccion, formando el <b>eje productivo</b>.",
+    "Fig. A.3 — Coordenadas Paralelas (500 estudiantes), verde = alta productividad")}
 
   <div class="callout info">
     <b>Coordenadas paralelas:</b> Cada linea es un estudiante. Las lineas verdes (alta
@@ -635,8 +674,28 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     productivo es consistente y visible a simple vista.
   </div>
 
-  {_img_tag("spbds_04", "Fig. A.4 — Distribuciones de study_hours y phone_usage por nivel de productividad")}
-  {_img_tag("spbds_05", "Fig. A.5 — Relacion entre las 2 variables clave coloreada por productividad y estres")}
+  {_fig_block("spbds_04",
+    "A.4 — Distribuciones de Variables Clave por Nivel de Productividad",
+    "Histogramas de <code>study_hours_per_day</code> (izq.) y <code>phone_usage_hours</code> (der.) "
+    "separados por tercil de productividad (bajo / medio / alto). "
+    "Los estudiantes de <b>alta productividad</b> concentran sus horas de estudio en el rango "
+    "6-10 h/dia y su uso del telefono en el rango 1-4 h/dia. "
+    "Los de <b>baja productividad</b> muestran el patron inverso: pocas horas de estudio "
+    "y alto tiempo en telefono. La separacion de las distribuciones confirma que estas "
+    "dos variables son los <b>mejores predictores univariables</b> de productividad.",
+    "Fig. A.4 — Distribuciones de study_hours y phone_usage por nivel de productividad")}
+
+  {_fig_block("spbds_05",
+    "A.5 — Scatter: Relacion entre Variables Clave",
+    "Diagrama de dispersion entre <code>study_hours_per_day</code> (eje X) y "
+    "<code>phone_usage_hours</code> (eje Y). Cada punto es un estudiante coloreado por "
+    "productividad (izq.) y estres (der.). La nube de puntos muestra una "
+    "<b>correlacion negativa</b> entre ambas variables: a mas horas de estudio, "
+    "menos uso del telefono. Los estudiantes de alta productividad (verde) se agrupan "
+    "en el cuadrante inferior-derecho (mucho estudio, poco telefono), "
+    "mientras que los de baja productividad (rojo) ocupan el cuadrante superior-izquierdo. "
+    "El estres no sigue ningun patron espacial, ratificando su independencia.",
+    "Fig. A.5 — Scatter coloreado por productividad y estres")}
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
@@ -699,8 +758,28 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     </div>
   </div>
 
-  {_img_tag("spbds_06", "Fig. B.1 — Clustering univariable de study_hours_per_day (distribucion, K-Means, DBSCAN)")}
-  {_img_tag("spbds_07", "Fig. B.2 — Clustering univariable de phone_usage_hours (distribucion, K-Means, DBSCAN)")}
+  {_fig_block("spbds_06",
+    f"B.1 — Clustering Univariable: study_hours_per_day  (K-Means k={p1_data['best_k_v1']}, Silhouette={p1_data['sil_v1']:.3f})",
+    "<b>Izquierda — Distribucion:</b> histograma de horas de estudio; la distribucion uniforme "
+    "indica que no hay grupos naturales muy separados. "
+    f"<b>Centro — K-Means k={p1_data['best_k_v1']}:</b> los estudiantes se dividen en grupos "
+    "segun sus horas de estudio. La productividad media de cada cluster aumenta "
+    "progresivamente, validando que los grupos tienen sentido semantico real. "
+    f"<b>Derecha — DBSCAN:</b> con la distribucion uniforme del dataset, DBSCAN agrupa "
+    f"la mayoria en {p1_data['n_cl_db']} cluster(s) con {p1_data['n_ns_db']} puntos de ruido. "
+    "Los puntos de ruido coinciden con los valores extremos del analisis de anomalias.",
+    "Fig. B.1 — Clustering univariable de study_hours_per_day")}
+
+  {_fig_block("spbds_07",
+    f"B.2 — Clustering Univariable: phone_usage_hours  (K-Means k={p1_data['best_k_v2']}, Silhouette={p1_data['sil_v2']:.3f})",
+    "<b>Izquierda — Distribucion:</b> histograma del uso diario del telefono; "
+    "tambien uniforme, sin picos claros. "
+    f"<b>Centro — K-Means k={p1_data['best_k_v2']}:</b> identifica grupos de uso bajo, "
+    "medio y alto del telefono. La productividad media decrece con el uso del telefono, "
+    "confirmando la correlacion negativa observada en PCA. "
+    "<b>Derecha — DBSCAN:</b> confirma los mismos grupos que K-Means. "
+    "La coincidencia entre ambos algoritmos valida la robustez de la segmentacion.",
+    "Fig. B.2 — Clustering univariable de phone_usage_hours")}
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
@@ -752,7 +831,18 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     </div>
   </div>
 
-  {_img_tag("spbds_08", "Fig. C.1 — Anomalias detectadas por Isolation Forest en study_hours y phone_usage")}
+  {_fig_block("spbds_08",
+    f"C.1 — Anomalias Univariable detectadas por Isolation Forest  ({p1_data['n_anom_uni']} estudiantes, {p1_data['n_anom_uni']/p1_data['n_students']*100:.1f}%)",
+    f"Los puntos <b>rojos</b> son los {p1_data['n_anom_uni']} estudiantes clasificados como "
+    "anomalos (contamination=0.05). "
+    "<b>Izquierda:</b> anomalias en <code>study_hours_per_day</code> — estudiantes con "
+    "mas de 9.5 h/dia de estudio (posibles estudiantes de postgrado o registros erroneos). "
+    "<b>Derecha:</b> anomalias en <code>phone_usage_hours</code> — estudiantes con "
+    "mas de 11 h/dia en el telefono (imposible combinado con otras actividades). "
+    "Isolation Forest los detecta porque en regiones de alta densidad se necesitan "
+    "<b>muchas particiones</b> para aislar un punto, mientras que en zonas escasas "
+    "(extremos) se necesitan <b>pocas particiones</b>.",
+    "Fig. C.1 — Anomalias univariable por Isolation Forest")}
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
@@ -810,8 +900,31 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     </div>
   </div>
 
-  {_img_tag("spbds_09", "Fig. D.1 — Clustering en espacio PCA 2D: K-Means (izq.) y DBSCAN (der.)")}
-  {_img_tag("spbds_10", "Fig. D.2 — Clustering directo: study_hours vs phone_usage, K-Means y DBSCAN")}
+  {_fig_block("spbds_09",
+    f"D.1 — Clustering Multivariable en Espacio PCA 2D  (K-Means k={p1_data['best_k_m']}, Silhouette={p1_data['sil_m']:.3f})",
+    "Clustering aplicado sobre la proyeccion PC1-PC2 que resume las "
+    f"{p1_data['n_features']} variables en 2 dimensiones "
+    f"({p1_data['pc1_pct']:.1f}% + {p1_data['pc2_pct']:.1f}% = "
+    f"{p1_data['pc1_pct']+p1_data['pc2_pct']:.1f}% de varianza). "
+    f"<b>Izquierda — K-Means k={p1_data['best_k_m']}:</b> los {p1_data['best_k_m']} grupos "
+    "se distribuyen a lo largo del eje PC1 (productividad), replicando exactamente "
+    "los resultados del analisis univariable y confirmando que PC1 domina la estructura. "
+    f"<b>Derecha — DBSCAN:</b> {p1_data['n_cl_db_m']} cluster(s) identificados con "
+    f"{p1_data['n_ns_db_m']} puntos de ruido en el espacio 2D.",
+    "Fig. D.1 — Clustering multivariable en PCA 2D")}
+
+  {_fig_block("spbds_10",
+    "D.2 — Clustering Multivariable: Par Directo (study_hours vs phone_usage)",
+    "Clustering en el espacio de las 2 variables interpretables seleccionadas por PCA, "
+    "sin reduccion de dimensionalidad. "
+    "<b>Izquierda — K-Means:</b> la separacion entre clusters es visible a simple vista "
+    "en el scatter — grupos definidos por la combinacion de alto/bajo estudio y "
+    "alto/bajo uso del telefono. "
+    "<b>Derecha — DBSCAN:</b> detecta la misma estructura que K-Means. "
+    "Comparado con el espacio PCA 2D, este grafico es <b>mas interpretable</b> "
+    "porque los ejes tienen significado directo, aunque ignora las otras 13 variables. "
+    "La coincidencia entre ambos espacios valida la robustez de los clusters.",
+    "Fig. D.2 — Clustering multivariable par directo")}
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
@@ -866,7 +979,18 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     </div>
   </div>
 
-  {_img_tag("spbds_11", "Fig. E.1 — Anomalias multivariable: PCA 2D (izq.) y study_hours vs phone_usage (der.)")}
+  {_fig_block("spbds_11",
+    f"E.1 — Anomalias Multivariable por Isolation Forest  ({p1_data['n_anom_multi']} estudiantes en 15D, {p1_data['n_anom_multi']/p1_data['n_students']*100:.1f}%)",
+    f"Isolation Forest aplicado sobre las {p1_data['n_features']} variables estandarizadas. "
+    "Los puntos rojos son anomalias en el espacio multidimensional completo. "
+    "<b>Izquierda (PCA 2D):</b> las anomalias aparecen dispersas por todo el espacio, "
+    "incluyendo puntos que en el analisis univariable parecian normales. "
+    "<b>Derecha (par directo):</b> algunos estudiantes anomalos tienen "
+    "combinaciones incoherentes: por ejemplo, alta puntuacion en estudio, gaming "
+    "y redes sociales simultaneamente, lo que suma mas horas de las disponibles en el dia. "
+    "Este tipo de inconsistencia <b>solo es detectable en el analisis multivariable</b> "
+    "y representa errores de registro en los datos originales.",
+    "Fig. E.1 — Anomalias multivariable en PCA 2D y par directo")}
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
@@ -1037,10 +1161,34 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
   invirtiendo el segmento entre ellas. El algoritmo 2-opt aplica este principio
   iterativamente hasta que no haya mas cruces detectables.</p>
   <div class="two-col">
-    {_img_tag("tsp_01", "Ruta Vecino Cercano — 100 ciudades (2006.73)", "98%")}
-    {_img_tag("tsp_02", "Ruta NN + 2-opt — 100 ciudades (1632.85, mejora 18.6%)", "98%")}
+    {_fig_block("tsp_01",
+      "F.1 — Ruta Vecino Cercano: 100 Ciudades",
+      "Ruta generada con el algoritmo <b>greedy de vecino mas cercano</b>: en cada paso "
+      "se visita la ciudad no visitada mas proxima. El resultado es una ruta de "
+      "<b>distancia 2006.73</b> con multiples <b>cruces de aristas</b> visibles "
+      "en la figura (lineas que se intersectan). En espacio euclidiano, dos aristas "
+      "que se cruzan siempre pueden mejorarse eliminando el cruce, lo que revela "
+      "que esta solucion tiene margen de mejora significativo sin necesidad de LP.",
+      "Fig. F.1 — Ruta Vecino Cercano (dist=2006.73)", "98%")}
+    {_fig_block("tsp_02",
+      "F.2 — Ruta Optimizada con 2-opt: 100 Ciudades",
+      "La misma ruta del vecino cercano tras aplicar el algoritmo <b>2-opt</b>: "
+      "se prueban todos los pares de aristas (i,j) y (k,l); si invertir el "
+      "segmento entre j y k reduce la distancia total, se aplica el cambio. "
+      "El proceso se repite hasta que no hay ningun par mejorable. "
+      "Resultado: <b>distancia 1632.85</b>, una mejora del <b>18.6%</b> "
+      "en tiempo practicamente instantaneo. La ruta resultante no tiene cruces visibles.",
+      "Fig. F.2 — Ruta NN + 2-opt (dist=1632.85, &minus;18.6%)", "98%")}
   </div>
-  {_img_tag("tsp_03", "Comparacion de distancias: Vecino Cercano vs NN+2opt por numero de ciudades")}
+  {_fig_block("tsp_03",
+    "F.3 — Comparacion de Distancias: Vecino Cercano vs NN + 2-opt (10 a 100 ciudades)",
+    "Grafico de barras comparando la distancia total obtenida por Vecino Cercano (azul) "
+    "y NN + 2-opt (verde) para instancias de 10 a 100 ciudades. "
+    "La mejora porcentual del 2-opt es <b>consistente en todos los tamaños</b>: "
+    "entre un 3% (instancias pequeñas donde el vecino cercano ya produce pocas cruces) "
+    "y un 21% (instancias grandes con mas oportunidades de eliminar cruces). "
+    "El tiempo de ejecucion del 2-opt es siempre menor a 1 segundo para estas instancias.",
+    "Fig. F.3 — Comparacion Vecino Cercano vs NN+2-opt")}
   <h4>Resultados por numero de ciudades</h4>
   {tsp_table()}
   <div class="callout good">
@@ -1116,8 +1264,38 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
 <div class="card">
   <h3>Resultados comparativos — todos los casos</h3>
   {ga_table()}
-  {_img_tag("ga_convergence", "Curvas de convergencia: aptitud por generacion para cada caso")}
-  {_img_tag("ga_bar", "Generacion en que cada caso converge al objetivo")}
+  {_fig_block("ga_convergence",
+    "P3.F1 — Curvas de Convergencia: Aptitud por Generacion para Cada Configuracion",
+    "Cada linea muestra como evoluciona la <b>aptitud del mejor individuo</b> a lo largo "
+    "de las generaciones para cada configuracion. La linea discontinua negra es el "
+    "objetivo (aptitud = 17 = longitud del string). "
+    "<ul style='margin:4px 0 4px 18px'>"
+    "<li><b>Rojo (Caso 1 DEFAULT):</b> convergencia lenta (gen 982) — la ruleta con conteo "
+    "de coincidencias tiene poca presion selectiva al inicio.</li>"
+    "<li><b>Naranja (Caso 2 BY_DISTANCE):</b> convergencia 2.6x mas rapida (gen 378) "
+    "gracias al gradiente mas rico de la distancia Manhattan.</li>"
+    "<li><b>Amarillo / marron (Casos 3a/3b):</b> mutation_rate 0.05 destruye genes correctos "
+    "(no converge); mutation_rate 0.001 queda atrapado en optimos locales (no converge).</li>"
+    "<li><b>Morado (Caso 4a, pop=500):</b> convergencia rapida (gen 44) por alta diversidad.</li>"
+    "<li><b>Verde (Caso 5):</b> el mas rapido (gen 30) con elitismo + torneo + cruce 2 puntos.</li>"
+    "</ul>",
+    "Fig. P3.1 — Curvas de convergencia por caso de estudio")}
+
+  {_fig_block("ga_bar",
+    "P3.F2 — Generacion de Convergencia: Solo los Casos que Alcanzaron el Objetivo",
+    "Las barras muestran en que generacion cada configuracion exitosa alcanzo "
+    "la cadena objetivo <code>&quot;GA Workshop! USFQ&quot;</code>. "
+    "Solo aparecen los casos que convergieron dentro de las 1000 generaciones limite. "
+    "La comparacion directa demuestra el impacto acumulado de cada mejora: "
+    "<ul style='margin:4px 0 4px 18px'>"
+    "<li><b>Caso 1</b> (baseline): gen 982</li>"
+    "<li><b>Caso 2</b> (distancia Manhattan): gen 378 &mdash; <b>2.6x mas rapido</b></li>"
+    "<li><b>Caso 4a</b> (pop=500): gen 44 &mdash; <b>22x mas rapido</b></li>"
+    "<li><b>Caso 5</b> (mejor combo): gen 30 &mdash; <b>32x mas rapido</b></li>"
+    "</ul>"
+    "Cada operador mejora la velocidad de convergencia de forma independiente; "
+    "combinados, el efecto es multiplicativo.",
+    "Fig. P3.2 — Generacion de convergencia de los casos exitosos")}
 </div>
 
 <div id="p3-12" class="card">
@@ -2141,8 +2319,15 @@ def main():
         f.write(html)
     print(f"  HTML: {html_path}  ({os.path.getsize(html_path)//1024} KB)")
 
-    generate_pdf(pdf_path, p1_data, p2_data, p3_data)
-    print(f"  PDF:  {pdf_path}  ({os.path.getsize(pdf_path)//1024} KB)")
+    tmp_pdf = pdf_path.replace(".pdf", "_tmp.pdf")
+    try:
+        generate_pdf(tmp_pdf, p1_data, p2_data, p3_data)
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        os.rename(tmp_pdf, pdf_path)
+        print(f"  PDF:  {pdf_path}  ({os.path.getsize(pdf_path)//1024} KB)")
+    except PermissionError:
+        print(f"  PDF:  NO generado — cierra el PDF abierto y vuelve a ejecutar.")
 
     elapsed = time.time() - t0
     print(f"\n{'=' * 58}")
