@@ -451,20 +451,29 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
 
     # GA tabla
     def ga_table() -> str:
-        h = ("<tr><th>Caso</th><th>Poblacion</th><th>Mut. Rate</th>"
-             "<th>Converge</th><th>Generacion</th><th>Mejor individuo</th></tr>")
+        h = ("<tr>"
+             "<th style='width:28%'>Caso</th>"
+             "<th style='width:9%'>Poblacion</th>"
+             "<th style='width:9%'>Mut. Rate</th>"
+             "<th style='width:9%'>Converge</th>"
+             "<th style='width:11%'>Generacion</th>"
+             "<th style='width:34%'>Mejor individuo</th>"
+             "</tr>")
         rows_html = ""
         for r in p3_data["summary"]:
             status = "SI" if r["converged"] else "NO"
             cls = "ok" if r["converged"] else "nok"
             gen = str(r["gen"]) if r["converged"] else "&#x2014;"
+            # Usa solo la primera linea del label para la columna Caso
+            label = r["label"].split("\n")[0]
             rows_html += (
-                f'<tr class="{cls}"><td>{r["label"].replace(chr(10)," — ")}</td>'
+                f'<tr class="{cls}"><td>{label}</td>'
                 f'<td>{r["pop"]}</td><td>{r["mr"]}</td>'
                 f'<td><b>{status}</b></td><td>{gen}</td>'
                 f'<td style="font-family:monospace">{r["best"]!r}</td></tr>'
             )
-        return f"<table class='data'>{h}{rows_html}</table>"
+        return (f"<table class='data' style='table-layout:fixed;word-break:break-word'>"
+                f"{h}{rows_html}</table>")
 
     # NAV
     nav = """
