@@ -1,0 +1,11 @@
+Paso 1 — Representar el problema como grafo. Cada ciudad es un nodo y cada par de ciudades tiene una arista con peso igual a la distancia entre ellas. La matriz de distancias reemplaza a la grilla de feromonas del ejercicio.
+
+Paso 2 — Inicializar la matriz de feromonas. En lugar de una grilla 2D, se usa una matriz n x n donde pheromones[i][j] representa la feromona en la arista entre la ciudad i y la ciudad j. Se inicializa uniformemente igual que en el ejercicio.
+
+Paso 3 — Construir soluciones. Cada hormiga parte de una ciudad aleatoria y en cada paso elige la siguiente ciudad no visitada usando la misma fórmula probabilística del ejercicio, donde la heurística ahora es 1 / distancia(i, j) en lugar de la distancia euclidiana al destino.
+
+Paso 4 — Aplicar restricción de visita única. A diferencia del ejercicio donde visited solo evitaba ciclos, aquí visited es obligatorio y estricto: una hormiga nunca puede volver a una ciudad ya visitada. Cuando ha visitado todas las ciudades, cierra el tour regresando a la ciudad inicial.
+
+Paso 5 — Evaluar y actualizar feromonas. Al final de cada iteración se calcula la distancia total de cada tour. Se evapora la feromona global y se deposita en las aristas de los mejores tours, usando Q / distancia_total como cantidad de depósito.
+
+
