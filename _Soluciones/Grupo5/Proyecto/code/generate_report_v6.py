@@ -286,7 +286,7 @@ add_bullets([
 ])
 add_para('Respuesta implementada:', bold_start='Respuesta implementada:')
 add_para('El algoritmo elegido fue un Algoritmo Genético Generacional Elitista. Dentro de ese algoritmo se utilizaron selección por torneo, crossover OX, mutación por inversión y elitismo. Es importante diferenciar la variante del algoritmo de sus operadores: el elitismo define cómo se conserva la mejor solución entre generaciones; OX define cómo se cruzan dos rutas padres para formar un hijo válido.')
-add_para('Corrección conceptual para la exposición:', bold_start='Corrección conceptual para la exposición:')
+add_para('Análisis conceptual:', bold_start='Análisis conceptual:')
 add_para('La elección no fue entre OX y el AG elitista, porque pertenecen a niveles diferentes de la solución. El AG generacional elitista es el enfoque principal de búsqueda; OX es el operador de crossover usado dentro de ese AG para recombinar rutas sin romper la estructura de permutación. Por tanto, la formulación correcta es: “Algoritmo Genético Generacional Elitista con crossover OX y mutación por inversión”.')
 operators = pd.DataFrame([
     ['Selección por torneo', 'Se eligen k individuos al azar y se reproduce el de menor distancia.', 'Controla la presión selectiva y permite que las mejores rutas tengan más probabilidad de reproducirse sin eliminar toda la diversidad.'],
@@ -452,6 +452,6 @@ for ref in refs:
     p.paragraph_format.space_after = Pt(3)
 
 # Guardar
-out = REPORT / 'informe_tsp_algoritmos_geneticos_grupo5_v5.docx'
+out = REPORT / 'informe_tsp_algoritmos_geneticos_grupo5_v6.docx'
 doc.save(out)
 print(out)

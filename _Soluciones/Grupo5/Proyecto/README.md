@@ -6,8 +6,8 @@ Grupo 5: Nancy Altamirano, Gustavo Berru, Raquel Pacheco, Kevin Viteri.
 
 - `data/`: datasets CSV originales con columnas `city`, `x`, `y`.
 - `code/tsp_ga_project.py`: implementación del Algoritmo Genético Generacional Elitista para TSP.
-- `code/generate_extra_figures_v5.py`: generación de gráficas complementarias para el informe v5.
-- `code/generate_report_v5.py`: generación del informe profesional en Word.
+- `code/generate_extra_figures_v6.py`: generación de gráficas complementarias del informe final.
+- `code/generate_report_v6.py`: generación del informe profesional en Word.
 - `results/`: históricos por generación, rutas finales, resumen global, validación de permutaciones y experimento de parámetros.
 - `figures/`: gráficas de fitness, convergencia, diversidad, comparación con heurística y parámetros.
 - `report/`: informe final en Word y PDF.
@@ -31,8 +31,8 @@ Desde la raíz del proyecto:
 
 ```bash
 python code/tsp_ga_project.py
-python code/generate_extra_figures_v5.py
-python code/generate_report_v5.py
+python code/generate_extra_figures_v6.py
+python code/generate_report_v6.py
 ```
 
 El informe final responde explícitamente los literales a) a f), incluye tablas, gráficas y sustentación técnica para exposición.
