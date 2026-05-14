@@ -4,8 +4,6 @@ import math
 from typing import List
 import datetime as dt
 
-import matplotlib
-matplotlib.use('Qt5Agg')
 from matplotlib import pyplot as plt
 
 def generar_ciudades(n_cities: int):
