@@ -151,6 +151,7 @@ class TSP:
 
     def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
         plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
+        
 
 def study_nearest_neighbor(n_cities):
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)

@@ -34,6 +34,7 @@ def plot_daily_overlay(_df: pd.DataFrame, lb, legend):
     plt.ylabel(legend)
     plt.title(alias[lb])
     plt.gcf().autofmt_xdate()
+    save_plot(f"overlay_{lb}")
     plt.show()
 
 def build_daily_profiles(_df: pd.DataFrame, lb):
@@ -85,6 +86,7 @@ def plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, l
     fig.suptitle(f"Patrones diarios de {alias[lb]}")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
     fig.autofmt_xdate()
+    save_plot(f"clusters_{lb}")
     plt.show()
 
 
@@ -139,7 +141,24 @@ def plot_anomalies(daily_profiles, anomaly_df, lb):
     if labels:
         plt.legend(handles[:1], labels[:1])
 
+    save_plot(f"anomalies_{lb}")
     plt.show()
+
+def save_plot(fig_name):
+    import os
+    import matplotlib.pyplot as plt
+
+    script_path = os.path.dirname(os.path.abspath(__file__))
+
+    images_path = os.path.join(script_path, "images_P1")
+
+    os.makedirs(images_path, exist_ok=True)
+
+    save_path = os.path.join(images_path, f"{fig_name}.png")
+
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+    print(f"Imagen guardada en: {save_path}")
 
 
 def analyze_variable(_df: pd.DataFrame, lb):
