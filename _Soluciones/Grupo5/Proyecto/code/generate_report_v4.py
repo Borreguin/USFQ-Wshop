@@ -8,7 +8,7 @@ from docx.enum.section import WD_SECTION_START
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-ROOT = Path('/mnt/data/tsp_ga_project_v2')
+ROOT = Path('/mnt/data/tsp_ga_project_v4')
 REPORT = ROOT / 'report'
 FIG = ROOT / 'figures'
 RES = ROOT / 'results'
@@ -186,13 +186,13 @@ doc.add_paragraph(
     f'En promedio, el AG elitista + 2-opt redujo la distancia frente a Nearest Neighbor en {abs(avg_gap_nn):.2f}%. '
     f'Frente a Nearest Neighbor con 2-opt, el promedio fue {avg_gap_nn2:.2f}%, lo que muestra que el AG fue competitivo incluso contra una heuristica ya refinada.'
 )
-add_note(doc, 'Idea central para la defensa:',
-         'El algoritmo elegido es elitista porque conserva las mejores rutas entre generaciones; OX no es otro algoritmo, sino el operador de crossover que permite combinar rutas sin romper la estructura de permutacion del TSP.')
+add_note(doc, 'Idea central para la sustentación:',
+         'El algoritmo elegido es un Algoritmo Genetico Generacional Elitista porque conserva las mejores rutas entre generaciones y reduce el riesgo de perder buenas soluciones por azar. OX no es otro algoritmo ni reemplaza al elitismo: OX es el operador de crossover incorporado dentro del AG para crear descendientes validos cuando las soluciones son permutaciones de ciudades.')
 
 # Objective
 h = doc.add_heading('Objetivo y enfoque metodologico', level=1)
 doc.add_paragraph(
-    'El objetivo del ejercicio es implementar y analizar una solucion evolutiva para el TSP cumpliendo seis literales: representacion valida, operadores geneticos adecuados, evolucion del fitness, diversidad poblacional, comparacion con una heuristica y analisis experimental de parametros. '
+    'El objetivo del ejercicio es implementar y analizar una solucion evolutiva para el TSP cumpliendo seis literales: representacion valida, operadores geneticos adecuados, evolucion del fitness, diversidad poblacional, comparacion con una heuristica y analisis experimental de parametros. Para sustentar visualmente los resultados, el informe incluye graficas de fitness, convergencia, diversidad, comparacion con heuristicas y analisis de parametros. '
     'El enfoque utilizado fue experimental y reproducible: los datasets se leyeron desde archivos CSV con columnas city, x e y; luego se calculo una matriz de distancias euclidianas y se ejecuto el algoritmo con semilla fija para permitir replicacion.'
 )
 
@@ -215,8 +215,6 @@ add_table_from_df(doc, config_df, ['Elemento', 'Valor'], font_size=9)
 h = doc.add_heading('Datasets trabajados', level=2)
 datasets_df = summary[['dataset', 'n_ciudades']].copy()
 add_table_from_df(doc, datasets_df, ['dataset', 'n_ciudades'], ['Dataset', 'Numero de ciudades'], font_size=8.5)
-
-doc.add_page_break()
 
 # a
 h = doc.add_heading('a) Representacion de cada individuo como una permutacion valida de ciudades', level=1)
@@ -245,7 +243,7 @@ doc.add_paragraph(
 val_table = validation[['dataset', 'n_ciudades', 'ruta_ag_2opt_valida', 'hijos_invalidos_generados', 'generaciones_con_poblacion_invalida', 'sin_ciudades_repetidas', 'sin_ciudades_faltantes']].copy()
 add_table_from_df(doc, val_table, ['dataset', 'n_ciudades', 'ruta_ag_2opt_valida', 'hijos_invalidos_generados', 'generaciones_con_poblacion_invalida', 'sin_ciudades_repetidas', 'sin_ciudades_faltantes'],
                   ['Dataset', 'n', 'Ruta final valida', 'Hijos invalidos', 'Poblaciones invalidas', 'Sin repetidas', 'Sin faltantes'], font_size=7.2)
-add_note(doc, 'Defensa del literal a):',
+add_note(doc, 'Sustentación del literal a):',
          'La validez no se deja al azar. La representacion, el crossover y la mutacion fueron elegidos para trabajar naturalmente con permutaciones; ademas, el codigo valida cada ruta final y registra si aparecieron soluciones invalidas.')
 
 # b
@@ -259,7 +257,7 @@ ops_df = pd.DataFrame([
     ['Crossover OX', 'Se preserva un segmento de un padre y se completa el resto siguiendo el orden del otro padre.', 'Es valido para permutaciones y conserva informacion de orden, que es clave en el TSP.'],
     ['Mutacion por inversion', 'Se seleccionan dos posiciones y se invierte el segmento entre ellas.', 'Introduce variacion sin crear ciudades repetidas ni faltantes. Ademas, es coherente con la idea de mejorar tramos de una ruta.'],
     ['Elitismo', 'Los 2 mejores individuos se copian directamente a la siguiente generacion.', 'Evita perder la mejor ruta encontrada y mejora la estabilidad de la convergencia.'],
-    ['2-opt final', 'Se invierten aristas si la inversion reduce la distancia.', 'Refina localmente la mejor ruta del AG; por eso el enfoque puede defenderse como AG elitista hibrido.']
+    ['2-opt final', 'Se invierten aristas si la inversion reduce la distancia.', 'Refina localmente la mejor ruta del AG; por eso el enfoque puede sustentarse como AG elitista hibrido.']
 ], columns=['Componente', 'Como funciona', 'Justificacion'])
 add_table_from_df(doc, ops_df, ['Componente', 'Como funciona', 'Justificacion'], font_size=7.6)
 
@@ -268,8 +266,8 @@ doc.add_paragraph(
     'OX evita ese problema: primero fija un bloque del padre 1 y luego recorre el padre 2 para insertar solamente las ciudades que todavia no aparecen en el hijo. '
     'La mutacion por inversion se eligio porque cambia la geometria de la ruta sin alterar el conjunto de ciudades; por tanto, es mas apropiada para rutas que una mutacion numerica comun.'
 )
-add_note(doc, 'Defensa del literal b):',
-         'No se eligio OX en lugar del AG elitista. El AG elitista es la variante principal del algoritmo; OX es el operador de cruce usado dentro de esa variante para asegurar hijos validos en un problema de permutaciones.')
+add_note(doc, 'Sustentación del literal b):',
+         'No se debe interpretar OX como una alternativa al AG elitista. El AG elitista es la variante principal del proceso evolutivo porque define como se conserva la mejor solucion entre generaciones; OX, en cambio, es el operador de crossover usado dentro de ese algoritmo para recombinar dos rutas padres sin romper la representacion por permutaciones. Por eso, la decision metodologica completa es: usar un AG generacional elitista y, dentro de el, aplicar OX como operador de cruce valido para el TSP.')
 
 # c
 h = doc.add_heading('c) Analisis de la evolucion del fitness', level=1)
@@ -294,7 +292,7 @@ doc.add_paragraph(
     'En los demas casos se observo convergencia activa, debido a que todavia existieron mejoras dentro del tramo final.'
 )
 add_image(doc, FIG / 'comparacion_nn_vs_ag2opt.png', 'Figura 2. Comparacion de distancia final entre Nearest Neighbor y AG elitista + 2-opt.', width=6.6)
-add_note(doc, 'Defensa del literal c):',
+add_note(doc, 'Sustentación del literal c):',
          'La evolucion del fitness se grafico por generacion para todos los datasets. El criterio de convergencia no se baso solo en mirar la grafica, sino tambien en medir generaciones sin mejora y diversidad final.')
 
 # d
@@ -323,7 +321,7 @@ doc.add_paragraph(
     'En este proyecto, los datasets cities_100_222324 y cities_100_252627 mostraron el patron mas claro de riesgo: baja diversidad final y muchas generaciones sin mejora.'
 )
 add_image(doc, FIG / 'diversidad_final_por_dataset.png', 'Figura 4. Diversidad final medida por porcentaje de individuos unicos.', width=6.4)
-add_note(doc, 'Defensa del literal d):',
+add_note(doc, 'Sustentación del literal d):',
          'Se midio la diversidad con dos indicadores complementarios. Esto permite explicar no solo si el algoritmo encontro buenas rutas, sino tambien si las encontro manteniendo suficiente exploracion poblacional.')
 
 # e
@@ -347,7 +345,7 @@ doc.add_paragraph(
     'El caso cities_100_192021 tuvo un gap positivo frente a NN+2-opt, lo que significa que la heuristica refinada fue mejor en ese dataset especifico; esto es normal en algoritmos aproximados y demuestra por que es importante comparar y no asumir optimalidad.'
 )
 add_image(doc, FIG / 'gap_relativo_vs_nn.png', 'Figura 5. Gap relativo frente a Nearest Neighbor. Valores negativos representan mejora.', width=6.4)
-add_note(doc, 'Defensa del literal e):',
+add_note(doc, 'Sustentación del literal e):',
          'La comparacion se hizo contra una heuristica simple, como solicita el literal, y se reporto el error relativo posible. Como no hay optimos certificados, se aclara que el gap no es contra el optimo global sino contra la referencia experimental.')
 
 doc.add_page_break()
@@ -377,34 +375,43 @@ param_summary = pd.DataFrame([
     ['Probabilidad de mutacion', '0.05 y 0.20', '0.20 ayudo a sostener diversidad y evitar estancamiento temprano en el experimento.']
 ], columns=['Parametro', 'Valores evaluados', 'Interpretacion'])
 add_table_from_df(doc, param_summary, ['Parametro', 'Valores evaluados', 'Interpretacion'], font_size=8.0)
-add_note(doc, 'Defensa del literal f):',
+add_note(doc, 'Sustentación del literal f):',
          'El analisis de parametros no solo reporta tablas; explica que la calidad del AG depende del equilibrio entre exploracion y explotacion. Por eso se compararon poblacion, crossover y mutacion, que son los factores pedidos en el literal.')
 
 doc.add_page_break()
 # Conclusions
 h = doc.add_heading('Conclusiones tecnicas', level=1)
 conclusions = [
-    'La representacion por permutaciones es la forma correcta de modelar el TSP, porque cada ciudad debe aparecer exactamente una vez en la ruta.',
-    'El AG elitista fue adecuado porque conserva las mejores rutas y evita retrocesos en la mejor solucion encontrada durante la evolucion.',
-    'OX e inversion fueron operadores coherentes con el problema porque generan descendientes validos sin ciudades repetidas ni faltantes.',
-    'El fitness aumento de forma progresiva en la mayoria de los datasets, lo que evidencia convergencia. Dos datasets mostraron posible convergencia prematura, identificada con generaciones sin mejora y baja diversidad.',
-    'El AG elitista + 2-opt fue mejor que Nearest Neighbor en todos los datasets y competitivo frente a NN+2-opt, aunque no se afirma optimalidad global porque no existen optimos certificados en los archivos.',
-    'El analisis de parametros mostro que no existe una configuracion universal; el rendimiento depende del equilibrio entre tamano poblacional, crossover y mutacion.'
+    'La representacion por permutaciones es tecnicamente adecuada para el TSP porque convierte la factibilidad de la solucion en una propiedad directa del cromosoma: cada ciudad aparece una sola vez y no se requieren reparaciones posteriores para eliminar duplicados o completar faltantes.',
+    'La matriz de distancias euclidianas permitio evaluar todas las rutas con el mismo criterio objetivo. Esto hizo posible comparar de manera consistente los datasets, la heuristica Nearest Neighbor, NN+2-opt y el AG elitista + 2-opt.',
+    'El AG generacional elitista fue una eleccion justificada porque conserva las mejores rutas entre generaciones. En un problema combinatorio como el TSP, esta propiedad evita que una solucion de buena calidad desaparezca por azar durante el crossover o la mutacion.',
+    'El elitismo no trabaja solo: se combino con seleccion por torneo para favorecer rutas prometedoras, OX para recombinar rutas validas y mutacion por inversion para introducir variacion sin generar ciudades repetidas ni faltantes.',
+    'OX fue coherente con el problema porque es un operador de crossover para permutaciones. La decision metodologica no fue comparar OX contra el AG elitista, porque pertenecen a niveles distintos: el AG elitista es la arquitectura del algoritmo y OX es el operador interno que recombina rutas padres para producir hijos validos.',
+    'La mutacion por inversion fue apropiada porque modifica el orden de visita de un segmento de la ruta sin alterar el conjunto de ciudades. Por eso mantiene la validez de la solucion y, al mismo tiempo, permite explorar nuevas configuraciones.',
+    'El analisis del fitness cumplio el literal porque no solo observo el mejor individuo: tambien se graficaron fitness promedio y peor fitness. Esto permite analizar convergencia, separacion entre individuos y posibles senales de estancamiento.',
+    'La diversidad poblacional se midio con porcentaje de individuos unicos y distancia Hamming promedio. Estas metricas permitieron distinguir una convergencia esperada de una posible convergencia prematura causada por perdida excesiva de variabilidad.',
+    'La comparacion con Nearest Neighbor fue pertinente porque el literal solicitaba contrastar el AG con una heuristica simple. Adicionalmente, NN+2-opt ofrecio una referencia mas exigente para revisar si el AG era competitivo frente a una solucion localmente refinada.',
+    'El uso de 2-opt como refinamiento final mejoro la ruta obtenida por el AG al corregir cruces innecesarios. Sin embargo, el nucleo de la propuesta sigue siendo evolutivo: 2-opt actua como mejora local posterior y no reemplaza al algoritmo genetico.',
+    'El analisis experimental confirmo que el rendimiento depende del equilibrio entre tamano de poblacion, probabilidad de crossover y probabilidad de mutacion. Una poblacion mayor puede aportar diversidad, pero tambien puede requerir mas generaciones para aprovecharla.',
+    'No se afirma optimalidad global porque los datasets no incluyen una ruta optima certificada. Por esta razon, el error relativo se reporto frente a referencias experimentales y no como brecha contra un optimo teorico desconocido.',
+    'Como mejora futura, se recomienda ejecutar varias semillas por configuracion y reportar media, desviacion estandar y mejor valor por dataset. Esto fortaleceria la robustez estadistica del experimento.'
 ]
 add_bullets(doc, conclusions)
+
+doc.add_page_break()
 
 # Participation
 h = doc.add_heading('Resumen de participacion del Grupo 5', level=1)
 participation_df = pd.DataFrame([
-    ['Nancy Altamirano', 'Preparacion y validacion de datasets', 'Revision de columnas city, x, y; verificacion de cantidad de ciudades; apoyo en el literal a sobre representacion valida y control de ciudades repetidas/faltantes.'],
-    ['Gustavo Berru', 'Implementacion del algoritmo genetico', 'Desarrollo de la estructura del AG elitista, seleccion por torneo, elitismo, funcion fitness, cruce OX y mutacion por inversion; apoyo principal en los literales b y c.'],
-    ['Raquel Pacheco', 'Evaluacion experimental y comparacion', 'Ejecucion de la heuristica Nearest Neighbor, calculo de gaps relativos, validacion de resultados finales y analisis de calidad de solucion del literal e.'],
-    ['Kevin Viteri', 'Graficas, diversidad y documentacion final', 'Generacion de graficas de fitness y diversidad, analisis de convergencia, experimento de parametros del literal f y consolidacion del informe profesional.']
+    ['Nancy Altamirano', 'Modelamiento del problema, datos y literal a', 'Revision de columnas city, x, y; verificacion de cantidad de ciudades; validacion de rutas sin ciudades repetidas/faltantes; apoyo en la explicacion de la representacion por permutaciones y en la preparacion de la tabla de validacion.'],
+    ['Gustavo Berru', 'Implementacion del AG y operadores geneticos', 'Desarrollo de la poblacion inicial, seleccion por torneo, elitismo, funcion fitness, crossover OX y mutacion por inversion; verificacion de que los operadores generen descendientes validos; apoyo en los literales b y c.'],
+    ['Raquel Pacheco', 'Evaluacion, comparacion y parametros', 'Ejecucion de Nearest Neighbor, NN+2-opt y AG+2-opt; calculo de gaps relativos; interpretacion de la calidad de solucion; diseno y analisis del experimento de parametros de poblacion, crossover y mutacion; apoyo en los literales e y f.'],
+    ['Kevin Viteri', 'Diversidad, graficas y consolidacion tecnica', 'Medicion de diversidad con individuos unicos y distancia Hamming; analisis de convergencia y estancamiento; generacion e interpretacion de graficas de fitness, diversidad y parametros; consolidacion final del informe y apoyo en los literales c y d.']
 ], columns=['Integrante', 'Responsabilidad asignada', 'Actividades realizadas'])
 add_table_from_df(doc, participation_df, ['Integrante', 'Responsabilidad asignada', 'Actividades realizadas'], font_size=7.7)
 
 doc.add_paragraph(
-    'La distribucion anterior reparte las tareas de forma equilibrada y permite defender el proyecto por componentes: datos, algoritmo, evaluacion y comunicacion de resultados.'
+    'La distribucion anterior mantiene una carga equilibrada: cada integrante participa en un componente tecnico verificable del proyecto y tambien puede sustentar una parte especifica durante la exposicion. La asignacion evita concentrar el trabajo en una sola persona y cubre datos, algoritmo, evaluacion, diversidad, parametros y documentacion final.'
 )
 
 # References
@@ -431,6 +438,6 @@ files_df = pd.DataFrame([
 ], columns=['Archivo/carpeta', 'Contenido'])
 add_table_from_df(doc, files_df, ['Archivo/carpeta', 'Contenido'], font_size=8.0)
 
-out_docx = REPORT / 'informe_tsp_algoritmos_geneticos_grupo5_v2.docx'
+out_docx = REPORT / 'informe_tsp_algoritmos_geneticos_grupo5_v4.docx'
 doc.save(out_docx)
 print(out_docx)

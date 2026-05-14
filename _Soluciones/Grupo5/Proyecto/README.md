@@ -1,40 +1,38 @@
-# Proyecto final de IA - Resolucion del TSP mediante Algoritmos Geneticos
+# Proyecto Final IA - Resolución del TSP mediante Algoritmos Genéticos
 
-**Grupo 5:** Nancy Altamirano, Gustavo Berru, Raquel Pacheco y Kevin Viteri.
+Grupo 5: Nancy Altamirano, Gustavo Berru, Raquel Pacheco, Kevin Viteri.
 
-Este paquete contiene el informe profesional, codigo reproducible, datasets, resultados y graficas del proyecto **Resolucion del TSP mediante Algoritmos Geneticos**.
+## Contenido
 
-## Algoritmo usado
+- `data/`: datasets CSV originales con columnas `city`, `x`, `y`.
+- `code/tsp_ga_project.py`: implementación del Algoritmo Genético Generacional Elitista para TSP.
+- `code/generate_extra_figures_v5.py`: generación de gráficas complementarias para el informe v5.
+- `code/generate_report_v5.py`: generación del informe profesional en Word.
+- `results/`: históricos por generación, rutas finales, resumen global, validación de permutaciones y experimento de parámetros.
+- `figures/`: gráficas de fitness, convergencia, diversidad, comparación con heurística y parámetros.
+- `report/`: informe final en Word y PDF.
 
-Se implementa un **Algoritmo Genetico Generacional Elitista** adaptado al TSP:
+## Algoritmo utilizado
 
-- Representacion: permutacion valida de ciudades.
-- Seleccion: torneo de tamano 3.
-- Crossover principal: OX (Order Crossover), valido para permutaciones.
-- Mutacion: inversion de segmento.
-- Elitismo: conserva los 2 mejores individuos por generacion.
-- Fitness: `fitness = 1 / distancia_total`.
-- Comparacion: heuristica Nearest Neighbor.
-- Refinamiento final: 2-opt.
+Algoritmo Genético Generacional Elitista con:
 
-## Estructura del paquete
+- Representación por permutaciones de ciudades.
+- Selección por torneo.
+- Crossover OX, válido para permutaciones.
+- Mutación por inversión.
+- Elitismo de 2 individuos.
+- Refinamiento final 2-opt.
 
-- `data/`: archivos CSV originales con columnas `city`, `x`, `y`.
-- `code/tsp_ga_project.py`: implementacion completa del algoritmo, comparacion y experimentos.
-- `results/`: historiales por generacion, rutas finales, tabla resumen, validacion y parametros.
-- `figures/`: graficas de fitness, diversidad, comparacion y parametros.
-- `report/`: informe profesional en DOCX y PDF.
+OX no es un algoritmo alternativo al AG elitista; es el operador de crossover utilizado dentro del AG para recombinar rutas sin generar ciudades repetidas ni faltantes.
 
-## Como ejecutar
+## Ejecución
 
-Desde la carpeta raiz del paquete:
+Desde la raíz del proyecto:
 
 ```bash
 python code/tsp_ga_project.py
+python code/generate_extra_figures_v5.py
+python code/generate_report_v5.py
 ```
 
-El script regenerara los archivos de `results/` y `figures/` usando una semilla fija para reproducibilidad.
-
-## Resultados principales
-
-En los 10 datasets cargados se generaron rutas validas sin ciudades repetidas ni faltantes. El AG elitista + 2-opt obtuvo, en promedio, una mejora relativa de aproximadamente 7.83% frente a Nearest Neighbor. Como los datasets no incluyen optimos certificados, el error relativo se reporta con respecto a la heuristica de referencia.
+El informe final responde explícitamente los literales a) a f), incluye tablas, gráficas y sustentación técnica para exposición.
