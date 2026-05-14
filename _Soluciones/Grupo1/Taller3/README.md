@@ -1,16 +1,71 @@
-# Taller 3 de inteligencia artificial
+# Taller 3
 
-- P1: Unsupervised Machine Learning
-- P2: Linear Programming
+- [Participación](Participacion_Taller_3_G1.pdf)
 
-## GLPK package:
-The GLPK (GNU Linear Programming Kit) package is intended for solving large-scale linear programming (LP), mixed integer programming (MIP), and other related problems. It is a set of routines written in ANSI C and organized in the form of a callable library.
-This project uses this Linear Programming Kit to solve large-scale problems related to Logistics. 
+## 1. USO DE APRENDIZAJE NO SUPERVISADO
 
-The installation of this package depends on the Operating System:
+### A. Plotear las variables
+<!-- Jairo -->
 
-Windows: https://winglpk.sourceforge.net/
+<!-- Agregar gráficos y hallazgos -->
 
-Linux: apt-get install -y -qq glpk-utils
+### B. Encontrar patrones/clústeres – análisis univariable
+<!-- Jairo -->
 
-Mac:  brew install glpk
+<!-- Agregar gráficos y hallazgos -->
+
+### C. Encontrar anomalías – análisis univariable
+<!-- Javi -->
+
+<!-- Agregar gráficos y hallazgos -->
+
+### D. Encontrar patrones – análisis multivariable
+<!-- Nico -->
+
+<!-- Agregar gráficos y hallazgos -->
+
+### E. Encontrar anomalías – análisis multivariable
+<!-- Eve -->
+
+<!-- Agregar gráficos y hallazgos -->
+
+### F. Conclusiones
+<!-- Todos -->
+
+<!-- Agregar hallazgos -->
+
+<!----------------------------------------------------------------------------------->
+
+## 2. INVESTIGACIÓN OPERATIVA: TRAVELLING SALEMAN PROBLEM (TSP)
+
+### A. Analizar el código propuesto
+<!-- Jairo + Eve -->
+
+<!-- Agregar gráficos y hallazgos, responder ¿qué tal te parece las soluciones que ha arrojado el modelo sin aplicar
+todavía una heurística que ayude al modelo? -->
+
+### B. Analizar el parámetro tee
+<!-- Jairo + Eve -->
+
+<!-- Agregar gráficos y hallazgos -->
+
+### C. Aplicar heurística de límites a la función objetivo
+<!-- Nico -->
+
+<!-- Agregar gráficos y hallazgos, responder ¿Cuál es la diferencia entre los dos casos? y ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón? -->
+
+### D. Aplicar heurística de vecinos cercanos
+<!-- Javi -->
+
+<!-- Agregar gráficos y hallazgos, responder ¿Cuál es la diferencia entre los dos casos? y ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón? -->
+
+### E. Conclusiones
+<!-- Todos -->
+
+<!-- Agregar hallazgos -->
+
+<!----------------------------------------------------------------------------------->
+
+## 3. ALGORTIMOS GENÉTICOS
+
+<!-- Pendiente -->
