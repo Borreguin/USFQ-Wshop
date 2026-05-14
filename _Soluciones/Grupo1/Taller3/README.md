@@ -56,10 +56,32 @@ Los métodos KMeans y Agglomerative mostraron consistencia en la identificación
 ## 2. INVESTIGACIÓN OPERATIVA: TRAVELLING SALEMAN PROBLEM (TSP)
 
 ### A. Analizar el código propuesto
-<!-- Jairo + Eve -->
 
-<!-- Agregar gráficos y hallazgos, responder ¿qué tal te parece las soluciones que ha arrojado el modelo sin aplicar
-todavía una heurística que ayude al modelo? -->
+Las soluciones obtenidas con el modelo sin heurísticas parecen adecuadas y razonablemente eficientes, especialmente para un número pequeño de ciudades. Las rutas generadas muestran recorridos coherentes y relativamente organizados, minimizando trayectorias innecesarias. Sin embargo, conforme aumenta el número de ciudades, el problema se vuelve más complejo y el tiempo de ejecución incrementa considerablemente. Aun así, el modelo logra encontrar soluciones de buena calidad, lo que demuestra la capacidad del enfoque de programación lineal para resolver el problema del TSP en instancias pequeñas y medianas.
+
+#### Resultados comparativos – Caso de estudio 1
+
+En comparación, la heurística del vecino cercano encuentra rutas rápidamente, pero al tomar decisiones locales no siempre obtiene el recorrido global más corto. La heurística de vecino cercano no garantiza una mejor solución que el modelo LP. Como se evidencia, su ventaja principal es el tiempo de ejecución ya que, construye una ruta rápidamente. Sin embargo, al tomar decisiones locales, puede generar rutas con cruces o distancias mayores. Por ello, una solución con heurística puede verse menos ordenada o tener mayor distancia, aunque se obtenga en menor tiempo.
+
+| Nº Ciudades | Método                     | Tiempo de ejecución | Distancia total |
+|-------------|----------------------------|---------------------|-----------------|
+| 10          | LP sin heurística          | 00:00               | 570.70          |
+| 10          | Heurística vecino cercano  | 00:00               | 588.52          |
+| 20          | LP sin heurística          | 00:03               | 718.47          |
+| 20          | Heurística vecino cercano  | 00:00               | 758.23          |
+| 30          | LP sin heurística          | 00:30               | 931.74          |
+| 30          | Heurística vecino cercano  | 00:00               | 1036.63         |
+| 40          | LP sin heurística          | 00:30               | 1131.79         |
+| 40          | Heurística vecino cercano  | 00:00               | 1174.04         |
+| 50          | LP sin heurística          | 00:30               | 1125.95         |
+| 50          | Heurística vecino cercano  | 00:00               | 1368.73         |
+
+![PS2](P2_TSP/images_P2/LP_sin_heuristica_10.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_10.png)
+
+![PS2](P2_TSP/images_P2/LP_sin_heuristica_30.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_30.png)
+
+![PS2](P2_TSP/images_P2/LP_sin_heuristica_50.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_50.png)
+
 
 ### B. Analizar el parámetro tee
 <!-- Jairo + Eve -->
