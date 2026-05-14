@@ -303,7 +303,8 @@ def study_case_2():
         tsp = TSP(ciudades, distancias, heuristics_dict[heuristics])
         ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
         rutas[heuristics] = ruta
-        tsp.plotear_resultado(ruta, False)
+        nombre_archivo = f"ruta_{n_cities}_ciudades_{heuristics.replace(' ', '_')}"
+        tsp.plotear_resultado(ruta, False, nombre_archivo)
         print("\n==========================")
     print("\nComparando resultados:\n")
     for heuristics in heuristics_dict.keys():
