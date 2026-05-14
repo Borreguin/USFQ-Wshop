@@ -204,9 +204,9 @@ def study_case_3():
     n_cities = 100
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
     # con heuristicas
-    heuristics = ['vecino_cercano']
+    # heuristics = ['vecino_cercano']
     # sin heuristicas
-    # heuristics = []
+    heuristics = []
     tsp = TSP(ciudades, distancias, heuristics)
     mipgap = 0.05
     time_limit = 60
@@ -221,5 +221,5 @@ if __name__ == "__main__":
     # study_nearest_neighbor(100)
     # Solve the TSP problem
     # study_case_1()
-    study_case_2()
-    # study_case_3()
+    # study_case_2()
+    study_case_3()
