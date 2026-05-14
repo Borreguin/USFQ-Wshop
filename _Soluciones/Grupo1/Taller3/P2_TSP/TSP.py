@@ -187,15 +187,27 @@ def study_case_2():
     n_cities = 70
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
     # con heuristicas
-    heuristics = ['limitar_funcion_objetivo']
+    heuristics_dict = {'con heuristica': ['limitar_funcion_objetivo'],
+                       'sin heuristica': []
+                       }
     # sin heuristicas
     # heuristics = []
-    tsp = TSP(ciudades, distancias, heuristics)
     mipgap = 0.2
     time_limit = 40
     tee = True
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta, False)
+    rutas = {}
+    for heuristics in heuristics_dict.keys():
+        print("\n==========================")
+        print(f"Probando {heuristics}:\n")
+        tsp = TSP(ciudades, distancias, heuristics_dict[heuristics])
+        ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
+        rutas[heuristics] = ruta
+        tsp.plotear_resultado(ruta, False)
+        print("\n==========================")
+    print("\nComparando resultados:\n")
+    for heuristics in heuristics_dict.keys():
+        print(f"Ruta obtenida {heuristics}: {rutas[heuristics]}")
+        print(f"Distancia total recorrida {heuristics}: {calculate_path_distance(distancias, rutas[heuristics])}\n")
 
 def study_case_3():
     n_cities = 100
