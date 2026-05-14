@@ -409,22 +409,30 @@ def start():
     start_d(df)
     start_e(df)
 
-def start_a(df = prepare_data()):
+def start_a(df = None):
+    if df is None:
+        df = prepare_data()
     plot_daily_overlay(df, lb_V005_vent01_CO2, "CO2")
     plot_daily_overlay(df, lb_V022_vent02_CO2, "CO2")
     plot_daily_overlay(df, lb_V006_vent01_temp_out, "Temperature")
     plot_daily_overlay(df, lb_V023_vent02_temp_out, "Temperature")
 
-def start_b(df = prepare_data()):
+def start_b(df = None):
+    if df is None:
+        df = prepare_data()
     analyze_variable(df, lb_V005_vent01_CO2)
     analyze_variable(df, lb_V022_vent02_CO2)
     analyze_variable(df, lb_V006_vent01_temp_out)
     analyze_variable(df, lb_V023_vent02_temp_out)
 
-def start_c(df = prepare_data()):
+def start_c(df = None):
+    if df is None:
+        df = prepare_data()
     pass
 
-def start_d(df = prepare_data()):
+def start_d(df = None):
+    if df is None:
+        df = prepare_data()
     analyze_multivariable_patterns(
         df,
         [lb_V005_vent01_CO2, lb_V006_vent01_temp_out],
@@ -436,5 +444,7 @@ def start_d(df = prepare_data()):
         "Zona Sur Oeste"
     )
 
-def start_e(df = prepare_data()):
+def start_e(df = None):
+    if df is None:
+        df = prepare_data()
     pass
