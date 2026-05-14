@@ -88,6 +88,60 @@ def plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, l
     plt.show()
 
 
+def detect_anomalies_kmeans(daily_profiles_scaled, kmeans_labels, kmeans, threshold_std=2):
+    import numpy as np
+    import pandas as pd
+
+    # Centroide asignado a cada día
+    assigned_centroids = kmeans.cluster_centers_[kmeans_labels]
+
+    # Distancia de cada día a su centroide
+    distances = np.linalg.norm(daily_profiles_scaled.values - assigned_centroids, axis=1)
+
+    # Umbral: promedio + 2 desviaciones estándar
+    threshold = distances.mean() + threshold_std * distances.std()
+
+    anomalies = distances > threshold
+
+    anomaly_df = pd.DataFrame({
+        "day": daily_profiles_scaled.index,
+        "cluster": kmeans_labels + 1,
+        "distance": distances,
+        "threshold": threshold,
+        "is_anomaly": anomalies
+    })
+
+    return anomaly_df
+
+
+def plot_anomalies(daily_profiles, anomaly_df, lb):
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+
+    time_axis = pd.to_datetime(daily_profiles.columns, format="%H:%M")
+
+    plt.figure(figsize=(12, 6))
+
+    for day in daily_profiles.index:
+        if day in anomaly_df[anomaly_df["is_anomaly"]]["day"].values:
+            plt.plot(time_axis, daily_profiles.loc[day], color="red", linewidth=2.5, label="Anomalía")
+        else:
+            plt.plot(time_axis, daily_profiles.loc[day], color="gray", alpha=0.25)
+
+    plt.title(f"Anomalías detectadas - {alias[lb]}")
+    plt.xlabel("Hora del día")
+    plt.ylabel(alias[lb])
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gcf().autofmt_xdate()
+    plt.grid(True, alpha=0.2)
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    if labels:
+        plt.legend(handles[:1], labels[:1])
+
+    plt.show()
+
+
 def analyze_variable(_df: pd.DataFrame, lb):
 
     daily_profiles = build_daily_profiles(_df, lb)
@@ -119,6 +173,20 @@ def analyze_variable(_df: pd.DataFrame, lb):
     print(f"Consistencia KMeans vs Agglomerative (ARI): {ari:.3f}")
     print(f"Distribución KMeans: { {int(cluster_id + 1): int((kmeans_labels == cluster_id).sum()) for cluster_id in sorted(set(kmeans_labels))} }")
     print(f"Distribución Agglomerative: { {int(cluster_id + 1): int((agglomerative_labels == cluster_id).sum()) for cluster_id in sorted(set(agglomerative_labels))} }")
+
+
+    anomaly_df = detect_anomalies_kmeans(
+        daily_profiles_scaled,
+        kmeans_labels,
+        kmeans,
+        threshold_std=2
+    )
+
+    print("\nAnomalías detectadas:")
+    print(anomaly_df[anomaly_df["is_anomaly"]].sort_values("distance", ascending=False))
+
+    plot_anomalies(daily_profiles, anomaly_df, lb)
+
 
     plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, lb)
 
