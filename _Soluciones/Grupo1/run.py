@@ -102,9 +102,13 @@ def taller_3():
             print('\nFin del estudio de caso 1\n')
         elif study_case == '2':
             print('\n=========================')
+            print('Resolución del TSP sin heurísticas')
+            print('=========================')
+            general_study_case(50, ['limitar_funcion_objetivo'], 0.05, 60, True)
+            print('\n=========================')
             print('Resolución del TSP con heurísticas')
             print('=========================')
-            general_study_case(100, ['limitar_funcion_objetivo'], 0.05, 60, True)
+            general_study_case(50, [], 0.05, 60, True)
             print('\nFin del estudio de caso 2\n')
         else :
             print('No hay el texto')
