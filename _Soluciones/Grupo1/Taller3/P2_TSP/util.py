@@ -3,6 +3,7 @@ import string
 import math
 from typing import List
 import datetime as dt
+import os
 
 from matplotlib import pyplot as plt
 
@@ -69,9 +70,26 @@ def plotear_ruta(ciudades, distancias, ruta, mostrar_anotaciones=True):
     plt.title('({:d}) Ciudades (Distancia: {:.2f})'.format(len(ciudades), path_distance))
     plt.legend()
     plt.grid(True)
+    guardar_imagen(f"ruta_{len(ciudades)}_ciudades")
     plt.show()
 
+def guardar_imagen(nombre_archivo):
+    # Ruta raíz del proyecto
+    project_root = os.path.dirname(os.path.abspath(__file__))
 
+    # Carpeta donde guardar imágenes
+    images_path = os.path.join(project_root, "images_P2")
+
+    # Crear carpeta si no existe
+    os.makedirs(images_path, exist_ok=True)
+
+    # Ruta final del archivo
+    save_path = os.path.join(images_path, f"{nombre_archivo}.png")
+
+    # Guardar imagen
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+    print(f"Imagen guardada correctamente en:\n{save_path}")
 
 
 def get_path(edges: dict, initial_city: str, path: List[str]):
