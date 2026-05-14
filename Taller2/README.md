@@ -1,14 +1,12 @@
 # WorkShop-USFQ
 ## Taller 2 de inteligencia artificial
 
-- **Nombre del grupo**: xxxxxx
+- **Nombre del grupo**: GRUPO 3
 - **Integrantes del grupo**:
-Integrantes del Grupo:
-
-Nancy Altamirano	
-Gustavo Berru	
-Raquel Pacheco	
-Kevin Viteri	
+  * Ana Haro             Realiza P2 Actividades D, E
+  * Lucy Barreno         Realiza P1
+  * Darwin Simba         Realiza P2 Actividades A, B, C
+  * Jhon Del Castillo    Realiza ENSAYO
 
 
 El objetivo de esta tarea es utilizar cualquier algoritmo de búsqueda para resolver los 3 laberintos propuestos, 

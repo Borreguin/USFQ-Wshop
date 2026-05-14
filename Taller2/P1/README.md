@@ -3,7 +3,7 @@
 
 - **Nombre del grupo**: GRUPO 3
 - **Integrantes del grupo**:
-  * Ana Haro             Realiza P2 Actividades D, E, F
+  * Ana Haro             Realiza P2 Actividades D, E
   * Lucy Barreno         Realiza P1
   * Darwin Simba         Realiza P2 Actividades A, B, C
   * Jhon Del Castillo    Realiza ENSAYO
