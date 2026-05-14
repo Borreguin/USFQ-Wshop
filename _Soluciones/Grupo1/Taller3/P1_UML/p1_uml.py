@@ -317,6 +317,9 @@ def plot_multivariable_patterns(
 
     fig.tight_layout(rect=[0, 0, 1, 0.96])
 
+    fig_name = title.replace(" ", "_").replace("(", "").replace(")", "").replace("-", "_")
+    save_plot(fig_name)
+
     plt.show()
 
 
@@ -400,23 +403,38 @@ def analyze_multivariable_patterns(
 
 def start():
     df = prepare_data()
+    start_a(df)
+    start_b(df)
+    start_c(df)
+    start_d(df)
+    start_e(df)
+
+def start_a(df = prepare_data()):
     plot_daily_overlay(df, lb_V005_vent01_CO2, "CO2")
     plot_daily_overlay(df, lb_V022_vent02_CO2, "CO2")
     plot_daily_overlay(df, lb_V006_vent01_temp_out, "Temperature")
     plot_daily_overlay(df, lb_V023_vent02_temp_out, "Temperature")
+
+def start_b(df = prepare_data()):
     analyze_variable(df, lb_V005_vent01_CO2)
     analyze_variable(df, lb_V022_vent02_CO2)
     analyze_variable(df, lb_V006_vent01_temp_out)
     analyze_variable(df, lb_V023_vent02_temp_out)
 
+def start_c(df = prepare_data()):
+    pass
+
+def start_d(df = prepare_data()):
     analyze_multivariable_patterns(
         df,
         [lb_V005_vent01_CO2, lb_V006_vent01_temp_out],
         "Zona Norte Este"
     )
-
     analyze_multivariable_patterns(
         df,
         [lb_V022_vent02_CO2, lb_V023_vent02_temp_out],
         "Zona Sur Oeste"
     )
+
+def start_e(df = prepare_data()):
+    pass
