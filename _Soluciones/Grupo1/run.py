@@ -3,7 +3,8 @@ from Taller1.P2_Granjero.Acertijo import main as granjero_main
 from Taller1.P3_Torres.Torres import main as torres_main
 from Taller2.P1.P1 import study_case_1 as p1_study_case_1, study_case_3 as p1_study_case_3
 from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, study_case_optimized as study_case_optimized
-from Taller3.P1_UML.p1_uml import start
+from Taller3.P1_UML.p1_uml import start as start_p1_uml
+from Taller3.P2_TSP.TSP import general_study_case, study_nearest_neighbor
 
 def print_options(arr, header = None):
     if header:
@@ -97,8 +98,14 @@ def taller_3():
             print('\n=========================')
             print('Llamado al dataset de edificios ')
             print('=========================')
-            start()
+            start_p1_uml()
             print('\nFin del estudio de caso 1\n')
+        elif study_case == '2':
+            print('\n=========================')
+            print('Resolución del TSP con heurísticas')
+            print('=========================')
+            general_study_case(100, ['limitar_funcion_objetivo'], 0.05, 60, True)
+            print('\nFin del estudio de caso 2\n')
         else :
             print('No hay el texto')
         print_options(options)
