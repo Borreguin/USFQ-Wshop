@@ -149,9 +149,65 @@ class TSP:
 
 
 
-    def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
-        plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
-        
+    def plotear_resultado(
+        self,
+        ruta: List[str],
+        mostrar_anotaciones: bool = True,
+        titulo: str = "",
+        guardar: bool = False,
+        nombre_archivo: str = ""
+    ):
+
+        import matplotlib.pyplot as plt
+        import os
+
+        plt.figure(figsize=(8, 6))
+
+        # Coordenadas de todas las ciudades
+        x_ciudades = [coord[0] for coord in self.ciudades.values()]
+        y_ciudades = [coord[1] for coord in self.ciudades.values()]
+
+        # Coordenadas de la ruta
+        x_ruta = [self.ciudades[ciudad][0] for ciudad in ruta]
+        y_ruta = [self.ciudades[ciudad][1] for ciudad in ruta]
+
+        # Distancia total
+        distancia = calculate_path_distance(self.distancias, ruta)
+
+        # Graficar ciudades
+        plt.scatter(x_ciudades, y_ciudades, color="blue", label="Ciudades")
+
+        # Graficar ruta
+        plt.plot(x_ruta, y_ruta, color="red", marker="o", label="Mejor Ruta")
+
+        # Anotaciones
+        if mostrar_anotaciones:
+            for ciudad, (x, y) in self.ciudades.items():
+                plt.text(x, y, ciudad, fontsize=8)
+
+        # Título
+        if titulo == "":
+            titulo = f"({len(self.ciudades)}) Ciudades (Distancia: {distancia:.2f})"
+        else:
+            titulo = f"{titulo} | Distancia: {distancia:.2f}"
+
+        plt.title(titulo)
+        plt.xlabel("Coordenada X")
+        plt.ylabel("Coordenada Y")
+        plt.grid(True)
+        plt.legend()
+
+        # Guardar imagen
+        if guardar:
+            carpeta = os.path.join(current_dir, "images_P2")
+            os.makedirs(carpeta, exist_ok=True)
+
+            ruta_guardado = os.path.join(carpeta, nombre_archivo)
+            plt.savefig(ruta_guardado, dpi=300, bbox_inches="tight")
+
+        plt.show()
+        plt.close()
+
 
 def study_nearest_neighbor(n_cities):
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
@@ -163,26 +219,70 @@ def study_case_1():
     for n_cities in [10, 20, 30, 40, 50]:
 
         print("\n==========================")
-        print(f"Probando con {n_cities} ciudades")
+        print(f"Comparando con {n_cities} ciudades")
         print("==========================")
 
         ciudades, distancias = generar_ciudades_con_distancias(n_cities)
 
+
+        # 1. MODELO LP SIN HEURÍSTICA
+
         heuristics = []
-
-        mipgap = 0.05
-        time_limit = 30
-        tee = False
-
         tsp = TSP(ciudades, distancias, heuristics)
 
-        ruta = tsp.encontrar_la_ruta_mas_corta(
-            mipgap,
-            time_limit,
-            tee
+        start_time = dt.datetime.now()
+
+        ruta_lp = tsp.encontrar_la_ruta_mas_corta(
+            mipgap=0.05,
+            time_limit=30,
+            tee=False
         )
 
-        tsp.plotear_resultado(ruta, False)
+        tiempo_lp = dt.datetime.now() - start_time
+        distancia_lp = calculate_path_distance(distancias, ruta_lp)
+
+        tsp.plotear_resultado(
+            ruta_lp,
+            False,
+            titulo=f"LP sin heurística - {n_cities} ciudades",
+            guardar=True,
+            nombre_archivo=f"LP_sin_heuristica_{n_cities}.png"
+        )
+
+
+        # 2. HEURÍSTICA VECINO CERCANO
+
+        start_time = dt.datetime.now()
+
+        ruta_nn = nearest_neighbor(ciudades, distancias)
+
+        tiempo_nn = dt.datetime.now() - start_time
+        distancia_nn = calculate_path_distance(distancias, ruta_nn)
+
+        tsp.plotear_resultado(
+            ruta_nn,
+            False,
+            titulo=f"Heurística Vecino Cercano - {n_cities} ciudades",
+            guardar=True,
+            nombre_archivo=f"Heuristica_vecino_cercano_{n_cities}.png"
+        )
+
+   
+        # RESULTADOS
+       
+        print("\nResultados:")
+
+        print(
+            f"LP sin heurística - "
+            f"Tiempo: {delta_time_mm_ss(tiempo_lp)}, "
+            f"Distancia: {distancia_lp}"
+        )
+
+        print(
+            f"Heurística vecino cercano - "
+            f"Tiempo: {delta_time_mm_ss(tiempo_nn)}, "
+            f"Distancia: {distancia_nn}"
+        )
 
 def study_case_2():
     n_cities = 70
