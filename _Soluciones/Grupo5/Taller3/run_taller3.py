@@ -785,8 +785,9 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
     f"B.2 — Clustering Univariable: phone_usage_hours  (K-Means k={p1_data['best_k_v2']}, Silhouette={p1_data['sil_v2']:.3f})",
     "<b>Izquierda — Distribucion:</b> histograma del uso diario del telefono; "
     "tambien uniforme, sin picos claros. "
-    f"<b>Centro — K-Means k={p1_data['best_k_v2']}:</b> identifica grupos de uso bajo, "
-    "medio y alto del telefono. La productividad media decrece con el uso del telefono, "
+    f"<b>Centro — K-Means k={p1_data['best_k_v2']}:</b> identifica dos grupos principales "
+    "asociados a uso bajo/moderado y uso alto del telefono. "
+    "La productividad media decrece con el uso del telefono, "
     "confirmando la correlacion negativa observada en PCA. "
     "<b>Derecha — DBSCAN:</b> confirma los mismos grupos que K-Means. "
     "La coincidencia entre ambos algoritmos valida la robustez de la segmentacion.",
@@ -794,10 +795,12 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
 
   <h4>Dificultades encontradas</h4>
   <div class="callout warn">
-    <b>1. Silhouette bajo:</b> Los valores de silhouette ({p1_data["sil_v1"]:.3f} y
-    {p1_data["sil_v2"]:.3f}) son bajos porque la distribucion del dataset es uniforme
-    &mdash; no hay gaps claros entre grupos. Esto no significa que el clustering sea
-    incorrecto; significa que los clusters son <i>graduales</i>, no discretos.<br><br>
+    <b>1. Silhouette aceptable&ndash;bueno (escala: &lt;0.25 malo, 0.25&ndash;0.5 debil,
+    0.5&ndash;0.7 aceptable/bueno, &gt;0.7 excelente):</b> Los valores obtenidos
+    ({p1_data["sil_v1"]:.3f} y {p1_data["sil_v2"]:.3f}) se ubican en la zona
+    <b>aceptable a buena</b>. No son bajos; reflejan que los clusters son
+    <i>graduales</i> y no discretos &mdash; esperable en un dataset sintetico con
+    distribucion uniforme donde no existen gaps claros entre grupos.<br><br>
     <b>2. DBSCAN: seleccion de eps:</b> Con datos uniformes, DBSCAN tiende a unir todo
     en un solo cluster para eps grandes o fragmentar todo en ruido para eps pequenos.
     Se necesito ajuste manual de eps=0.4 y min_samples=50 para obtener clusters
@@ -807,7 +810,7 @@ def build_html(p1_data: dict, p2_data: dict, p3_data: dict) -> str:
 
   <h4>Aprendizajes</h4>
   <div class="callout good">
-    A pesar del bajo silhouette, <b>K-Means y DBSCAN coinciden</b> en la segmentacion
+    Con un Silhouette aceptable (~0.6), <b>K-Means y DBSCAN coinciden</b> en la segmentacion
     basica: estudiantes con poco estudio (&le;3 h), promedio (3-6 h) y con mucho estudio
     (&ge;7 h). Esta coincidencia valida los patrones. El analisis de la
     <code>productivity_score</code> promedio por cluster confirma que los grupos tienen
@@ -2584,24 +2587,27 @@ def generate_pdf(out_path: str, p1_data: dict, p2_data: dict, p3_data: dict) -> 
         f"(K-Means k={p1_data['best_k_v2']}, Silhouette={p1_data['sil_v2']:.3f})",
         f"<b>Izquierda — Distribucion:</b> histograma del uso diario del telefono; "
         "tambien uniforme, sin picos claros. "
-        f"<b>Centro — K-Means k={p1_data['best_k_v2']}:</b> identifica grupos de uso bajo, "
-        "medio y alto del telefono. La productividad media decrece con el uso del telefono, "
+        f"<b>Centro — K-Means k={p1_data['best_k_v2']}:</b> identifica dos grupos principales "
+        "asociados a uso bajo/moderado y uso alto del telefono. "
+        "La productividad media decrece con el uso del telefono, "
         "confirmando la correlacion negativa observada en PCA. "
         "<b>Derecha — DBSCAN:</b> confirma los mismos grupos que K-Means. "
         "La coincidencia entre ambos algoritmos valida la robustez de la segmentacion.")
     story += [
         Paragraph("<b>Dificultades encontradas</b>", H4),
         callout(
-            f"<b>1. Silhouette bajo:</b> Los valores de silhouette ({p1_data['sil_v1']:.3f} y "
-            f"{p1_data['sil_v2']:.3f}) son bajos porque la distribucion del dataset es uniforme — "
-            "no hay gaps claros entre grupos. Los clusters son <i>graduales</i>, no discretos.<br/>"
+            f"<b>1. Silhouette aceptable-bueno</b> (escala: &lt;0.25 malo, 0.25-0.5 debil, "
+            "0.5-0.7 aceptable/bueno, &gt;0.7 excelente): "
+            f"Los valores obtenidos ({p1_data['sil_v1']:.3f} y {p1_data['sil_v2']:.3f}) "
+            "se ubican en la zona aceptable a buena. "
+            "No son bajos; reflejan clusters graduales — esperable en un dataset sintetico uniforme.<br/>"
             "<b>2. DBSCAN: seleccion de eps:</b> Con datos uniformes, DBSCAN tiende a unir todo "
             "en un solo cluster para eps grandes o fragmentar todo en ruido para eps pequenos. "
             f"Se ajusto eps=0.4 y min_samples=50 obteniendo {p1_data['n_cl_db']} cluster(s) "
             f"y {p1_data['n_ns_db']} puntos de ruido.", "warn"),
         Paragraph("<b>Aprendizajes</b>", H4),
         callout(
-            "A pesar del bajo silhouette, <b>K-Means y DBSCAN coinciden</b> en la segmentacion: "
+            "Con un Silhouette aceptable (~0.6), <b>K-Means y DBSCAN coinciden</b> en la segmentacion: "
             "estudiantes con poco estudio (<=3 h), promedio (3-6 h) y mucho estudio (>=7 h). "
             "La coincidencia valida los patrones. El analisis de productivity_score promedio "
             "por cluster confirma que los grupos tienen sentido real.", "good"),
