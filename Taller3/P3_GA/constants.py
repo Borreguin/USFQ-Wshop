@@ -35,3 +35,4 @@ class NewGenerationType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'
     NEW = 'new'
+    DEFINITIVE = 'definitive'

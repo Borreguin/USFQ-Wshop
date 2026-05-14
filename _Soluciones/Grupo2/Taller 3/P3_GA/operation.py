@@ -1,6 +1,6 @@
 import random
-from Taller3.P3_GA.constants import *
-from Taller3.P3_GA.util import *
+from constants import *
+from util import *
 
 
 def parent_selection(_type: ParentSelectionType, population, aptitudes):
@@ -19,8 +19,14 @@ def parent_selection(_type: ParentSelectionType, population, aptitudes):
         return parent1, parent2
 
     if _type == ParentSelectionType.NEW:
-        print("implement here the new parent selection")
-        return None
+        # Selección por torneo: k candidatos aleatorios, gana el de mayor aptitud
+        k = 5
+        indices = list(range(len(population)))
+        candidates1 = random.sample(indices, k)
+        candidates2 = random.sample(indices, k)
+        parent1 = population[max(candidates1, key=lambda i: aptitudes[i])]
+        parent2 = population[max(candidates2, key=lambda i: aptitudes[i])]
+        return parent1, parent2
 
 
 def crossover(_type: CrossoverType, parent1, parent2):
@@ -31,8 +37,17 @@ def crossover(_type: CrossoverType, parent1, parent2):
         child2 = parent2[:crossover_point] + parent1[crossover_point:]
         return child1, child2
     if _type == CrossoverType.NEW:
-        print("implement here the new crossover")
-        return None
+        # Cruce uniforme: cada posición se toma independientemente de un padre o del otro
+        child1 = ''
+        child2 = ''
+        for g1, g2 in zip(parent1, parent2):
+            if random.random() < 0.5:
+                child1 += g1
+                child2 += g2
+            else:
+                child1 += g2
+                child2 += g1
+        return child1, child2
 
 
 def mutate(_type: MutationType, individual, mutation_rate):
