@@ -98,7 +98,7 @@ def taller_3():
             print('\n=========================')
             print('Llamado al dataset de edificios ')
             print('=========================')
-            T3_P1.start_p1_uml()
+            T3_P1.start()
             print('\nFin del estudio de caso 1\n')
         elif exercise == '2':
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
