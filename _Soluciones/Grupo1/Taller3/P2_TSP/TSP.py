@@ -149,9 +149,8 @@ class TSP:
 
 
 
-    def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True):
-        plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones)
-        
+    def plotear_resultado(self, ruta: List[str], mostrar_anotaciones: bool = True, nombre_archivo: str = None):
+        plotear_ruta(self.ciudades, self.distancias, ruta, mostrar_anotaciones, nombre_archivo)
 
 def study_nearest_neighbor(n_cities):
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
@@ -203,7 +202,8 @@ def study_case_2():
         tsp = TSP(ciudades, distancias, heuristics_dict[heuristics])
         ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
         rutas[heuristics] = ruta
-        tsp.plotear_resultado(ruta, False)
+        nombre_archivo = f"ruta_{n_cities}_ciudades_{heuristics.replace(' ', '_')}"
+        tsp.plotear_resultado(ruta, False, nombre_archivo)
         print("\n==========================")
     print("\nComparando resultados:\n")
     for heuristics in heuristics_dict.keys():

@@ -43,7 +43,7 @@ def generar_ciudades_con_distancias(n_cities: int, seed: int =123):
     distancias = generar_distancias(ciudades)
     return ciudades, distancias
 
-def plotear_ruta(ciudades, distancias, ruta, mostrar_anotaciones=True):
+def plotear_ruta(ciudades, distancias, ruta, mostrar_anotaciones=True, nombre_archivo=None):
     if None in ruta:
         print("La ruta contiene valores nulos, no se encontró una solución válida.")
         return
@@ -70,7 +70,9 @@ def plotear_ruta(ciudades, distancias, ruta, mostrar_anotaciones=True):
     plt.title('({:d}) Ciudades (Distancia: {:.2f})'.format(len(ciudades), path_distance))
     plt.legend()
     plt.grid(True)
-    guardar_imagen(f"ruta_{len(ciudades)}_ciudades")
+    if nombre_archivo is None:
+        nombre_archivo = f"ruta_{len(ciudades)}_ciudades"
+    guardar_imagen(nombre_archivo)
     plt.show()
 
 def guardar_imagen(nombre_archivo):
