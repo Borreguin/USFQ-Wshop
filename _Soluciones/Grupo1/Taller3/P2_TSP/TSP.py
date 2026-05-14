@@ -159,16 +159,30 @@ def study_nearest_neighbor(n_cities):
     plotear_ruta(ciudades, distancias, ruta, True)
 
 def study_case_1():
-    # tal vez un loop para probar 10, 20, 30, 40, 50 ciudades?
-    n_cities = 50
-    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
-    heuristics = []
-    mipgap = 0.05
-    time_limit = 30
-    tee = False
-    tsp = TSP(ciudades, distancias, heuristics)
-    ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
-    tsp.plotear_resultado(ruta)
+
+    for n_cities in [10, 20, 30, 40, 50]:
+
+        print("\n==========================")
+        print(f"Probando con {n_cities} ciudades")
+        print("==========================")
+
+        ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+
+        heuristics = []
+
+        mipgap = 0.05
+        time_limit = 30
+        tee = False
+
+        tsp = TSP(ciudades, distancias, heuristics)
+
+        ruta = tsp.encontrar_la_ruta_mas_corta(
+            mipgap,
+            time_limit,
+            tee
+        )
+
+        tsp.plotear_resultado(ruta, False)
 
 def study_case_2():
     n_cities = 70
@@ -204,6 +218,6 @@ if __name__ == "__main__":
     # as reference, see nearest neighbor heuristic
     study_nearest_neighbor(100)
     # Solve the TSP problem
-    # study_case_1()
+    study_case_1()
     # study_case_2()
-    study_case_3()
+    # study_case_3()
