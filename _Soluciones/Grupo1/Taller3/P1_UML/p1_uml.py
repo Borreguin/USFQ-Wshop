@@ -391,14 +391,14 @@ def analyze_multivariable_patterns(
         daily_profiles,
         kmeans_labels,
         variables,
-        f"Patrones diarios multivariables - {zone_name} (KMeans)"
+        f"Multivariable Clusters - {zone_name} (KMeans)"
     )
 
     plot_multivariable_patterns(
         daily_profiles,
         agglomerative_labels,
         variables,
-        f"Patrones diarios multivariables - {zone_name} (Agglomerative)"
+        f"Multivariable Clusters - {zone_name} (Agglomerative)"
     )
 
 def start():
