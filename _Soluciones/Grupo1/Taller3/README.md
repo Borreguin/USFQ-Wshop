@@ -76,7 +76,21 @@ En comparación, la heurística del vecino cercano encuentra rutas rápidamente,
 | 50          | LP sin heurística          | 00:30               | 1125.95         |
 | 50          | Heurística vecino cercano  | 00:00               | 1368.73         |
 
-![PS2](P2_TSP/images_P2/LP_sin_heuristica_10.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_10.png)
+
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_10.png" width="350">
+    </td>
+
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_10.png" width="350">
+    </td>
+  </tr>
+</table>
+
 
 ![PS2](P2_TSP/images_P2/LP_sin_heuristica_30.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_30.png)
 
