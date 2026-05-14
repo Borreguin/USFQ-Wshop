@@ -82,7 +82,6 @@ Por otro lado, en laberintos de mayor tamaño o complejidad, se recomienda el us
 
 ![Maze4](images/laberinto4_BFS.png)
 
-
 ## 2. OPTIMIZACIÓN DE COLONIAS DE HORMIGAS
 
 ### A. Correr la implementación planteada
