@@ -91,25 +91,35 @@ En general, el análisis multivariable permitió identificar patrones diarios m�
 
 ### E. Encontrar anomalías – análisis multivariable
 
-Las anomalías multivariables se detectaron identificando perfiles diarios que no pertenecen claramente a los clústeres principales encontrados mediante KMeans y Agglomerative Clustering.
+Para el análisis multivariable se consideraron conjuntamente las variables de CO2 y temperatura de cada zona del edificio, formando perfiles diarios combinados. Se aplicó el algoritmo KMeans para identificar patrones representativos y posteriormente se calcularon las distancias de cada día respecto al centroide de su clúster asignado. Los perfiles cuya distancia superó el umbral definido fueron considerados anomalías multivariables.
 
-Para cada par de variables (CO2 y temperatura), se comparó la forma completa de los perfiles diarios respecto a los patrones promedio de cada clúster.
+#### Zona Norte Este (NE)
 
-En el caso del CO2, se identificaron días con picos excesivos de concentración, variaciones abruptas y perfiles que no seguían la tendencia típica de ocupación del edificio. Algunos perfiles alcanzaron valores superiores a 1300 ppm, alejándose significativamente de los patrones representativos. En las gráficas se visualizan todos los días normales en gris y las anomalías en rojo.
+En la zona Norte Este se identificaron varios perfiles diarios anómalos que presentan comportamientos distintos al patrón general observado en la mayoría de días.
 
-![PS1](P1_UML/images_P1/anomalies_V005_vent01_CO2.png)
+Las anomalías más evidentes se presentan principalmente en la variable de CO2, donde algunos días muestran incrementos abruptos entre las 12:00 y 15:00 horas, alcanzando concentraciones considerablemente mayores al comportamiento promedio. Esto podría sugerir eventos de mayor ocupación, menor ventilación o cambios operativos del sistema de ventilación.
 
-![PS1](P1_UML/images_P1/anomalies_V022_vent02_CO2.png)
+En la variable de temperatura también se detectaron perfiles atípicos, especialmente días con descensos bruscos de temperatura cercanos a valores anormalmente bajos respecto al resto del conjunto. Estos comportamientos podrían estar asociados a errores de medición, fallas del sensor o condiciones operativas inusuales del sistema de ventilación.
 
+En general, la mayoría de anomalías de la zona NE muestran una desviación simultánea en ambas variables, lo que indica que ciertos días presentan un comportamiento integral distinto al patrón multivariable dominante.
 
-En las variables de temperatura, las anomalías fueron más evidentes, observándose caídas bruscas y valores atípicos cercanos a 0 °C y 7 °C, los cuales no corresponden al comportamiento normal del sistema de ventilación. Estos perfiles podrían estar asociados a errores de sensor, fallos de adquisición de datos o condiciones operacionales inusuales.
+![PS1](P1_UML/images_P1/multivariable_anomalies_Zona_Norte_Este.png)
 
-![PS1](P1_UML/images_P1/anomalies_V006_vent01_temp_out.png)
+#### Zona Sur Oeste (SW)
 
-![PS1](P1_UML/images_P1/anomalies_V023_vent02_temp_out.png)
+En la zona Sur Oeste también se detectaron anomalías multivariables, aunque con menor dispersión que en la zona Norte Este.
 
-Los métodos KMeans y Agglomerative mostraron consistencia en la identificación de los patrones principales, permitiendo detectar perfiles diarios alejados de los centroides o grupos representativos como posibles anomalías.
+Los perfiles anómalos muestran incrementos pronunciados de CO2 durante las horas centrales del día, especialmente entre las 09:00 y 16:00 horas, superando el comportamiento promedio de los demás días.
 
+En temperatura se observan anomalías asociadas a descensos abruptos alrededor del mediodía, así como perfiles con temperaturas más elevadas y constantes respecto al patrón general. Esto podría indicar cambios operativos del sistema de ventilación, diferencias de ocupación o posibles inconsistencias en la adquisición de datos.
+
+A diferencia del análisis univariable, el análisis multivariable permitió identificar días que individualmente podrían parecer normales en una sola variable, pero que presentan un comportamiento atípico cuando se analiza conjuntamente la relación entre CO2 y temperatura.
+
+![PS1](P1_UML/images_P1/multivariable_anomalies_Zona_Sur_Oeste.png)
+
+El análisis multivariable permitió identificar patrones diarios representativos y detectar perfiles atípicos considerando simultáneamente las variables de CO2 y temperatura. Las anomalías detectadas evidencian días con comportamientos operativos distintos al patrón habitual del sistema de ventilación, posiblemente relacionados con variaciones de ocupación, cambios de operación del sistema de ventilación o errores de sensores.
+
+Además, se observó que la zona Norte Este presenta una mayor variabilidad y dispersión en los perfiles anómalos respecto a la zona Sur Oeste, lo que sugiere un comportamiento menos estable del sistema en dicha área.
 
 ### F. Conclusiones
 <!-- Todos -->
