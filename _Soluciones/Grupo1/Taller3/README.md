@@ -17,10 +17,6 @@ Imágenes de referencia en esta carpeta: las figuras de la subcarpeta `images_P1
 
 ![PS1](P1_UML/images_P1/overlay_V022_vent02_CO2.png)
 
-Recomendaciones iniciales: correlacionar los días detectados con registros operativos (mantenimiento, eventos, ocupación) y revisar calibración/estado de sensores para distinguir entre causas físicas y fallos de adquisición.
-
-![PS1](P1_UML/images_P1/Patrones_diarios_multivariables___Zona_Sur_Oeste_Agglomerative.png)
-
 ### B. Encontrar patrones/clústeres – análisis univariable
 Análisis y metodología aplicada:
 
