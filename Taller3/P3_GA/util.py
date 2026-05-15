@@ -1,6 +1,5 @@
 from typing import List
 
-
 def word_to_array(word: str):
     return [ord(w) for w in word]
 
@@ -8,11 +7,11 @@ def word_to_array(word: str):
 def distance(list1:List[int], list2:List[int]):
     acc = 0
     for e1, e2 in zip(list1, list2):
-        acc += (e1 - e2)
+        acc += abs(e1 - e2)
     n_size = min(len(list1), len(list2))
     if n_size == 0:
         return None
-    return acc + (len(list1) - len(list2))
+    return acc + abs(len(list1) - len(list2))
 
 def word_distance(word1:str, word2:str):
     return distance(word_to_array(word1), word_to_array(word2))
