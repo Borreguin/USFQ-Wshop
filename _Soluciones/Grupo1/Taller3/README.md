@@ -124,7 +124,7 @@ Cuando `tee=False`, el solver trabaja en segundo plano y únicamente se muestran
 
 ```python
 tee = True
-
+```
 el solver imprime información detallada del proceso de resolución del problema TSP como se muestra a continuación:
 
 ![PS2](P2_TSP/images_P2/tee_true.PNG)
