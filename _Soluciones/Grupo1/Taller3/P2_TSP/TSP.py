@@ -330,3 +330,8 @@ def general_study_case(n_cities, heuristics, mipgap, time_limit, tee):
     tsp = TSP(ciudades, distancias, heuristics)
     ruta = tsp.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
     tsp.plotear_resultado(ruta, False)
+
+
+if __name__ == "__main__":
+    study_case_3()
+

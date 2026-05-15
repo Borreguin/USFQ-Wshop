@@ -91,6 +91,7 @@ def plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, l
     plt.show()
 
 
+
 def detect_anomalies_kmeans(daily_profiles_scaled, kmeans_labels, kmeans, threshold_std=2):
     import numpy as np
     import pandas as pd
@@ -209,9 +210,6 @@ def analyze_variable(_df: pd.DataFrame, lb):
 
 
     plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, lb)
-
-# Literal C
-
 
 
 # Literal D
