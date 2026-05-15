@@ -35,7 +35,7 @@ def parent_selection(_type: ParentSelectionType, population, aptitudes):
     if _type == ParentSelectionType.PROBABILISTIC_DISTANCE:
         # Selección de padres por ruleta
         aptitudes = [1/(aptitude+1e-10) for aptitude in aptitudes]
-        aptitudes = aptitudes**(1/2) # para evitar que las probabilidades sean tan extremas
+        aptitudes = [a**2 for a in aptitudes]
         cumulative = sum(aptitudes)
         selection_probability = [aptitude / cumulative for aptitude in aptitudes]
         parents = random.choices(population, weights=selection_probability, k=2)
