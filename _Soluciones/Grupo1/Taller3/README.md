@@ -124,16 +124,56 @@ En comparación, la heurística del vecino cercano encuentra rutas rápidamente,
   </tr>
 </table>
 
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_30.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_30.png" width="350">
+    </td>
+  </tr>
+</table>
 
-![PS2](P2_TSP/images_P2/LP_sin_heuristica_30.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_30.png)
-
-![PS2](P2_TSP/images_P2/LP_sin_heuristica_50.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_50.png)
-
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_50.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_50.png" width="350">
+    </td>
+  </tr>
+</table>
 
 ### B. Analizar el parámetro tee
-<!-- Jairo + Eve -->
 
-<!-- Agregar gráficos y hallazgos -->
+El parámetro `tee` controla si se muestra o no en consola la salida detallada del solver GLPK durante el proceso de optimización.
+
+Cuando `tee=False`, el solver trabaja en segundo plano y únicamente se muestran los resultados definidos manualmente en el código mediante `print()`. En cambio, al activar:
+
+```python
+tee = True
+
+el solver imprime información detallada del proceso de resolución del problema TSP como se muestra a continuación:
+
+![PS2](P2_TSP/images_P2/tee_true.PNG)
+
+Entre los mensajes observados se encuentran:
+
+- Inicio de la optimización LP y MIP.
+- Número de iteraciones y nodos explorados.
+- Mejor solución encontrada hasta el momento.
+- Gap porcentual entre la solución actual y el límite inferior.
+- Tiempo de ejecución.
+- Memoria utilizada.
+- Condición de terminación del algoritmo.
+
+En conclusión, el parámetro tee=True es útil para monitorear el comportamiento interno del solver, analizar el rendimiento computacional y comprender el progreso de la optimización en problemas complejos como el TSP.
 
 ### C. Aplicar heurística de límites a la función objetivo
 <!-- Nico -->
