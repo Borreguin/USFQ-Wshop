@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TSP Geoespacial — ArcGIS</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.30/"></script>
+  <style>
+    html, body, #viewDiv { height: 100%; margin: 0; padding: 0; }
+    #panel {
+      position: absolute; top: 16px; right: 16px;
+      background: white; padding: 16px; border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      width: 260px; font-family: sans-serif; font-size: 13px;
+    }
+    #panel h3 { margin: 0 0 10px; font-size: 15px; }
+    button {
+      width: 100%; padding: 8px; margin: 4px 0;
+      border: none; border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 500;
+    }
+    #btn-solve  { background: #0070C5; color: white; }
+    #btn-clear  { background: #f0f0f0; color: #333; }
+    #btn-solve:hover { background: #005a9e; }
+    #resultado  { margin-top: 10px; padding: 8px; background: #f5f5f5;
+                  border-radius: 6px; display: none; }
+    #lista-nodos { max-height: 160px; overflow-y: auto;
+                   margin-top: 8px; font-size: 12px; }
+    .nodo-item { display: flex; justify-content: space-between;
+                 padding: 3px 0; border-bottom: 1px solid #eee; }
+  </style>
+</head>
+<body>
+<div id="viewDiv"></div>
+
+<div id="panel">
+  <h3>🗺️ TSP Geoespacial</h3>
+  <p style="color:#666; margin:0 0 10px">
+    Haz clic en el mapa para agregar ubicaciones
+  </p>
+  <div id="lista-nodos"></div>
+  <button id="btn-solve" onclick="resolverTSP()">▶ Resolver ruta óptima</button>
+  <button id="btn-clear" onclick="limpiarMapa()">✕ Limpiar mapa</button>
+  <div id="resultado">
+    <strong>Distancia total:</strong>
+    <span id="distancia-total"></span> km<br>
+    <strong>Orden de visita:</strong>
+    <div id="orden-visita" style="margin-top:4px; color:#333"></div>
+  </div>
+</div>
+
+<script>
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/GraphicsLayer",
+  "esri/Graphic",
+  "esri/geometry/Point",
+  "esri/geometry/Polyline",
+  "esri/symbols/SimpleMarkerSymbol",
+  "esri/symbols/SimpleLineSymbol",
+  "esri/symbols/TextSymbol"
+], function(Map, MapView, GraphicsLayer, Graphic, Point,
+            Polyline, SimpleMarkerSymbol, SimpleLineSymbol, TextSymbol) {
+
+  // ── Capas del grafo ──────────────────────────────────────────────
+  const nodosLayer  = new GraphicsLayer({ title: "Nodos TSP" });
+  const aristas     = new GraphicsLayer({ title: "Ruta TSP" });
+  const etiquetas   = new GraphicsLayer({ title: "Etiquetas" });
+
+  const map = new Map({
+    basemap: "streets-navigation-vector",
+    layers: [aristas, nodosLayer, etiquetas]
+  });
+
+  const view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [-78.5, -1.8],   // Ecuador como centro inicial
+    zoom: 6
+  });
+
+  // ── Estado de la app ─────────────────────────────────────────────
+  let ciudades = {};   // { "Ciudad_1": [lon, lat], ... }
+  let contador = 1;
+
+  // ── Símbolos ─────────────────────────────────────────────────────
+  const simboloNodo = new SimpleMarkerSymbol({
+    color: [0, 112, 197],
+    outline: { color: [255, 255, 255], width: 2 },
+    size: "14px", style: "circle"
+  });
+
+  const simboloNodoOrigen = new SimpleMarkerSymbol({
+    color: [227, 87, 37],
+    outline: { color: [255, 255, 255], width: 2 },
+    size: "18px", style: "square"
+  });
+
+  const simboloRuta = new SimpleLineSymbol({
+    color: [227, 87, 37, 200],
+    width: 2.5, style: "solid"
+  });
+
+  const simboloConexion = new SimpleLineSymbol({
+    color: [150, 150, 150, 80],
+    width: 1, style: "dash"
+  });
+
+  // ── Click en mapa: agregar nodo ───────────────────────────────────
+  view.on("click", function(event) {
+    const lon = parseFloat(event.mapPoint.longitude.toFixed(4));
+    const lat = parseFloat(event.mapPoint.latitude.toFixed(4));
+    const nombre = `Ciudad_${contador++}`;
+
+    ciudades[nombre] = [lon, lat];
+
+    // Gráfico del nodo
+    const punto = new Point({ longitude: lon, latitude: lat });
+    const simbolo = Object.keys(ciudades).length === 1
+      ? simboloNodoOrigen : simboloNodo;
+
+    nodosLayer.add(new Graphic({
+      geometry: punto,
+      symbol: simbolo,
+      attributes: { nombre },
+      popupTemplate: {
+        title: nombre,
+        content: `Lon: ${lon}<br>Lat: ${lat}`
+      }
+    }));
+
+    // Etiqueta
+    etiquetas.add(new Graphic({
+      geometry: punto,
+      symbol: new TextSymbol({
+        text: nombre.replace("Ciudad_", "C"),
+        color: "#1a1a1a",
+        font: { size: 10, weight: "bold" },
+        yoffset: 12
+      })
+    }));
+
+    actualizarLista();
+  });
+
+  // ── Resolver TSP vía API Python ───────────────────────────────────
+  window.resolverTSP = async function() {
+    if (Object.keys(ciudades).length < 3) {
+      alert("Agrega al menos 3 ubicaciones en el mapa");
+      return;
+    }
+
+    document.getElementById("btn-solve").textContent = "⏳ Calculando...";
+
+    try {
+      const resp = await fetch("http://localhost:5000/solve-tsp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ciudades })
+      });
+
+      const resultado = await resp.json();
+      dibujarRuta(resultado);
+
+    } catch(e) {
+      // Demo offline: nearest neighbor en JS si no hay backend
+      const rutaDemo = nearestNeighborJS(ciudades);
+      dibujarRutaDemo(rutaDemo);
+    } finally {
+      document.getElementById("btn-solve").textContent = "▶ Resolver ruta óptima";
+    }
+  };
+
+  // ── Dibujar ruta en el mapa ───────────────────────────────────────
+  function dibujarRuta(resultado) {
+    aristas.removeAll();
+    const coords = resultado.coordenadas;
+
+    // Construir polilínea del ciclo cerrado
+    const puntos = coords.map(c => [c.lon, c.lat]);
+    puntos.push(puntos[0]);  // cerrar ciclo
+
+    aristas.add(new Graphic({
+      geometry: new Polyline({
+        paths: [puntos],
+        spatialReference: { wkid: 4326 }
+      }),
+      symbol: simboloRuta
+    }));
+
+    // Mostrar resultado
+    document.getElementById("resultado").style.display = "block";
+    document.getElementById("distancia-total").textContent =
+      resultado.distancia_total_km;
+    document.getElementById("orden-visita").textContent =
+      resultado.ruta.join(" → ") + " → " + resultado.ruta[0];
+
+    // Zoom a la ruta
+    view.goTo(coords.map(c => ({
+      type: "point",
+      longitude: c.lon,
+      latitude: c.lat
+    })));
+  }
+
+  // ── Nearest Neighbor en JS (fallback offline) ────────────────────
+  function haversineJS(c1, c2) {
+    const R = 6371;
+    const [lon1, lat1] = c1, [lon2, lat2] = c2;
+    const dLat = (lat2-lat1) * Math.PI/180;
+    const dLon = (lon2-lon1) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return 2*R*Math.asin(Math.sqrt(a));
+  }
+
+  function nearestNeighborJS(ciudadesMap) {
+    const keys = Object.keys(ciudadesMap);
+    const visitadas = new Set();
+    const ruta = [keys[0]];
+    visitadas.add(keys[0]);
+
+    while (ruta.length < keys.length) {
+      const actual = ruta[ruta.length - 1];
+      let minDist = Infinity, siguiente = null;
+      for (const c of keys) {
+        if (!visitadas.has(c)) {
+          const d = haversineJS(ciudadesMap[actual], ciudadesMap[c]);
+          if (d < minDist) { minDist = d; siguiente = c; }
+        }
+      }
+      ruta.push(siguiente);
+      visitadas.add(siguiente);
+    }
+
+    const coords = ruta.map(n => ({
+      nombre: n, lon: ciudadesMap[n][0], lat: ciudadesMap[n][1]
+    }));
+    const dist = ruta.reduce((acc, c, i) => {
+      const next = ruta[(i+1) % ruta.length];
+      return acc + haversineJS(ciudadesMap[c], ciudadesMap[next]);
+    }, 0);
+
+    dibujarRuta({
+      ruta, coordenadas: coords,
+      distancia_total_km: dist.toFixed(2)
+    });
+  }
+
+  function dibujarRutaDemo(r) { /* ya lo maneja nearestNeighborJS */ }
+
+  // ── Limpiar mapa ─────────────────────────────────────────────────
+  window.limpiarMapa = function() {
+    nodosLayer.removeAll();
+    aristas.removeAll();
+    etiquetas.removeAll();
+    ciudades = {};
+    contador = 1;
+    actualizarLista();
+    document.getElementById("resultado").style.display = "none";
+  };
+
+  function actualizarLista() {
+    const lista = document.getElementById("lista-nodos");
+    const items = Object.entries(ciudades).map(([n, [lon, lat]]) =>
+      `<div class="nodo-item">
+         <span>${n}</span>
+         <span style="color:#888">${lon}, ${lat}</span>
+       </div>`
+    ).join("");
+    lista.innerHTML = items || '<span style="color:#aaa">Sin nodos</span>';
+  }
+
+}); // end require
+</script>
+</body>
+</html>
