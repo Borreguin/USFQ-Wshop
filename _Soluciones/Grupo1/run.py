@@ -5,6 +5,7 @@ import Taller2.P1.P1 as T2_P1
 import Taller2.P2.P2_ACO as T2_P2
 import Taller3.P1_UML.p1_uml as T3_P1
 import Taller3.P2_TSP.TSP as T3_P2
+import Taller3.P3_GA.GA as T3_P3
 
 def print_options(arr, header = None):
     if header:
@@ -98,7 +99,7 @@ def taller_3():
             print('\n=========================')
             print('Dataset de edificios')
             print('=========================')
-            print_options(['Plotear las variables', 'Patrones univariable', 'Anomalías univariable', 'Patrones multivariable', 'Anomalías multivariable'])
+            print_options(['Plotear las variables', 'Patrones y Anomalías univariable', 'Patrones y Anomalías multivariable'])
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
             if study_case == '1':
                 print('\n=========================')
@@ -108,27 +109,15 @@ def taller_3():
                 print('\nFin del ejercicio 1\n')
             elif study_case == '2':
                 print('\n=========================')
-                print('Patrones univariable')
+                print('Patrones y Anomalías univariable')
                 print('=========================')
-                T3_P1.start_b()
+                T3_P1.start_b_y_c()
                 print('\nFin del ejercicio 1\n')
             elif study_case == '3':
                 print('\n=========================')
-                print('Anomalías univariable')
+                print('Patrones y Anomalías multivariable')
                 print('=========================')
-                T3_P1.start_c()
-                print('\nFin del ejercicio 1\n')
-            elif study_case == '4':
-                print('\n=========================')
-                print('Patrones multivariable')
-                print('=========================')
-                T3_P1.start_d()
-                print('\nFin del ejercicio 1\n')
-            elif study_case == '5':
-                print('\n=========================')
-                print('Anomalías multivariable')
-                print('=========================')
-                T3_P1.start_e()
+                T3_P1.start_d_y_e()
                 print('\nFin del ejercicio 1\n')
         elif exercise == '2':
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
@@ -152,6 +141,22 @@ def taller_3():
                 print('\nFin del estudio de caso 3\n')
             if exercise == '3':
                 print('Pendiente por implementar en run.py')
+        elif exercise == '3':
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
+            if study_case == '1':
+                print('\n=========================')
+                print('Algoritmo Genético sin heurísticas')
+                print('=========================')
+                objective = "GA Workshop! USFQ"
+                T3_P3.case_study_1(objective)
+                print('\nFin del estudio de caso 1\n')
+            elif study_case == '2':
+                print('\n=========================')
+                print('Algoritmo Genético con heurísticas')
+                print('=========================')
+                objective = "GA Workshop! USFQ"
+                T3_P3.case_study_2(objective)
+                print('\nFin del estudio de caso 2\n')
         else :
             print('No hay el texto')
         print_options(options)
