@@ -8,6 +8,7 @@ class AptitudeType(str, Enum):
     BY_DISTANCE = 'by_distance'
     NEW = 'new'
 
+
 class ParentSelectionType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'

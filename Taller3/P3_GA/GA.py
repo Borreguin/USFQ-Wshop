@@ -62,3 +62,9 @@ def case_study_2(_objetive):
     ga.set_best_individual_selection_type(BestIndividualSelectionType.MIN_DISTANCE)
     ga.set_new_generation_type(NewGenerationType.MIN_DISTANCE)
     ga.run()
+
+
+if __name__ == "__main__":
+    objective = "GA Workshop! USFQ"
+    case_study_1(objective)
+    # case_study_2(objetive)

@@ -1,5 +1,6 @@
 from typing import List
 
+
 def word_to_array(word: str):
     return [ord(w) for w in word]
 
