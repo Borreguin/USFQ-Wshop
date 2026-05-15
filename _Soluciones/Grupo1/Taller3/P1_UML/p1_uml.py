@@ -404,10 +404,8 @@ def analyze_multivariable_patterns(
 def start():
     df = prepare_data()
     start_a(df)
-    start_b(df)
-    start_c(df)
-    start_d(df)
-    start_e(df)
+    start_b_y_c(df)
+    start_d_y_e(df)
 
 def start_a(df = None):
     if df is None:
@@ -417,7 +415,7 @@ def start_a(df = None):
     plot_daily_overlay(df, lb_V006_vent01_temp_out, "Temperature")
     plot_daily_overlay(df, lb_V023_vent02_temp_out, "Temperature")
 
-def start_b(df = None):
+def start_b_y_c(df = None):
     if df is None:
         df = prepare_data()
     analyze_variable(df, lb_V005_vent01_CO2)
@@ -425,12 +423,7 @@ def start_b(df = None):
     analyze_variable(df, lb_V006_vent01_temp_out)
     analyze_variable(df, lb_V023_vent02_temp_out)
 
-def start_c(df = None):
-    if df is None:
-        df = prepare_data()
-    pass
-
-def start_d(df = None):
+def start_d_y_e(df = None):
     if df is None:
         df = prepare_data()
     analyze_multivariable_patterns(
