@@ -91,6 +91,7 @@ def plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, l
     plt.show()
 
 
+
 def detect_anomalies_kmeans(daily_profiles_scaled, kmeans_labels, kmeans, threshold_std=2):
     import numpy as np
     import pandas as pd
@@ -210,9 +211,6 @@ def analyze_variable(_df: pd.DataFrame, lb):
 
     plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, lb)
 
-# Literal C
-
-
 
 # Literal D
 
@@ -317,6 +315,9 @@ def plot_multivariable_patterns(
 
     fig.tight_layout(rect=[0, 0, 1, 0.96])
 
+    fig_name = title.replace(" ", "_").replace("(", "").replace(")", "").replace("-", "_")
+    save_plot(fig_name)
+
     plt.show()
 
 
@@ -388,35 +389,66 @@ def analyze_multivariable_patterns(
         daily_profiles,
         kmeans_labels,
         variables,
-        f"Patrones diarios multivariables - {zone_name} (KMeans)"
+        f"Multivariable Clusters - {zone_name} (KMeans)"
     )
 
     plot_multivariable_patterns(
         daily_profiles,
         agglomerative_labels,
         variables,
-        f"Patrones diarios multivariables - {zone_name} (Agglomerative)"
+        f"Multivariable Clusters - {zone_name} (Agglomerative)"
     )
 
 def start():
     df = prepare_data()
+    start_a(df)
+    start_b(df)
+    start_c(df)
+    start_d(df)
+    start_e(df)
+
+def start_a(df = None):
+    if df is None:
+        df = prepare_data()
     plot_daily_overlay(df, lb_V005_vent01_CO2, "CO2")
     plot_daily_overlay(df, lb_V022_vent02_CO2, "CO2")
     plot_daily_overlay(df, lb_V006_vent01_temp_out, "Temperature")
     plot_daily_overlay(df, lb_V023_vent02_temp_out, "Temperature")
+
+def start_b(df = None):
+    if df is None:
+        df = prepare_data()
     analyze_variable(df, lb_V005_vent01_CO2)
     analyze_variable(df, lb_V022_vent02_CO2)
     analyze_variable(df, lb_V006_vent01_temp_out)
     analyze_variable(df, lb_V023_vent02_temp_out)
 
+def start_c(df = None):
+    if df is None:
+        df = prepare_data()
+    pass
+
+def start_d(df = None):
+    if df is None:
+        df = prepare_data()
     analyze_multivariable_patterns(
         df,
         [lb_V005_vent01_CO2, lb_V006_vent01_temp_out],
         "Zona Norte Este"
     )
-
     analyze_multivariable_patterns(
         df,
         [lb_V022_vent02_CO2, lb_V023_vent02_temp_out],
         "Zona Sur Oeste"
     )
+
+<<<<<<< Updated upstream
+def start_e(df = None):
+    if df is None:
+        df = prepare_data()
+    pass
+=======
+
+if __name__ == "__main__":
+    start()
+>>>>>>> Stashed changes

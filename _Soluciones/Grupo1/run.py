@@ -96,10 +96,40 @@ def taller_3():
     while exercise != '0':
         if exercise == '1':
             print('\n=========================')
-            print('Llamado al dataset de edificios ')
+            print('Dataset de edificios')
             print('=========================')
-            T3_P1.start()
-            print('\nFin del estudio de caso 1\n')
+            print_options(['Plotear las variables', 'Patrones univariable', 'Anomalías univariable', 'Patrones multivariable', 'Anomalías multivariable'])
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
+            if study_case == '1':
+                print('\n=========================')
+                print('Plotear las variables')
+                print('=========================')
+                T3_P1.start_a()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '2':
+                print('\n=========================')
+                print('Patrones univariable')
+                print('=========================')
+                T3_P1.start_b()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '3':
+                print('\n=========================')
+                print('Anomalías univariable')
+                print('=========================')
+                T3_P1.start_c()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '4':
+                print('\n=========================')
+                print('Patrones multivariable')
+                print('=========================')
+                T3_P1.start_d()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '5':
+                print('\n=========================')
+                print('Anomalías multivariable')
+                print('=========================')
+                T3_P1.start_e()
+                print('\nFin del ejercicio 1\n')
         elif exercise == '2':
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
             if study_case == '1':
