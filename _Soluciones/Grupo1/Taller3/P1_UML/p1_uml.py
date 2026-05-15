@@ -547,14 +547,3 @@ def start_d_y_e(df = None):
         [lb_V022_vent02_CO2, lb_V023_vent02_temp_out],
         "Zona Sur Oeste"
     )
-
-<<<<<<< Updated upstream
-def start_e(df = None):
-    if df is None:
-        df = prepare_data()
-    pass
-=======
-
-if __name__ == "__main__":
-    start()
->>>>>>> Stashed changes

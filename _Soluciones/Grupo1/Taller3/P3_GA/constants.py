@@ -12,7 +12,7 @@ class AptitudeType(str, Enum):
 class ParentSelectionType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'
-    PROBABILISTIC_DISTANCE = 'probabilistic_distance'
+    TOURNAMENT = 'tournament'
     NEW = 'new'
 
 class MutationType(str, Enum):
@@ -35,5 +35,6 @@ class BestIndividualSelectionType(str, Enum):
 class NewGenerationType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'
-    PROBABILISTIC_DISTANCE = 'probabilistic_distance'
+    TOURNAMENT = 'tournament'
+    TOURNAMENT_ELITISM = 'tournament_elitism'
     NEW = 'new'
