@@ -316,3 +316,21 @@ Se implementaron dos mejoras que aceleran la convergencia sin cambiar mutation_r
 - Elitismo en la generación: se conserva el mejor individuo y se generan hijos para completar la población (evita perder la mejor solución entre generaciones). Con esta mejora mas el torneo, se alcanzó el objetivo en 215 generaciones.
 
 ### 5. Cree un nuevo caso de estudio 3. Altere el parámetro de mutación mutation_rate, ¿ha beneficiado en algo la convergencia? Qué valores son los más adecuados para este parámetro. ¿Qué conclusión se puede obtener de este cambio?
+
+Sí hubo un efecto importante al modificar el parámetro `mutation_rate`. Para analizarlo se implementó un nuevo caso de estudio utilizando un enfoque tipo *grid search*, probando distintos valores de mutación: `0.001`, `0.005`, `0.01`, `0.02`, `0.05` y `0.1`. Además, las pruebas se realizaron utilizando selección por torneo y elitismo (`TOURNAMENT_ELITISM`), manteniendo constante el resto de parámetros del algoritmo. 
+
+Los resultados mostraron que tasas de mutación demasiado bajas reducen significativamente la capacidad de exploración del algoritmo. Por ejemplo, con `mutation_rate = 0.001` el algoritmo no logró alcanzar el objetivo en ninguna de las ejecuciones realizadas.
+
+En cambio, tasas intermedias y moderadamente altas permitieron una convergencia mucho más rápida. El valor `0.05` fue el que obtuvo la convergencia más rápida, alcanzando el objetivo en promedio en aproximadamente 113 generaciones. Por otro lado, `0.01` produjo la mejor aptitud promedio global, lo que indica una búsqueda más estable y precisa.
+
+También se observó que valores excesivamente altos, como `0.1`, aunque todavía permitieron converger, comenzaron a degradar parcialmente el rendimiento. Esto ocurre porque demasiada mutación introduce ruido aleatorio constante y dificulta conservar buenas soluciones entre generaciones.
+
+En conclusión, el parámetro `mutation_rate` tiene un impacto directo sobre el equilibrio entre exploración y explotación dentro del algoritmo genético. Valores muy bajos generan poca diversidad y pueden provocar estancamiento, mientras que valores demasiado altos vuelven la búsqueda demasiado aleatoria. Para este problema, los mejores resultados se obtuvieron con valores entre `0.02` y `0.05`, ya que ofrecieron una convergencia rápida manteniendo buena calidad de solución.
+
+### 6. Cree un nuevo caso de estudio 4. Altere el tamaño de la población, ¿es beneficioso o no aumentar la población?
+
+<!-- Completar -->
+
+### 7. De todo lo aprendido, cree el caso de estudio definitivo (caso de estudio 5) el cual tiene lo mejor de los ítems 4, 5, 6.
+
+<!-- Completar -->
