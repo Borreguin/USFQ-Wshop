@@ -99,6 +99,7 @@ def taller_3():
             print('\n=========================')
             print('Dataset de edificios')
             print('=========================')
+            print_options(['Plotear las variables', 'Patrones univariable', 'Anomalías univariable', 'Patrones multivariable', 'Anomalías multivariable'])
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
             if study_case == '1':
                 print('\n=========================')
