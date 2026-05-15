@@ -11,11 +11,26 @@ def parent_selection(_type: ParentSelectionType, population, aptitudes):
         parents = random.choices(population, weights=selection_probability, k=2)
         return parents
     if _type == ParentSelectionType.MIN_DISTANCE:
-        # seleccionando randomicamente dos poblaciones diferentes para cada padre
-        # se podria seleccionar de otra manera?
-        partition_size = random.randint(1, len(population)-1)
-        parent1 = choose_best_individual_by_distance(population[:partition_size], aptitudes[:partition_size])
-        parent2 = choose_best_individual_by_distance(population[partition_size:], aptitudes[partition_size:])
+        # Tournament selection (prefer individuals with smaller distance)
+        def tournament(k=5):
+            # sample k distinct indices
+            k = min(k, len(population))
+            indices = random.sample(range(len(population)), k)
+            best_idx = indices[0]
+            best_apt = aptitudes[best_idx]
+            for idx in indices[1:]:
+                if aptitudes[idx] < best_apt:
+                    best_idx = idx
+                    best_apt = aptitudes[idx]
+            return population[best_idx]
+
+        parent1 = tournament()
+        parent2 = tournament()
+        # ensure two distinct parents
+        attempts = 0
+        while parent2 == parent1 and attempts < 5:
+            parent2 = tournament()
+            attempts += 1
         return parent1, parent2
 
     if _type == ParentSelectionType.NEW:
