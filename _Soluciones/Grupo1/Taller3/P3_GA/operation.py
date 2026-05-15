@@ -17,6 +17,14 @@ def parent_selection(_type: ParentSelectionType, population, aptitudes):
         parent1 = choose_best_individual_by_distance(population[:partition_size], aptitudes[:partition_size])
         parent2 = choose_best_individual_by_distance(population[partition_size:], aptitudes[partition_size:])
         return parent1, parent2
+    if _type == ParentSelectionType.PROBABILISTIC_DISTANCE:
+        # Selección de padres por ruleta
+        aptitudes = [1/(aptitude+1e-10) for aptitude in aptitudes]
+        aptitudes = aptitudes**(1/2) # para evitar que las probabilidades sean tan extremas
+        cumulative = sum(aptitudes)
+        selection_probability = [aptitude / cumulative for aptitude in aptitudes]
+        parents = random.choices(population, weights=selection_probability, k=2)
+        return parents
 
     if _type == ParentSelectionType.NEW:
         print("implement here the new parent selection")
