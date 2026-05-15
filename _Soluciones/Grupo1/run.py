@@ -5,6 +5,7 @@ import Taller2.P1.P1 as T2_P1
 import Taller2.P2.P2_ACO as T2_P2
 import Taller3.P1_UML.p1_uml as T3_P1
 import Taller3.P2_TSP.TSP as T3_P2
+import Taller3.P3_GA.GA as T3_P3
 
 def print_options(arr, header = None):
     if header:
@@ -152,6 +153,22 @@ def taller_3():
                 print('\nFin del estudio de caso 3\n')
             if exercise == '3':
                 print('Pendiente por implementar en run.py')
+        elif exercise == '3':
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
+            if study_case == '1':
+                print('\n=========================')
+                print('Algoritmo Genético sin heurísticas')
+                print('=========================')
+                objective = "GA Workshop! USFQ"
+                T3_P3.case_study_1(objective)
+                print('\nFin del estudio de caso 1\n')
+            elif study_case == '2':
+                print('\n=========================')
+                print('Algoritmo Genético con heurísticas')
+                print('=========================')
+                objective = "GA Workshop! USFQ"
+                T3_P3.case_study_2(objective)
+                print('\nFin del estudio de caso 2\n')
         else :
             print('No hay el texto')
         print_options(options)

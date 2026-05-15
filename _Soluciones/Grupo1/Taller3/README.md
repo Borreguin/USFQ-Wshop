@@ -123,16 +123,82 @@ En comparación, la heurística del vecino cercano encuentra rutas rápidamente,
   </tr>
 </table>
 
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_20.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_20.png" width="350">
+    </td>
+  </tr>
+</table>
 
-![PS2](P2_TSP/images_P2/LP_sin_heuristica_30.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_30.png)
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_30.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_30.png" width="350">
+    </td>
+  </tr>
+</table>
 
-![PS2](P2_TSP/images_P2/LP_sin_heuristica_50.png) ![PS2](P2_TSP/images_P2/Heuristica_vecino_cercano_50.png)
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_40.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_40.png" width="350">
+    </td>
+  </tr>
+</table>
 
+<table>
+  <tr>
+    <td align="center">
+      <b>LP sin heurística</b><br>
+      <img src="P2_TSP/images_P2/LP_sin_heuristica_50.png" width="350">
+    </td>
+    <td align="center">
+      <b>Heurística Vecino Cercano</b><br>
+      <img src="P2_TSP/images_P2/Heuristica_vecino_cercano_50.png" width="350">
+    </td>
+  </tr>
+</table>
 
 ### B. Analizar el parámetro tee
-<!-- Jairo + Eve -->
 
-<!-- Agregar gráficos y hallazgos -->
+El parámetro `tee` controla si se muestra o no en consola la salida detallada del solver GLPK durante el proceso de optimización.
+
+Cuando `tee=False`, el solver trabaja en segundo plano y únicamente se muestran los resultados definidos manualmente en el código mediante `print()`. En cambio, al activar:
+
+```python
+tee = True
+```
+el solver imprime información detallada del proceso de resolución del problema TSP como se muestra a continuación:
+
+![PS2](P2_TSP/images_P2/tee_true.PNG)
+
+Entre los mensajes observados se encuentran:
+
+- Inicio de la optimización LP y MIP.
+- Número de iteraciones y nodos explorados.
+- Mejor solución encontrada hasta el momento.
+- Gap porcentual entre la solución actual y el límite inferior.
+- Tiempo de ejecución.
+- Memoria utilizada.
+- Condición de terminación del algoritmo.
+
+En conclusión, el parámetro tee=True es útil para monitorear el comportamiento interno del solver, analizar el rendimiento computacional y comprender el progreso de la optimización en problemas complejos como el TSP.
 
 ### C. Aplicar heurística de límites a la función objetivo
 
@@ -195,4 +261,29 @@ Una posible razón es que el TSP es un problema NP-Hard y pequeñas variaciones 
 
 ## 3. ALGORTIMOS GENÉTICOS
 
-<!-- Pendiente -->
+1. Ejecute los dos casos de estudio y explique los resultados de ejecución de cada caso de 
+estudio.
+
+•	Caso 1 (evaluación por coincidencias por posición): Se alcanzó el objetivo planteado. Observación: la aptitud (número de caracteres coincidentes) aumenta gradualmente hasta llegar al objetivo. Resultado de la ejecución: objetivo alcanzado en la generación 139 (Aptitud: 11).
+
+•	Caso 2 (evaluación por distancia / minimización): Inicialmente se pudo ver que no alcanzó los objetivos planteados. Se modificó la función de distancia para usar valores absolutos y evitar negativos. Con la implementación correcta y las mejoras, alcanzó el objetivo más rápido. Observación: la aptitud (distancia) disminuye hasta 0. Resultado de la ejecución: objetivo alcanzado en la generación 69 (Aptitud: 0).
+
+2. ¿Cuál sería una posible explicación para que el caso 2 no finalice como lo hace el caso 1?
+
+La raíz del problema fue la función distance() en util.py. Antes devolvía una suma de diferencias con signo (valores negativos), por lo que la evaluación por distancia devolvía aptitudes incorrectas (negativas) y la lógica de selección/minimización quedaba distorsionada. Eso hacía que el algoritmo no favoreciera correctamente las soluciones cercanas al objetivo y no convergiera como se esperaba.
+
+3. Realice una correcta implementación para obtener la distancia/diferencia correcta entre 
+dos individuos en el archivo util.py función distance.
+
+Cambié distance() para usar la distancia de Levenshtein sobre las secuencias (listas de códigos de caracteres). Ventajas: mide inserciones/deletes/substitutions (medida de edición) y es una métrica adecuada para similitud entre palabras. Archivo modificado: util.py.
+
+4. ¿Sin alterar el parámetro de mutación mutation_rate, se puede implementar algo para 
+mejorar la convergencia y que esta sea más rápida?
+
+Implementé dos mejoras que aceleran la convergencia sin cambiar mutation_rate:
+
+  Selección por torneo para ParentSelectionType.MIN_DISTANCE (favorece padres con menor distancia). Archivo modificado: operation.py.
+
+  Elitismo en la generación NewGenerationType.MIN_DISTANCE: se conserva el mejor individuo y se generan hijos para completar la población (evita perder la mejor solución entre generaciones). Archivo modificado: generalSteps.py.
+
+Efecto observado: con Levenshtein + torneo + elitismo, el Caso 2 pasó de tardar muchas generaciones a alcanzar el objetivo en ~69 generaciones (ejecución de prueba).
