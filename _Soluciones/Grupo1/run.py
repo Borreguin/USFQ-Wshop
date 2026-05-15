@@ -99,7 +99,7 @@ def taller_3():
             print('\n=========================')
             print('Dataset de edificios')
             print('=========================')
-            print_options(['Plotear las variables', 'Patrones univariable', 'Anomalías univariable', 'Patrones multivariable', 'Anomalías multivariable'])
+            print_options(['Plotear las variables', 'Patrones y Anomalías univariable', 'Patrones y Anomalías multivariable'])
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
             if study_case == '1':
                 print('\n=========================')
@@ -109,27 +109,15 @@ def taller_3():
                 print('\nFin del ejercicio 1\n')
             elif study_case == '2':
                 print('\n=========================')
-                print('Patrones univariable')
+                print('Patrones y Anomalías univariable')
                 print('=========================')
-                T3_P1.start_b()
+                T3_P1.start_b_y_c()
                 print('\nFin del ejercicio 1\n')
             elif study_case == '3':
                 print('\n=========================')
-                print('Anomalías univariable')
+                print('Patrones y Anomalías multivariable')
                 print('=========================')
-                T3_P1.start_c()
-                print('\nFin del ejercicio 1\n')
-            elif study_case == '4':
-                print('\n=========================')
-                print('Patrones multivariable')
-                print('=========================')
-                T3_P1.start_d()
-                print('\nFin del ejercicio 1\n')
-            elif study_case == '5':
-                print('\n=========================')
-                print('Anomalías multivariable')
-                print('=========================')
-                T3_P1.start_e()
+                T3_P1.start_d_y_e()
                 print('\nFin del ejercicio 1\n')
         elif exercise == '2':
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
