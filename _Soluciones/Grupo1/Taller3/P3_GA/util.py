@@ -1,11 +1,9 @@
 from typing import List
 
-
 def word_to_array(word: str):
     return [ord(w) for w in word]
 
-# Algo no está bien con esta función de distancia
-def distance(list1:List[int], list2:List[int]):
+def distance_Levenshtein(list1:List[int], list2:List[int]):
     # Levenshtein (edit) distance between two sequences of character codes.
     # Works on lists of ints (character ordinals) and returns the minimal
     # number of insertions/deletions/substitutions to transform list1 -> list2.
@@ -16,7 +14,6 @@ def distance(list1:List[int], list2:List[int]):
         return m
     if m == 0:
         return n
-
     # initialize DP table with two rows to save memory
     prev = list(range(m + 1))
     cur = [0] * (m + 1)
@@ -30,6 +27,16 @@ def distance(list1:List[int], list2:List[int]):
             cur[j] = min(prev[j - 1] + cost, prev[j] + 1, cur[j - 1] + 1)
         prev, cur = cur, prev
     return prev[m]
+
+#corregido para usar valores absolutos y considerar la diferencia de longitud entre las palabras
+def distance(list1:List[int], list2:List[int]):
+    acc = 0
+    for e1, e2 in zip(list1, list2):
+        acc += abs(e1 - e2)
+    n_size = min(len(list1), len(list2))
+    if n_size == 0:
+        return None
+    return acc + abs(len(list1) - len(list2))
 
 def word_distance(word1:str, word2:str):
     return distance(word_to_array(word1), word_to_array(word2))
