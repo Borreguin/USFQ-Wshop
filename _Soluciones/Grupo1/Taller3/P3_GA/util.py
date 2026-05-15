@@ -6,16 +6,30 @@ def word_to_array(word: str):
 
 # Algo no está bien con esta función de distancia
 def distance(list1:List[int], list2:List[int]):
-    # sum of absolute differences per position; treat missing positions as 0
-    if not list1 and not list2:
-        return 0
-    acc = 0
-    n = max(len(list1), len(list2))
-    for i in range(n):
-        v1 = list1[i] if i < len(list1) else 0
-        v2 = list2[i] if i < len(list2) else 0
-        acc += abs(v1 - v2)
-    return acc
+    # Levenshtein (edit) distance between two sequences of character codes.
+    # Works on lists of ints (character ordinals) and returns the minimal
+    # number of insertions/deletions/substitutions to transform list1 -> list2.
+    n = len(list1)
+    m = len(list2)
+    # quick exits
+    if n == 0:
+        return m
+    if m == 0:
+        return n
+
+    # initialize DP table with two rows to save memory
+    prev = list(range(m + 1))
+    cur = [0] * (m + 1)
+    for i in range(1, n + 1):
+        cur[0] = i
+        a = list1[i - 1]
+        for j in range(1, m + 1):
+            b = list2[j - 1]
+            cost = 0 if a == b else 1
+            # substitution, insertion, deletion
+            cur[j] = min(prev[j - 1] + cost, prev[j] + 1, cur[j - 1] + 1)
+        prev, cur = cur, prev
+    return prev[m]
 
 def word_distance(word1:str, word2:str):
     return distance(word_to_array(word1), word_to_array(word2))
@@ -28,11 +42,3 @@ def choose_best_individual_by_distance(population, aptitudes):
             best_aptitude = apt
             best_individual = ind
     return best_individual
-
-
-
-# print(word_distance("abc", "abc"))
-# print(word_distance("abc", "abd"))
-# print(word_distance("abc", "abz"))
-# print(word_distance("abc", "cba"))
-# print(word_distance("abc", "cbad"))

@@ -58,14 +58,20 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
             new_population.extend([child1, child2])
         return new_population
     if _type == NewGenerationType.MIN_DISTANCE:
+        # elitism: keep the best individual (smallest distance)
         new_population = []
-        for _ in range(len(population)//2):
+        best_idx = aptitudes.index(min(aptitudes))
+        new_population.append(population[best_idx])
+        target_size = len(population)
+        # generate children until we reach the target size
+        while len(new_population) < target_size:
             parent1, parent2 = parent_selection(ParentSelectionType.MIN_DISTANCE, population, aptitudes)
             child1, child2 = crossover(CrossoverType.DEFAULT, parent1, parent2)
             child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
             child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
             new_population.extend([child1, child2])
-        return new_population
+        # trim if we exceeded target_size
+        return new_population[:target_size]
 
     if _type == NewGenerationType.NEW:
         print("implement here the new generation")
