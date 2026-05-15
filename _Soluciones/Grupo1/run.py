@@ -156,7 +156,6 @@ def taller_3():
                 print('=========================')
                 objective = "GA Workshop! USFQ"
                 T3_P3.case_study_2(objective)
-                print('\nFin del estudio de caso 2\n')
         else :
             print('No hay el texto')
         print_options(options)

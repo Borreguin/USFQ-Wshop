@@ -21,7 +21,7 @@ class GA:
     def set_new_generation_type(self, _type):
         self.new_generation_type = _type
 
-    def run(self):
+    def run(self, print_interval=50):
         success = False
         for i in range(self.n_iterations):
             # las aptitudes son los valores que se obtienen al evaluar la función de aptitud
@@ -35,7 +35,7 @@ class GA:
                 print("Objetivo alcanzado:")
                 print(f"Generación {self.n_generation}: {best_individual} - Aptitud: {best_aptitude}")
                 break
-            if i % 10 == 0:  # Print progress every 10 iterations
+            if i % print_interval == 0:  # Print progress every print_interval iterations
                 print(f"Generación {self.n_generation}: {best_individual} - población: {len(self.population)} - Aptitud: {best_aptitude}")
 
             # la nueva generación se obtiene a partir de la población actual, interactuando entre los individuos
@@ -57,8 +57,17 @@ def case_study_2(_objetive):
     population = generate_population(100, len(_objetive))
     mutation_rate = 0.01
     n_iterations = 1000
-    ga = GA(population, _objetive, mutation_rate, n_iterations)
-    ga.set_evaluation_type(AptitudeType.BY_DISTANCE)
-    ga.set_best_individual_selection_type(BestIndividualSelectionType.MIN_DISTANCE)
-    ga.set_new_generation_type(NewGenerationType.PROBABILISTIC_DISTANCE)
-    ga.run()
+    _types = [
+        NewGenerationType.MIN_DISTANCE, 
+        NewGenerationType.TOURNAMENT,
+        NewGenerationType.TOURNAMENT_ELITISM
+        ]
+    for _type in _types:
+        print('\n========================================')
+        print(f'\nEjecutando caso de estudio 2 con tipo de generación: {_type}')
+        random.seed(MY_SEED)
+        ga = GA(population, _objetive, mutation_rate, n_iterations)
+        ga.set_evaluation_type(AptitudeType.BY_DISTANCE)
+        ga.set_best_individual_selection_type(BestIndividualSelectionType.MIN_DISTANCE)
+        ga.set_new_generation_type(_type)
+        ga.run()
