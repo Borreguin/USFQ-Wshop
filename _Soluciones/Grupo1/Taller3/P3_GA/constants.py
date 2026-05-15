@@ -12,6 +12,7 @@ class AptitudeType(str, Enum):
 class ParentSelectionType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'
+    PROBABILISTIC_DISTANCE = 'probabilistic_distance'
     NEW = 'new'
 
 class MutationType(str, Enum):
@@ -34,4 +35,5 @@ class BestIndividualSelectionType(str, Enum):
 class NewGenerationType(str, Enum):
     DEFAULT = 'default'
     MIN_DISTANCE = 'min_distance'
+    PROBABILISTIC_DISTANCE = 'probabilistic_distance'
     NEW = 'new'

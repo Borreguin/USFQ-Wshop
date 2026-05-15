@@ -52,7 +52,6 @@ Acciones recomendadas: verificar las fechas/días listados como anómalos contra
 <!-- Agregar gráficos y hallazgos -->
 
 ### D. Encontrar patrones – análisis multivariable
-<!-- Nico -->
 
 Para el análisis multivariable se estudiaron simultáneamente las variables de CO2 y temperatura de las zonas Norte Este (NE) y Sur Oeste (SW), utilizando dos técnicas de clustering: KMeans y Agglomerative Clustering. El objetivo fue identificar patrones diarios representativos considerando el comportamiento conjunto de ambas variables.
 
@@ -234,9 +233,6 @@ Entre los mensajes observados se encuentran:
 En conclusión, el parámetro tee=True es útil para monitorear el comportamiento interno del solver, analizar el rendimiento computacional y comprender el progreso de la optimización en problemas complejos como el TSP.
 
 ### C. Aplicar heurística de límites a la función objetivo
-<!-- Nico -->
-
-<!-- Agregar gráficos y hallazgos, responder ¿Cuál es la diferencia entre los dos casos? y ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón? -->
 
 Para este experimento se ejecutó el caso 2 del problema TSP con 70 ciudades comparando dos escenarios:
 a) aplicando la heurística `limitar_funcion_objetivo` y
