@@ -332,6 +332,36 @@ def general_study_case(n_cities, heuristics, mipgap, time_limit, tee):
     tsp.plotear_resultado(ruta, False)
 
 
-if __name__ == "__main__":
-    study_case_3()
+
+# LITERAL D
+# Comparación del modelo con y sin la heurística de vecinos cercanos para 100 ciudades
+def study_case_3_literal_D():
+    n_cities = 100
+    ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+    mipgap = 0.05
+    time_limit = 60
+    tee = True
+
+    print("\nCaso 3: Sin heurística de vecinos cercanos\n")
+    heuristics_sin = []
+    tsp_sin = TSP(ciudades, distancias, heuristics_sin)
+    ruta_sin = tsp_sin.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
+    distancia_sin = calculate_path_distance(distancias, ruta_sin)
+    tsp_sin.plotear_resultado(ruta_sin, False, titulo="LP sin heurística - 100 ciudades", guardar=True, nombre_archivo="LP_sin_heuristica_100.png")
+
+    print("\nCaso 3: Con heurística de vecinos cercanos\n")
+    heuristics_con = ['vecino_cercano']
+    tsp_con = TSP(ciudades, distancias, heuristics_con)
+    ruta_con = tsp_con.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
+    distancia_con = calculate_path_distance(distancias, ruta_con)
+    tsp_con.plotear_resultado(ruta_con, False, titulo="LP con heurística vecino cercano - 100 ciudades", guardar=True, nombre_archivo="LP_con_vecino_cercano_100.png")
+
+    print("\n\n")
+    print("Comparación de resultados:")
+    print(f"Sin heurística: Distancia = {distancia_sin}")
+    print(f"Con heurística vecino cercano: Distancia = {distancia_con}")
+    print("\nExplicación:")
+    print("La heurística de vecinos cercanos ayuda a guiar el modelo hacia soluciones más eficientes, reduciendo el espacio de búsqueda y, en muchos casos, obteniendo recorridos más cortos en menor tiempo. Sin embargo, su efectividad puede depender de la distribución de las ciudades y no garantiza siempre la mejor solución para todos los casos.")
+
+study_case_3_literal_D()
 

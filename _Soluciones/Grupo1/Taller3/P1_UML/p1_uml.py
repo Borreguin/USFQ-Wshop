@@ -90,8 +90,6 @@ def plot_cluster_patterns(daily_profiles, kmeans_labels, agglomerative_labels, l
     save_plot(f"clusters_{lb}")
     plt.show()
 
-# Literal C
-
 def detect_anomalies_kmeans(daily_profiles_scaled, kmeans_labels, kmeans, threshold_std=2):
     import numpy as np
     import pandas as pd
