@@ -46,7 +46,6 @@ class GA:
 
 
 def case_study_1(_objetive):
-    # Definición de la población inicial
     population = generate_population(100, len(_objetive))
     mutation_rate = 0.01
     n_iterations = 1000
