@@ -26,21 +26,21 @@ Análisis y metodología aplicada:
 - Métodos de agrupamiento: se aplican `KMeans` (n_init=10, random_state fijo) y `AgglomerativeClustering` con el K seleccionado.
 - Validación entre métodos: se calcula el `Adjusted Rand Index (ARI)` entre las etiquetas de KMeans y Agglomerative para cuantificar la consistencia; el análisis muestra buena concordancia entre ambos métodos en las series estudiadas.
 
-Detección de anomalías univariables (método usado):
+El análisis realizado permitió identificar perfiles diarios recurrentes de comportamiento ambiental dentro del edificio a partir de mediciones temporales de CO₂ y temperatura. Debido a que la concentración de CO₂ en espacios interiores suele estar asociada a niveles de ocupación y condiciones de ventilación, el proceso de clustering facilitó la detección de patrones operativos similares entre distintos días.
 
-- Asignación de centroides: para cada día se toma el centroide del cluster asignado por KMeans.
-- Distancia al centroide: se calcula la distancia euclídea entre el perfil diario (escalado) y el centroide asignado.
-- Umbral de anomalía: se usa `umbral = media(distancias) + 2·desviación_estándar` (parámetro `threshold_std=2`). Días cuya distancia excede este umbral se marcan como anomalías.
+Los resultados muestran que los niveles de CO₂ presentan una concentración más elevada durante las horas diurnas, alcanzando picos pronunciados en determinados intervalos horarios. Este comportamiento sugiere una relación directa con la actividad humana y el uso cotidiano de las instalaciones, ya que durante períodos de mayor ocupación se incrementa la acumulación de CO₂ en ambientes cerrados. Por el contrario, durante horarios nocturnos o de menor actividad, las concentraciones tienden a estabilizarse o disminuir considerablemente.
 
-Hallazgos y ejemplos:
-- Las anomalías detectadas por este método coinciden con los picos de CO2 y las caídas bruscas de temperatura observadas en los plots. El script imprime una tabla con `day`, `cluster`, `distance` y `is_anomaly`, lo que permite priorizar inspecciones por orden de distancia.
+![PS1](P1_UML/images_P1/Multivariable_Clusters___Zona_Sur_Oeste_KMeans.png)
 
-Limitaciones y mejoras sugeridas:
-- El escalado puede ocultar anomalías que son puramente de magnitud; considerar complementarlo con un análisis en escala absoluta para detectar aumentos de nivel general.
-- El umbral global (media + 2·std) asume una distribución de distancias relativamente simétrica; en conjuntos heterogéneos es preferible usar umbrales por cluster o estadísticos robustos (mediana + MAD).
-- Para detectar anomalías que involucren simultáneamente varias variables (CO2 y temperatura), conviene emplear los análisis multivariables desarrollados en la sección D.
+En el caso de la temperatura, se observaron variaciones más heterogéneas entre los distintos días analizados. Estas diferencias podrían estar influenciadas por factores externos como condiciones climáticas, estacionalidad, radiación solar o sistemas de climatización internos del edificio. A diferencia del CO₂, cuya dinámica parece estar más vinculada a la ocupación humana, la temperatura refleja tanto factores ambientales externos como condiciones operativas internas.
 
-Acciones recomendadas: verificar las fechas/días listados como anómalos contra registros de ocupación y mantenimiento; en caso de repetición por sensor, planificar calibración o reemplazo.
+El análisis de selección de clusters determinó que un valor de K=5 proporciona la mejor separación entre grupos según la métrica silhouette score. Esta segmentación permitió distinguir distintos patrones de comportamiento diario, posiblemente asociados a variaciones en la ocupación, días festivos, cambios climáticos y diferencias en el uso de las instalaciones. Además, la concordancia observada entre KMeans y Agglomerative Clustering, evaluada mediante el Adjusted Rand Index (ARI), sugiere que los patrones identificados presentan estabilidad y consistencia entre diferentes métodos de agrupamiento.
+
+En conjunto, los resultados evidencian que las técnicas de clustering aplicadas sobre perfiles temporales permiten caracterizar dinámicas ambientales recurrentes dentro del edificio y constituyen una herramienta útil para el análisis de ocupación, monitoreo energético y detección de comportamientos atípicos en sistemas de sensores ambientales.
+
+Acciones recomendadas: los días detectados como anómalos deberían contrastarse con registros históricos de ocupación, mantenimiento y operación del edificio para validar si las desviaciones identificadas corresponden a condiciones reales o a inconsistencias de adquisición de datos. La recurrencia de anomalías asociadas a sensores particulares podría indicar problemas de calibración o degradación de hardware, haciendo necesaria su revisión técnica.
+
+Asimismo, se recomienda aplicar un proceso de depuración sobre los registros de temperatura considerados outliers, especialmente aquellos con valor 0, ya que no muestran consistencia con la dinámica temporal del CO₂ ni con el comportamiento ambiental esperado. Estos valores probablemente representan errores de medición, pérdidas de información o fallos del sensor, por lo que su exclusión puede mejorar la robustez y confiabilidad del análisis de patrones y clustering.
 
 ### C. Encontrar anomalías – análisis univariable
 
@@ -157,19 +157,39 @@ El análisis multivariable permitió identificar patrones diarios representativo
 
 Además, se observó que la zona Norte Este presenta una mayor variabilidad y dispersión en los perfiles anómalos respecto a la zona Sur Oeste, lo que sugiere un comportamiento menos estable del sistema en dicha área.
 
-### F. Conclusiones
-<!-- Todos -->
+### F. Conclusiones generales
 
-<!-- Agregar hallazgos -->
+El análisis de aprendizaje no supervisado aplicado sobre las mediciones de CO₂ y temperatura permitió identificar patrones operativos recurrentes y detectar comportamientos anómalos dentro del sistema de ventilación del edificio. A través de técnicas de clustering y análisis de perfiles temporales diarios, fue posible caracterizar la dinámica ambiental de distintas zonas del edificio y comprender cómo evolucionan conjuntamente las variables monitoreadas.
 
-<!----------------------------------------------------------------------------------->
+Los resultados muestran que la concentración de CO₂ presenta una fuerte relación con los horarios de ocupación y actividad humana, observándose incrementos consistentes durante las horas diurnas y reducciones durante períodos nocturnos o de baja utilización. Este comportamiento confirma que el CO₂ puede utilizarse como un indicador indirecto del nivel de ocupación y de las condiciones de ventilación en ambientes interiores.
 
-Conlusiones Literal C:
+En contraste, la temperatura exhibe una variabilidad más heterogénea entre los distintos días y zonas analizadas. Las fluctuaciones observadas sugieren la influencia simultánea de factores externos —como condiciones climáticas y estacionalidad— junto con variables operativas internas asociadas al sistema HVAC y a la dinámica térmica propia del edificio.
 
-•	El análisis univariable permitió identificar días atípicos en las mediciones de CO2 y temperatura, que no siguen los patrones diarios más comunes.
-•	Estos días anómalos pueden deberse a eventos inusuales, fallos en el sistema, cambios ambientales extremos o errores de medición.
-•	La visualización gráfica facilita la interpretación y validación de las anomalías detectadas.
-•	El método es robusto porque compara cada día con el patrón de su propio cluster, no con la media global.
+El uso combinado de KMeans y Agglomerative Clustering permitió validar la estabilidad de los patrones identificados, obteniéndose altos niveles de concordancia entre ambos métodos mediante el índice ARI. Esto evidencia que las estructuras detectadas no corresponden a agrupaciones aleatorias, sino a comportamientos consistentes presentes en los datos históricos.
+
+El análisis univariable permitió detectar días atípicos asociados específicamente a anomalías en CO₂ o temperatura, mientras que el análisis multivariable proporcionó una visión más completa del sistema al considerar simultáneamente la relación entre ambas variables. Gracias a ello fue posible identificar perfiles que, aunque parecían normales de manera individual, presentaban comportamientos anómalos al analizar la interacción conjunta entre temperatura y concentración de CO₂.
+
+Las anomalías detectadas pueden estar relacionadas con distintos factores, incluyendo:
+
+variaciones inusuales en la ocupación,
+fallos o cambios operativos del sistema de ventilación,
+eventos excepcionales,
+errores de adquisición de datos,
+sensores descalibrados o defectuosos.
+
+Particularmente, la presencia de registros de temperatura cercanos a 0 °C o con descensos abruptos no coherentes con la dinámica del CO₂ sugiere posibles inconsistencias de medición o fallos de sensores. Esto resalta la importancia de incorporar procesos de limpieza, validación y depuración de datos antes de realizar análisis avanzados de comportamiento ambiental.
+
+Asimismo, el análisis evidenció diferencias entre las zonas del edificio. La zona Norte Este mostró una mayor dispersión y variabilidad en los perfiles diarios y anomalías detectadas, lo que podría indicar una operación menos estable o una mayor sensibilidad a cambios de ocupación y ventilación. Por otro lado, la zona Sur Oeste presentó patrones más estructurados y consistentes a lo largo del tiempo.
+
+En términos generales, los resultados demuestran que las técnicas de aprendizaje no supervisado constituyen una herramienta efectiva para el monitoreo inteligente de edificios, permitiendo:
+
+detectar anomalías operativas,
+identificar patrones recurrentes de ocupación,
+evaluar el comportamiento del sistema de ventilación,
+mejorar procesos de mantenimiento preventivo,
+apoyar estrategias de eficiencia energética y calidad ambiental interior.
+
+Finalmente, se recomienda complementar este análisis con información contextual adicional, como registros de ocupación, mantenimiento, climatología externa y estado operativo del sistema HVAC, con el fin de validar las anomalías detectadas y mejorar la interpretación de los patrones identificados.
 
 ## 2. INVESTIGACIÓN OPERATIVA: TRAVELLING SALEMAN PROBLEM (TSP)
 
