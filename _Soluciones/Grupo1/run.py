@@ -142,21 +142,26 @@ def taller_3():
             if exercise == '3':
                 print('Pendiente por implementar en run.py')
         elif exercise == '3':
+            objective = "GA Workshop! USFQ"
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
             if study_case == '1':
                 print('\n=========================')
-                print('Algoritmo Genético sin heurísticas')
+                print('Algoritmo Genético default')
                 print('=========================')
-                objective = "GA Workshop! USFQ"
                 T3_P3.case_study_1(objective)
                 print('\nFin del estudio de caso 1\n')
             elif study_case == '2':
                 print('\n=========================')
-                print('Algoritmo Genético con heurísticas')
+                print('Algoritmo Genético con distancias')
                 print('=========================')
-                objective = "GA Workshop! USFQ"
                 T3_P3.case_study_2(objective)
                 print('\nFin del estudio de caso 2\n')
+            elif study_case == '3':
+                print('\n=========================')
+                print('Algoritmo Genético con gridsearch de mutation_rate')
+                print('=========================')
+                T3_P3.case_study_3(objective)
+                print('\nFin del estudio de caso 3\n')
         else :
             print('No hay el texto')
         print_options(options)

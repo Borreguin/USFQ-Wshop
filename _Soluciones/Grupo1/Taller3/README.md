@@ -5,14 +5,42 @@
 ## 1. USO DE APRENDIZAJE NO SUPERVISADO
 
 ### A. Plotear las variables
-<!-- Jairo -->
+Se realizaron overlay diarios de perfiles horarios para las variables registradas (CO2 y temperatura) por sensor/ventilador. El procedimiento gráfico consiste en normalizar las marcas temporales (formato %d.%m.%Y %H:%M), agrupar los datos por día y representar cada día como una curva hora-del-día superpuesta. Esto facilita identificar visualmente picos, caídas abruptas y desviaciones respecto al patrón típico de ocupación.
 
-<!-- Agregar gráficos y hallazgos -->
+Observaciones principales:
+- CO2: se detectan picos puntuales en ciertos días, con algunos perfiles que alcanzan valores muy elevados (en el análisis se reportan casos por encima de 1300 ppm). Estos picos rompen la forma típica del perfil diario y aparecen claramente resaltados en las figuras de anomalías.
+- Temperatura: se observaron caídas bruscas y valores atípicos (p. ej. cercanos a 0 °C y ~7 °C) en algunos días, lo cual no concuerda con el comportamiento normal del sistema de ventilación y sugiere error de sensor, pérdida de datos o condiciones operativas inusuales.
+
+Imágenes de referencia en esta carpeta: las figuras de la subcarpeta `images_P1` muestran la superposición de días normales en gris y los días anómalos en rojo, permitiendo identificar visualmente los eventos atípicos y patrones de comportamiento de los datos.
+
+![PS1](P1_UML/images_P1/overlay_V023_vent02_temp_out.png)
+
+![PS1](P1_UML/images_P1/overlay_V022_vent02_CO2.png)
 
 ### B. Encontrar patrones/clústeres – análisis univariable
-<!-- Jairo -->
+Análisis y metodología aplicada:
 
-<!-- Agregar gráficos y hallazgos -->
+- Construcción de perfiles diarios: se crea una matriz día × hora pivotando la serie temporal por `time_of_day` (función `build_daily_profiles`). Las columnas se ordenan cronológicamente, se rellenan valores faltantes por interpolación y se descartan días con datos incompletos.
+- Escalado: antes de clusterizar, los perfiles diarios se normalizan con `MinMaxScaler` para centrar el análisis en la forma temporal (perfil) en lugar de la magnitud absoluta.
+- Selección del número de clusters: se prueba K en el rango 2..min(6, n_días-1) y se selecciona K que maximiza el `silhouette_score` (función `select_cluster_count`).
+- Métodos de agrupamiento: se aplican `KMeans` (n_init=10, random_state fijo) y `AgglomerativeClustering` con el K seleccionado.
+- Validación entre métodos: se calcula el `Adjusted Rand Index (ARI)` entre las etiquetas de KMeans y Agglomerative para cuantificar la consistencia; el análisis muestra buena concordancia entre ambos métodos en las series estudiadas.
+
+Detección de anomalías univariables (método usado):
+
+- Asignación de centroides: para cada día se toma el centroide del cluster asignado por KMeans.
+- Distancia al centroide: se calcula la distancia euclídea entre el perfil diario (escalado) y el centroide asignado.
+- Umbral de anomalía: se usa `umbral = media(distancias) + 2·desviación_estándar` (parámetro `threshold_std=2`). Días cuya distancia excede este umbral se marcan como anomalías.
+
+Hallazgos y ejemplos:
+- Las anomalías detectadas por este método coinciden con los picos de CO2 y las caídas bruscas de temperatura observadas en los plots. El script imprime una tabla con `day`, `cluster`, `distance` y `is_anomaly`, lo que permite priorizar inspecciones por orden de distancia.
+
+Limitaciones y mejoras sugeridas:
+- El escalado puede ocultar anomalías que son puramente de magnitud; considerar complementarlo con un análisis en escala absoluta para detectar aumentos de nivel general.
+- El umbral global (media + 2·std) asume una distribución de distancias relativamente simétrica; en conjuntos heterogéneos es preferible usar umbrales por cluster o estadísticos robustos (mediana + MAD).
+- Para detectar anomalías que involucren simultáneamente varias variables (CO2 y temperatura), conviene emplear los análisis multivariables desarrollados en la sección D.
+
+Acciones recomendadas: verificar las fechas/días listados como anómalos contra registros de ocupación y mantenimiento; en caso de repetición por sensor, planificar calibración o reemplazo.
 
 ### C. Encontrar anomalías – análisis univariable
 <!-- Javi -->
@@ -59,25 +87,35 @@ En general, el análisis multivariable permitió identificar patrones diarios m�
 
 ### E. Encontrar anomalías – análisis multivariable
 
-Las anomalías multivariables se detectaron identificando perfiles diarios que no pertenecen claramente a los clústeres principales encontrados mediante KMeans y Agglomerative Clustering.
+Para el análisis multivariable se consideraron conjuntamente las variables de CO2 y temperatura de cada zona del edificio, formando perfiles diarios combinados. Se aplicó el algoritmo KMeans para identificar patrones representativos y posteriormente se calcularon las distancias de cada día respecto al centroide de su clúster asignado. Los perfiles cuya distancia superó el umbral definido fueron considerados anomalías multivariables.
 
-Para cada par de variables (CO2 y temperatura), se comparó la forma completa de los perfiles diarios respecto a los patrones promedio de cada clúster.
+#### Zona Norte Este (NE)
 
-En el caso del CO2, se identificaron días con picos excesivos de concentración, variaciones abruptas y perfiles que no seguían la tendencia típica de ocupación del edificio. Algunos perfiles alcanzaron valores superiores a 1300 ppm, alejándose significativamente de los patrones representativos. En las gráficas se visualizan todos los días normales en gris y las anomalías en rojo.
+En la zona Norte Este se identificaron varios perfiles diarios anómalos que presentan comportamientos distintos al patrón general observado en la mayoría de días.
 
-![PS1](P1_UML/images_P1/anomalies_V005_vent01_CO2.png)
+Las anomalías más evidentes se presentan principalmente en la variable de CO2, donde algunos días muestran incrementos abruptos entre las 12:00 y 15:00 horas, alcanzando concentraciones considerablemente mayores al comportamiento promedio. Esto podría sugerir eventos de mayor ocupación, menor ventilación o cambios operativos del sistema de ventilación.
 
-![PS1](P1_UML/images_P1/anomalies_V022_vent02_CO2.png)
+En la variable de temperatura también se detectaron perfiles atípicos, especialmente días con descensos bruscos de temperatura cercanos a valores anormalmente bajos respecto al resto del conjunto. Estos comportamientos podrían estar asociados a errores de medición, fallas del sensor o condiciones operativas inusuales del sistema de ventilación.
 
+En general, la mayoría de anomalías de la zona NE muestran una desviación simultánea en ambas variables, lo que indica que ciertos días presentan un comportamiento integral distinto al patrón multivariable dominante.
 
-En las variables de temperatura, las anomalías fueron más evidentes, observándose caídas bruscas y valores atípicos cercanos a 0 °C y 7 °C, los cuales no corresponden al comportamiento normal del sistema de ventilación. Estos perfiles podrían estar asociados a errores de sensor, fallos de adquisición de datos o condiciones operacionales inusuales.
+![PS1](P1_UML/images_P1/multivariable_anomalies_Zona_Norte_Este.png)
 
-![PS1](P1_UML/images_P1/anomalies_V006_vent01_temp_out.png)
+#### Zona Sur Oeste (SW)
 
-![PS1](P1_UML/images_P1/anomalies_V023_vent02_temp_out.png)
+En la zona Sur Oeste también se detectaron anomalías multivariables, aunque con menor dispersión que en la zona Norte Este.
 
-Los métodos KMeans y Agglomerative mostraron consistencia en la identificación de los patrones principales, permitiendo detectar perfiles diarios alejados de los centroides o grupos representativos como posibles anomalías.
+Los perfiles anómalos muestran incrementos pronunciados de CO2 durante las horas centrales del día, especialmente entre las 09:00 y 16:00 horas, superando el comportamiento promedio de los demás días.
 
+En temperatura se observan anomalías asociadas a descensos abruptos alrededor del mediodía, así como perfiles con temperaturas más elevadas y constantes respecto al patrón general. Esto podría indicar cambios operativos del sistema de ventilación, diferencias de ocupación o posibles inconsistencias en la adquisición de datos.
+
+A diferencia del análisis univariable, el análisis multivariable permitió identificar días que individualmente podrían parecer normales en una sola variable, pero que presentan un comportamiento atípico cuando se analiza conjuntamente la relación entre CO2 y temperatura.
+
+![PS1](P1_UML/images_P1/multivariable_anomalies_Zona_Sur_Oeste.png)
+
+El análisis multivariable permitió identificar patrones diarios representativos y detectar perfiles atípicos considerando simultáneamente las variables de CO2 y temperatura. Las anomalías detectadas evidencian días con comportamientos operativos distintos al patrón habitual del sistema de ventilación, posiblemente relacionados con variaciones de ocupación, cambios de operación del sistema de ventilación o errores de sensores.
+
+Además, se observó que la zona Norte Este presenta una mayor variabilidad y dispersión en los perfiles anómalos respecto a la zona Sur Oeste, lo que sugiere un comportamiento menos estable del sistema en dicha área.
 
 ### F. Conclusiones
 <!-- Todos -->
@@ -296,29 +334,44 @@ literal D:
 
 ## 3. ALGORTIMOS GENÉTICOS
 
-1. Ejecute los dos casos de estudio y explique los resultados de ejecución de cada caso de 
-estudio.
+### 1. Ejecute los dos casos de estudio y explique los resultados de ejecución de cada caso de estudio.
 
-•	Caso 1 (evaluación por coincidencias por posición): Se alcanzó el objetivo planteado. Observación: la aptitud (número de caracteres coincidentes) aumenta gradualmente hasta llegar al objetivo. Resultado de la ejecución: objetivo alcanzado en la generación 139 (Aptitud: 11).
+-	Caso 1 (evaluación por coincidencias por posición): Se alcanzó el objetivo planteado. Observación: la aptitud (número de caracteres coincidentes) aumenta gradualmente hasta llegar al objetivo. Resultado de la ejecución: objetivo alcanzado en la generación 982 (Aptitud: 17).
 
-•	Caso 2 (evaluación por distancia / minimización): Inicialmente se pudo ver que no alcanzó los objetivos planteados. Se modificó la función de distancia para usar valores absolutos y evitar negativos. Con la implementación correcta y las mejoras, alcanzó el objetivo más rápido. Observación: la aptitud (distancia) disminuye hasta 0. Resultado de la ejecución: objetivo alcanzado en la generación 69 (Aptitud: 0).
+-	Caso 2 (evaluación por distancia / minimización): Inicialmente se pudo ver que no alcanzó los objetivos planteados. Se modificó la función de distancia para usar valores absolutos y evitar negativos. Con la implementación correcta alcanzó el objetivo más rápido. Observación: la aptitud (distancia) disminuye hasta 0. Resultado de la ejecución: objetivo alcanzado en la generación 378 (Aptitud: 0).
 
-2. ¿Cuál sería una posible explicación para que el caso 2 no finalice como lo hace el caso 1?
+### 2. ¿Cuál sería una posible explicación para que el caso 2 no finalice como lo hace el caso 1?
 
-La raíz del problema fue la función distance() en util.py. Antes devolvía una suma de diferencias con signo (valores negativos), por lo que la evaluación por distancia devolvía aptitudes incorrectas (negativas) y la lógica de selección/minimización quedaba distorsionada. Eso hacía que el algoritmo no favoreciera correctamente las soluciones cercanas al objetivo y no convergiera como se esperaba.
+La raíz del problema fue la función `distance()` en util.py. Antes devolvía una suma de diferencias con signo (valores negativos), por lo que la evaluación por distancia devolvía aptitudes incorrectas (negativas) y la lógica de selección/minimización quedaba distorsionada. Eso hacía que el algoritmo no favoreciera correctamente las soluciones cercanas al objetivo y no convergiera como se esperaba.
 
-3. Realice una correcta implementación para obtener la distancia/diferencia correcta entre 
-dos individuos en el archivo util.py función distance.
+### 3. Realice una correcta implementación para obtener la distancia/diferencia correcta entre dos individuos en el archivo util.py función distance.
 
-Cambié distance() para usar la distancia de Levenshtein sobre las secuencias (listas de códigos de caracteres). Ventajas: mide inserciones/deletes/substitutions (medida de edición) y es una métrica adecuada para similitud entre palabras. Archivo modificado: util.py.
+Se modificó para que sume los valores absolutos de las distancias al igual que sume el valor absoluto de la diferencia de longitudes entre ambas listas. De esta manera, el caso 2 converge correctamente y en menos iteraciones.
 
-4. ¿Sin alterar el parámetro de mutación mutation_rate, se puede implementar algo para 
-mejorar la convergencia y que esta sea más rápida?
+### 4. ¿Sin alterar el parámetro de mutación mutation_rate, se puede implementar algo para mejorar la convergencia y que esta sea más rápida?
 
-Implementé dos mejoras que aceleran la convergencia sin cambiar mutation_rate:
+Se implementaron dos mejoras que aceleran la convergencia sin cambiar mutation_rate:
 
-  Selección por torneo para ParentSelectionType.MIN_DISTANCE (favorece padres con menor distancia). Archivo modificado: operation.py.
+- Selección por torneo para ParentSelectionType, escogiendo `k` individuos y eligiendo como parent al mejor entre ellos. Solo agregando selección por torneo, el resultado mejoró y se alcanzó el objetivo en 225 generaciones.
 
-  Elitismo en la generación NewGenerationType.MIN_DISTANCE: se conserva el mejor individuo y se generan hijos para completar la población (evita perder la mejor solución entre generaciones). Archivo modificado: generalSteps.py.
+- Elitismo en la generación: se conserva el mejor individuo y se generan hijos para completar la población (evita perder la mejor solución entre generaciones). Con esta mejora mas el torneo, se alcanzó el objetivo en 215 generaciones.
 
-Efecto observado: con Levenshtein + torneo + elitismo, el Caso 2 pasó de tardar muchas generaciones a alcanzar el objetivo en ~69 generaciones (ejecución de prueba).
+### 5. Cree un nuevo caso de estudio 3. Altere el parámetro de mutación mutation_rate, ¿ha beneficiado en algo la convergencia? Qué valores son los más adecuados para este parámetro. ¿Qué conclusión se puede obtener de este cambio?
+
+Sí hubo un efecto importante al modificar el parámetro `mutation_rate`. Para analizarlo se implementó un nuevo caso de estudio utilizando un enfoque tipo *grid search*, probando distintos valores de mutación: `0.001`, `0.005`, `0.01`, `0.02`, `0.05` y `0.1`. Además, las pruebas se realizaron utilizando selección por torneo y elitismo (`TOURNAMENT_ELITISM`), manteniendo constante el resto de parámetros del algoritmo. 
+
+Los resultados mostraron que tasas de mutación demasiado bajas reducen significativamente la capacidad de exploración del algoritmo. Por ejemplo, con `mutation_rate = 0.001` el algoritmo no logró alcanzar el objetivo en ninguna de las ejecuciones realizadas.
+
+En cambio, tasas intermedias y moderadamente altas permitieron una convergencia mucho más rápida. El valor `0.05` fue el que obtuvo la convergencia más rápida, alcanzando el objetivo en promedio en aproximadamente 113 generaciones. Por otro lado, `0.01` produjo la mejor aptitud promedio global, lo que indica una búsqueda más estable y precisa.
+
+También se observó que valores excesivamente altos, como `0.1`, aunque todavía permitieron converger, comenzaron a degradar parcialmente el rendimiento. Esto ocurre porque demasiada mutación introduce ruido aleatorio constante y dificulta conservar buenas soluciones entre generaciones.
+
+En conclusión, el parámetro `mutation_rate` tiene un impacto directo sobre el equilibrio entre exploración y explotación dentro del algoritmo genético. Valores muy bajos generan poca diversidad y pueden provocar estancamiento, mientras que valores demasiado altos vuelven la búsqueda demasiado aleatoria. Para este problema, los mejores resultados se obtuvieron con valores entre `0.02` y `0.05`, ya que ofrecieron una convergencia rápida manteniendo buena calidad de solución.
+
+### 6. Cree un nuevo caso de estudio 4. Altere el tamaño de la población, ¿es beneficioso o no aumentar la población?
+
+<!-- Completar -->
+
+### 7. De todo lo aprendido, cree el caso de estudio definitivo (caso de estudio 5) el cual tiene lo mejor de los ítems 4, 5, 6.
+
+<!-- Completar -->

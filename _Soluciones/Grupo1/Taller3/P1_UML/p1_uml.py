@@ -318,6 +318,100 @@ def plot_multivariable_patterns(
 
     plt.show()
 
+# Literal E - Anomalías multivariables
+
+def detect_multivariable_anomalies_kmeans(scaled_profiles, kmeans_labels, kmeans, threshold_std=2):
+    import numpy as np
+    import pandas as pd
+
+    assigned_centroids = kmeans.cluster_centers_[kmeans_labels]
+
+    distances = np.linalg.norm(
+        scaled_profiles.values - assigned_centroids,
+        axis=1
+    )
+
+    threshold = distances.mean() + threshold_std * distances.std()
+
+    anomaly_df = pd.DataFrame({
+        "day": scaled_profiles.index,
+        "cluster": kmeans_labels + 1,
+        "distance": distances,
+        "threshold": threshold,
+        "is_anomaly": distances > threshold
+    })
+
+    return anomaly_df
+
+
+def plot_multivariable_anomalies(original_profiles, anomaly_df, variables, zone_name):
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+
+    fig, axes = plt.subplots(
+        len(variables),
+        1,
+        figsize=(14, 8),
+        sharex=True
+    )
+
+    if len(variables) == 1:
+        axes = [axes]
+
+    anomaly_days = anomaly_df[anomaly_df["is_anomaly"]]["day"].values
+
+    for variable_index, variable in enumerate(variables):
+        ax = axes[variable_index]
+
+        variable_columns = [
+            column for column in original_profiles.columns
+            if column.startswith(variable)
+        ]
+
+        time_labels = [
+            column.replace(f"{variable}_", "")
+            for column in variable_columns
+        ]
+
+        time_axis = pd.to_datetime(time_labels, format="%H:%M")
+
+        for day in original_profiles.index:
+            values = original_profiles.loc[day, variable_columns].values
+
+            if day in anomaly_days:
+                ax.plot(
+                    time_axis,
+                    values,
+                    color="red",
+                    linewidth=2.5,
+                    label="Anomalía"
+                )
+            else:
+                ax.plot(
+                    time_axis,
+                    values,
+                    color="gray",
+                    alpha=0.25
+                )
+
+        ax.set_title(alias[variable])
+        ax.set_ylabel("Valor")
+        ax.grid(True, alpha=0.3)
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+
+        handles, labels = ax.get_legend_handles_labels()
+        if labels:
+            ax.legend(handles[:1], labels[:1])
+
+    axes[-1].set_xlabel("Hora del día")
+
+    fig.suptitle(f"Anomalías multivariables - {zone_name}")
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
+
+    save_plot(f"multivariable_anomalies_{zone_name.replace(' ', '_')}")
+    plt.show()
+
+
 
 def analyze_multivariable_patterns(
         _df: pd.DataFrame,
@@ -383,6 +477,27 @@ def analyze_multivariable_patterns(
         f"{ {int(cluster_id + 1): int((agglomerative_labels == cluster_id).sum()) for cluster_id in sorted(set(agglomerative_labels))} }"
     )
 
+        # Literal E: detección de anomalías multivariables
+    anomaly_df = detect_multivariable_anomalies_kmeans(
+        scaled_profiles,
+        kmeans_labels,
+        kmeans,
+        threshold_std=2
+    )
+
+    print("\nAnomalías multivariables detectadas:")
+    print(
+        anomaly_df[anomaly_df["is_anomaly"]]
+        .sort_values("distance", ascending=False)
+    )
+
+    plot_multivariable_anomalies(
+        daily_profiles,
+        anomaly_df,
+        variables,
+        zone_name
+    )
+
     plot_multivariable_patterns(
         daily_profiles,
         kmeans_labels,
@@ -432,14 +547,3 @@ def start_d_y_e(df = None):
         [lb_V022_vent02_CO2, lb_V023_vent02_temp_out],
         "Zona Sur Oeste"
     )
-
-<<<<<<< Updated upstream
-def start_e(df = None):
-    if df is None:
-        df = prepare_data()
-    pass
-=======
-
-if __name__ == "__main__":
-    start()
->>>>>>> Stashed changes
