@@ -144,7 +144,7 @@ def taller_3():
         elif exercise == '3':
             objective = "GA Workshop! USFQ"
             study_case = input('Ingrese el caso de estudio que desea ejecutar: ').strip()
-            print(f"[DEBUG] Valor recibido en study_case: '{study_case}' (type: {type(study_case)})")
+            # ...existing code...
             try:
                 if study_case == '1':
                     print('\n=========================')
@@ -177,7 +177,7 @@ def taller_3():
                     T3_P3.case_study_5(objective)
                     print('\nFin del estudio de caso 5\n')
                 else:
-                    print(f"[DEBUG] Opción no reconocida: '{study_case}'")
+                    # ...existing code...
             except Exception as e:
                 print(f"[ERROR] Excepción al ejecutar el caso de estudio: {e}")
         else :

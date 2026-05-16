@@ -109,9 +109,9 @@ def case_study_4(_objetive):
     output_lines = []
     for pop_size in population_sizes:
         generations_when_found = []
-        output_lines.append('\n========================================')
+        output_lines.append('\n')
         output_lines.append(f'Ejecutando con tamaño de población: {pop_size}')
-        print('\n========================================')
+        print('\n')
         print(f'Ejecutando con tamaño de población: {pop_size}')
         for run in range(n_runs):
             random.seed(MY_SEED)
@@ -157,13 +157,7 @@ def case_study_4(_objetive):
 
             
 def case_study_5(_objetive):
-    """
-    Caso de estudio definitivo: combina lo mejor de los casos anteriores.
-    - Prueba varios tamaños de población y tasas de mutación.
-    - Usa selección por torneo con elitismo.
-    - Evalúa por distancia.
-    - Guarda resultados detallados y resumen.
-    """
+    
     print('========== INICIO caso de estudio 5 =========')
     from Taller3.P3_GA.GA import GA  # Importación local para evitar ciclo
 
