@@ -388,17 +388,39 @@ No, la heurística de vecinos cercanos no garantiza siempre la mejor solución n
 -	Con heurística: 1785.44
 
 ### E. Conclusiones
-<!-- Todos -->
 
-<!-- Agregar hallazgos -->
+El desarrollo de la Parte 2 permitió analizar de manera práctica y experimental el comportamiento del Travelling Salesman Problem (TSP), uno de los problemas clásicos más importantes dentro de la investigación operativa y la optimización combinatoria. A través de la implementación de modelos exactos mediante programación lineal y la incorporación de distintas heurísticas, fue posible comprender las ventajas, limitaciones y dificultades computacionales asociadas a la resolución de este tipo de problemas.
 
-<!----------------------------------------------------------------------------------->
+De manera general, los resultados obtenidos demostraron que el TSP presenta un crecimiento exponencial de complejidad conforme aumenta el número de ciudades. Aunque en instancias pequeñas el solver logra encontrar soluciones de muy buena calidad en tiempos razonables, al incrementar la cantidad de nodos el espacio de búsqueda se vuelve extremadamente grande, haciendo que el tiempo de procesamiento aumente considerablemente. Esto evidencia claramente la naturaleza NP-Hard del problema, donde el número de combinaciones posibles crece rápidamente y dificulta alcanzar soluciones óptimas exactas en tiempos reducidos.
 
-literal D:
+Las gráficas obtenidas durante los distintos experimentos permitieron visualizar cómo cambia el comportamiento de las rutas a medida que aumenta el tamaño del problema. En los casos de 10 y 20 ciudades, tanto el modelo exacto como la heurística del vecino cercano logran recorridos relativamente organizados y cercanos entre sí. Sin embargo, conforme se analizaron escenarios de 30, 40, 50 y 70 ciudades, comenzaron a observarse diferencias mucho más marcadas entre ambos enfoques.
 
-- La heurística de vecinos cercanos mejoró la solución encontrada por el modelo, reduciendo la distancia total recorrida en aproximadamente 26.35 unidades.
-- Esto demuestra que, para este caso, la heurística es útil para guiar el solver hacia soluciones más eficientes, especialmente en problemas grandes donde el solver exacto puede no alcanzar la óptima en el tiempo disponible.
-- Sin embargo, la heurística no garantiza la mejor solución en todos los casos y su efectividad depende de la distribución de las ciudades. Es recomendable usarla como apoyo, pero siempre validar los resultados y, si es posible, comparar con otros métodos o heurísticas.
+El modelo LP sin heurísticas produjo generalmente rutas más coherentes, con menos cruces innecesarios y trayectorias más equilibradas. Esto se debe a que el solver analiza globalmente el problema buscando minimizar la distancia total recorrida considerando simultáneamente todas las posibles conexiones entre ciudades. Como resultado, las soluciones obtenidas suelen aproximarse mejor a la ruta óptima global.
+
+Por otro lado, la heurística del vecino cercano mostró una ventaja importante relacionada con la velocidad de ejecución. En prácticamente todos los casos evaluados, esta heurística logró construir soluciones de manera casi instantánea. Esto representa una característica muy valiosa cuando se trabaja con problemas de gran tamaño o cuando existen restricciones fuertes de tiempo computacional.
+
+No obstante, las gráficas también evidenciaron que la heurística del vecino cercano puede generar rutas menos eficientes debido a su naturaleza greedy. El algoritmo toma decisiones locales seleccionando siempre la ciudad más cercana disponible en cada paso, pero sin considerar el impacto global de dichas decisiones sobre el recorrido completo. Como consecuencia, en varios escenarios se generaron rutas con cruces, trayectorias largas o conexiones poco eficientes que incrementaron considerablemente la distancia total recorrida.
+
+Este comportamiento permitió concluir que una solución rápida no necesariamente implica una solución óptima. Las heurísticas son herramientas útiles para aproximarse al problema, pero su desempeño depende de la distribución espacial de las ciudades y de las características específicas de cada instancia.
+
+Otro aspecto importante analizado fue el parámetro `tee` del solver GLPK. La activación de este parámetro permitió observar internamente el comportamiento del algoritmo de optimización durante la ejecución del modelo. Gracias a esta salida detallada fue posible monitorear iteraciones, nodos explorados, gaps de optimalidad, tiempos de ejecución y progreso general del solver.
+
+Esto permitió comprender con mayor profundidad cómo funciona un solver de programación lineal y cómo el esfuerzo computacional aumenta significativamente conforme crece el problema. Además, evidenció que en problemas complejos el solver puede alcanzar el límite de tiempo establecido sin lograr demostrar optimalidad, aun cuando haya encontrado soluciones razonablemente buenas.
+
+El análisis realizado también permitió identificar que la incorporación de heurísticas no siempre garantiza mejores resultados. En el experimento utilizando la heurística `limitar_funcion_objetivo`, los resultados mostraron un comportamiento contrario al esperado. Aunque la intención de esta heurística era reducir el espacio de búsqueda y acelerar la convergencia del solver, la solución obtenida fue peor que la alcanzada por el modelo sin heurística.
+
+Esto ocurrió porque los límites impuestos sobre la función objetivo restringieron excesivamente el espacio de soluciones posibles. Como consecuencia, el solver dejó de explorar rutas potencialmente mejores. Este experimento permitió concluir que una heurística mal calibrada puede perjudicar el rendimiento del modelo, especialmente en problemas altamente sensibles como el TSP.
+
+Además, se observó que agregar restricciones adicionales incrementa la complejidad matemática del modelo, aumentando la cantidad de coeficientes no nulos y el esfuerzo computacional requerido por el solver. Esto demuestra que diseñar heurísticas efectivas requiere un análisis cuidadoso del comportamiento del problema y de la estructura de los datos.
+
+De manera global, todos los experimentos realizados permitieron comprender la importancia de combinar enfoques exactos y heurísticos dentro de la investigación operativa moderna. Los métodos exactos ofrecen soluciones de mayor calidad y cercanas a la optimalidad, pero presentan limitaciones computacionales importantes en problemas grandes. Las heurísticas, en cambio, sacrifican precisión a cambio de rapidez y escalabilidad.
+
+Por ello, en aplicaciones reales del TSP —como logística, transporte, planificación de rutas, distribución de mercancías o diseño de redes— suele ser necesario utilizar estrategias híbridas que permitan equilibrar calidad de solución y tiempo computacional.
+
+La heurística de vecinos cercanos mejoró la solución encontrada por el modelo, reduciendo la distancia total recorrida en aproximadamente 26.35 unidades. Esto demuestra que, para este caso, la heurística es útil para guiar el solver hacia soluciones más eficientes, especialmente en problemas grandes donde el solver exacto puede no alcanzar la óptima en el tiempo disponible. Sin embargo, la heurística no garantiza la mejor solución en todos los casos y su efectividad depende de la distribución de las ciudades. Es recomendable usarla como apoyo, pero siempre validar los resultados y, si es posible, comparar con otros métodos o heurísticas.
+
+Finalmente, esta práctica permitió no solo implementar modelos de optimización, sino también interpretar gráficamente los resultados, analizar el comportamiento de distintas técnicas de resolución y comprender las dificultades reales que enfrentan los algoritmos de optimización combinatoria. El trabajo realizado evidencia cómo pequeñas modificaciones en restricciones, heurísticas o parámetros del solver pueden afectar significativamente la calidad de las soluciones obtenidas y el desempeño computacional del modelo.
+
 
 
 ## 3. ALGORTIMOS GENÉTICOS
