@@ -26,7 +26,6 @@ class RunPanel(QGroupBox):
         self.log.setStyleSheet("background: #1e1e1e; color: #d4d4d4;")
         layout.addWidget(self.log, stretch=4)
 
-        # Barra de progreso + etiqueta de coincidencias
         bar_row = QHBoxLayout()
         self.progress = QProgressBar()
         self.progress.setRange(0, 100)
@@ -37,14 +36,11 @@ class RunPanel(QGroupBox):
         bar_row.addWidget(self.match_label)
         layout.addLayout(bar_row)
 
-        # Etiqueta de estado
         self.status_label = QLabel("Listo para ejecutar.")
         self.status_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.status_label)
 
         self.setLayout(layout)
-
-    # ── Interfaz pública ──────────────────────────────────────────────────────
 
     def set_max_iters(self, n: int):
         self._max_iters = n
@@ -60,7 +56,6 @@ class RunPanel(QGroupBox):
         self.status_label.setStyleSheet("color: #d4d4d4;")
 
     def append_generation(self, stats: dict):
-        """Recibe el dict de estadísticas y actualiza la vista."""
         objective = stats['objective']
         best = stats['best_individual']
         match_count = stats['match_count']
@@ -72,7 +67,6 @@ class RunPanel(QGroupBox):
         self.progress.setValue(int(pct))
         self.match_label.setText(f"Coinc: {match_count} / {len(objective)}")
 
-        # Diff coloreado: verde = coincide, rojo = difiere
         diff_html = ""
         for a, b in zip(best, objective):
             color = "#2ecc71" if a == b else "#e74c3c"

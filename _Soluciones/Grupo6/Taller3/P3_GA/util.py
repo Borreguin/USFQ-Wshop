@@ -6,18 +6,7 @@ def word_to_array(word: str):
 
 
 def distance(list1: List[int], list2: List[int]):
-    """
-    Distancia de Hamming entre dos listas de valores ASCII.
-
-    Ejercicio 3 — corrección:
-    La versión original usaba (e1 - e2) sin valor absoluto, lo que permitía que
-    diferencias positivas y negativas se cancelaran entre sí (e.g., 'abc' vs
-    'cba' devolvía 0 aunque son palabras muy distintas).
-    La corrección aplica abs() en cada par, garantizando una distancia siempre
-    >= 0 que crece a medida que los individuos se alejan del objetivo.
-    """
     acc = sum(abs(e1 - e2) for e1, e2 in zip(list1, list2))
-    # Penalizar diferencias de longitud con el mayor delta ASCII posible
     acc += abs(len(list1) - len(list2)) * 128
     return acc
 

@@ -76,8 +76,6 @@ class MainWindow(QMainWindow):
             QTextEdit { border: 1px solid #444; }
         """)
 
-    # ── Slots ─────────────────────────────────────────────────────────────────
-
     def _start_run(self):
         config = self.config_panel.get_config()
         self.run_panel.set_max_iters(config['n_iterations'])

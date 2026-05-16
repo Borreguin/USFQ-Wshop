@@ -11,13 +11,8 @@ from ..constants import (
 
 
 class GAWorker(QThread):
-    """
-    Ejecuta el Algoritmo Genético en un hilo secundario y emite señales Qt
-    para actualizar la interfaz sin bloquear el hilo principal.
-    """
-
-    generation_ready = pyqtSignal(object)  # dict con estadísticas de la generación
-    run_complete = pyqtSignal(object)      # dict con resultado final + historial
+    generation_ready = pyqtSignal(object)
+    run_complete = pyqtSignal(object)
 
     def __init__(self, config: dict):
         super().__init__()

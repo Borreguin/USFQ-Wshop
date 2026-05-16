@@ -22,8 +22,6 @@ from ...constants import (
     MY_SEED,
 )
 
-# ── Definición de los 5 casos de estudio ─────────────────────────────────────
-
 CASOS = [
     {
         'nombre': 'Caso 1 — Coincidencias (DEFAULT)',
@@ -115,7 +113,6 @@ class ConfigPanel(QGroupBox):
         layout = QVBoxLayout()
         form = QFormLayout()
 
-        # Caso de estudio
         self.caso_combo = QComboBox()
         for c in CASOS:
             self.caso_combo.addItem(c['nombre'])
@@ -123,11 +120,9 @@ class ConfigPanel(QGroupBox):
         self.caso_combo.currentIndexChanged.connect(self._on_caso_changed)
         form.addRow("Caso de estudio:", self.caso_combo)
 
-        # Objetivo
         self.target_edit = QLineEdit("GA Workshop! USFQ")
         form.addRow("Expresión objetivo:", self.target_edit)
 
-        # Parámetros
         self.pop_spin = QSpinBox()
         self.pop_spin.setRange(10, 5000)
         self.pop_spin.setValue(100)
@@ -151,7 +146,6 @@ class ConfigPanel(QGroupBox):
 
         layout.addLayout(form)
 
-        # Descripción del caso
         self.desc_label = QTextEdit()
         self.desc_label.setReadOnly(True)
         self.desc_label.setStyleSheet(
@@ -159,7 +153,6 @@ class ConfigPanel(QGroupBox):
         )
         layout.addWidget(self.desc_label, stretch=1)
 
-        # Botones
         self.run_btn = QPushButton("Ejecutar AG")
         self.run_btn.setStyleSheet(
             "font-weight: bold; background: #2ecc71; color: white; padding: 7px;"
@@ -175,8 +168,6 @@ class ConfigPanel(QGroupBox):
         layout.addLayout(btn_row)
 
         self.setLayout(layout)
-
-    # ── Helpers ──────────────────────────────────────────────────────────────
 
     def _on_caso_changed(self, idx):
         if idx < len(CASOS):
@@ -195,8 +186,6 @@ class ConfigPanel(QGroupBox):
         self.desc_label.setPlainText(caso['descripcion'])
         self._building = False
 
-    # ── Accessors ─────────────────────────────────────────────────────────────
-
     def get_config(self) -> dict:
         idx = self.caso_combo.currentIndex()
         seed_text = self.seed_edit.text().strip()
@@ -204,7 +193,6 @@ class ConfigPanel(QGroupBox):
 
         if idx < len(CASOS):
             caso = CASOS[idx].copy()
-            # Allow user to override pop/mut/iter even with a preset
             caso['population_size'] = self.pop_spin.value()
             caso['mutation_rate'] = self.mut_spin.value()
             caso['n_iterations'] = self.iter_spin.value()
@@ -212,7 +200,6 @@ class ConfigPanel(QGroupBox):
             caso['seed'] = seed
             return caso
 
-        # Personalizado
         return {
             'objective': self.target_edit.text(),
             'population_size': self.pop_spin.value(),

@@ -24,14 +24,12 @@ class StatsPanel(QGroupBox):
         layout = QVBoxLayout()
         tabs = QTabWidget()
 
-        # ── Gráfico de convergencia ───────────────────────────────────────────
         self.figure = Figure(facecolor="#1e1e1e")
         self.canvas = FigureCanvas(self.figure)
         self.ax = self.figure.add_subplot(111)
         self._style_axes()
         tabs.addTab(self.canvas, "Convergencia")
 
-        # ── Tabla de generaciones ─────────────────────────────────────────────
         self.table = QTableWidget(0, 5)
         self.table.setHorizontalHeaderLabels(
             ["Generación", "Mejor apt.", "Media apt.", "Coincidencias", "Mejor individuo"]
@@ -42,7 +40,6 @@ class StatsPanel(QGroupBox):
         )
         tabs.addTab(self.table, "Tabla de datos")
 
-        # ── Resumen textual ────────────────────────────────────────────────────
         self.summary_label = QLabel("Ejecuta el AG para ver las estadísticas.")
         self.summary_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.summary_label.setStyleSheet(
