@@ -153,4 +153,9 @@ def case_study_5(objective):
 
 if __name__ == "__main__":
     objective = "GA Workshop! USFQ"
+    case_study_1(objective)  # Caso 1: coincidencias (DEFAULT)
+    # case_study_2(objective) # Caso 2: distancia Hamming corregida
+    # case_study_3(objective) # Caso 3: mutation_rate = 0.05
+    # case_study_4(objective) # Caso 4: población = 200
+    # case_study_5(objective) # Caso 5: combinación óptima (IMPROVED)
     case_study_5(objective)
