@@ -1,0 +1,125 @@
+Caso de estudio 5: Combinación de lo mejor de los casos anteriores
+
+
+========================================
+Población: 50 | Mutación: 0.01
+  Run 1: Objetivo alcanzado en 826 generaciones.
+  Run 2: Objetivo alcanzado en 826 generaciones.
+  Run 3: Objetivo alcanzado en 826 generaciones.
+  Run 4: Objetivo alcanzado en 826 generaciones.
+  Run 5: Objetivo alcanzado en 826 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 826.0 (5/5 runs exitosos)
+
+========================================
+Población: 50 | Mutación: 0.05
+  Run 1: Objetivo alcanzado en 172 generaciones.
+  Run 2: Objetivo alcanzado en 172 generaciones.
+  Run 3: Objetivo alcanzado en 172 generaciones.
+  Run 4: Objetivo alcanzado en 172 generaciones.
+  Run 5: Objetivo alcanzado en 172 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 172.0 (5/5 runs exitosos)
+
+========================================
+Población: 50 | Mutación: 0.1
+  Run 1: Objetivo alcanzado en 306 generaciones.
+  Run 2: Objetivo alcanzado en 306 generaciones.
+  Run 3: Objetivo alcanzado en 306 generaciones.
+  Run 4: Objetivo alcanzado en 306 generaciones.
+  Run 5: Objetivo alcanzado en 306 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 306.0 (5/5 runs exitosos)
+
+========================================
+Población: 100 | Mutación: 0.01
+  Run 1: Objetivo alcanzado en 674 generaciones.
+  Run 2: Objetivo alcanzado en 674 generaciones.
+  Run 3: Objetivo alcanzado en 674 generaciones.
+  Run 4: Objetivo alcanzado en 674 generaciones.
+  Run 5: Objetivo alcanzado en 674 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 674.0 (5/5 runs exitosos)
+
+========================================
+Población: 100 | Mutación: 0.05
+  Run 1: Objetivo alcanzado en 113 generaciones.
+  Run 2: Objetivo alcanzado en 113 generaciones.
+  Run 3: Objetivo alcanzado en 113 generaciones.
+  Run 4: Objetivo alcanzado en 113 generaciones.
+  Run 5: Objetivo alcanzado en 113 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 113.0 (5/5 runs exitosos)
+
+========================================
+Población: 100 | Mutación: 0.1
+  Run 1: Objetivo alcanzado en 313 generaciones.
+  Run 2: Objetivo alcanzado en 313 generaciones.
+  Run 3: Objetivo alcanzado en 313 generaciones.
+  Run 4: Objetivo alcanzado en 313 generaciones.
+  Run 5: Objetivo alcanzado en 313 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 313.0 (5/5 runs exitosos)
+
+========================================
+Población: 200 | Mutación: 0.01
+  Run 1: Objetivo alcanzado en 158 generaciones.
+  Run 2: Objetivo alcanzado en 158 generaciones.
+  Run 3: Objetivo alcanzado en 158 generaciones.
+  Run 4: Objetivo alcanzado en 158 generaciones.
+  Run 5: Objetivo alcanzado en 158 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 158.0 (5/5 runs exitosos)
+
+========================================
+Población: 200 | Mutación: 0.05
+  Run 1: Objetivo alcanzado en 65 generaciones.
+  Run 2: Objetivo alcanzado en 65 generaciones.
+  Run 3: Objetivo alcanzado en 65 generaciones.
+  Run 4: Objetivo alcanzado en 65 generaciones.
+  Run 5: Objetivo alcanzado en 65 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 65.0 (5/5 runs exitosos)
+
+========================================
+Población: 200 | Mutación: 0.1
+  Run 1: Objetivo alcanzado en 173 generaciones.
+  Run 2: Objetivo alcanzado en 173 generaciones.
+  Run 3: Objetivo alcanzado en 173 generaciones.
+  Run 4: Objetivo alcanzado en 173 generaciones.
+  Run 5: Objetivo alcanzado en 173 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 173.0 (5/5 runs exitosos)
+
+========================================
+Población: 500 | Mutación: 0.01
+  Run 1: Objetivo alcanzado en 68 generaciones.
+  Run 2: Objetivo alcanzado en 68 generaciones.
+  Run 3: Objetivo alcanzado en 68 generaciones.
+  Run 4: Objetivo alcanzado en 68 generaciones.
+  Run 5: Objetivo alcanzado en 68 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 68.0 (5/5 runs exitosos)
+
+========================================
+Población: 500 | Mutación: 0.05
+  Run 1: Objetivo alcanzado en 66 generaciones.
+  Run 2: Objetivo alcanzado en 66 generaciones.
+  Run 3: Objetivo alcanzado en 66 generaciones.
+  Run 4: Objetivo alcanzado en 66 generaciones.
+  Run 5: Objetivo alcanzado en 66 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 66.0 (5/5 runs exitosos)
+
+========================================
+Población: 500 | Mutación: 0.1
+  Run 1: Objetivo alcanzado en 171 generaciones.
+  Run 2: Objetivo alcanzado en 171 generaciones.
+  Run 3: Objetivo alcanzado en 171 generaciones.
+  Run 4: Objetivo alcanzado en 171 generaciones.
+  Run 5: Objetivo alcanzado en 171 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 171.0 (5/5 runs exitosos)
+
+Resumen de resultados por tamaño de población y tasa de mutación:
+Población	Mutación	Promedio Generaciones	Runs Exitosos/Total
+50	0.01	826.0		5/5
+50	0.05	172.0		5/5
+50	0.1	306.0		5/5
+100	0.01	674.0		5/5
+100	0.05	113.0		5/5
+100	0.1	313.0		5/5
+200	0.01	158.0		5/5
+200	0.05	65.0		5/5
+200	0.1	173.0		5/5
+500	0.01	68.0		5/5
+500	0.05	66.0		5/5
+500	0.1	171.0		5/5

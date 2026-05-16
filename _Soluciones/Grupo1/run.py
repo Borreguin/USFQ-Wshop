@@ -1,43 +1,47 @@
-from Taller1.P1_TSP.TSP import study_case_1, study_case_2
-from Taller1.P2_Granjero.Acertijo import main as granjero_main
-from Taller1.P3_Torres.Torres import main as torres_main
-from Taller2.P1.P1 import study_case_1 as p1_study_case_1, study_case_2 as p1_study_case_2, study_case_3 as p1_study_case_3, study_case_4 as p1_study_case_4
-from Taller2.P2.P2_ACO import study_case_1 as aco_study_case_1, study_case_2 as aco_study_case_2, find_optimized_path as study_case_optimized
+import Taller1.P1_TSP.TSP as T1_P1
+import Taller1.P2_Granjero.Acertijo as T1_P2
+import Taller1.P3_Torres.Torres as T1_P3
+import Taller2.P1.P1 as T2_P1
+import Taller2.P2.P2_ACO as T2_P2
+import Taller3.P1_UML.p1_uml as T3_P1
+import Taller3.P2_TSP.TSP as T3_P2
+import Taller3.P3_GA.GA as T3_P3
 
 def print_options(arr, header = None):
     if header:
         print(header)
     _ = [print(f'{i+1}. {option}') for i, option in enumerate(arr)]
+    print('0. Salir')
 
 def taller_1():
-    options = ['TSP', 'Acertijo del granjero y el bote', 'Torres de Hanoi', 'Otro', 'Salir']
+    options = ['TSP', 'Acertijo del granjero y el bote', 'Torres de Hanoi', 'Otro']
     header = 'Bienvenido al taller 1 de Inteligencia Artificial'
     print_options(options, header)
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
-    while study_case != '5':
+    while study_case != '0':
         if study_case == '1':
             print('\n=========================')
             print('Viaje del vendedor (TSP)')
             print('=========================')
-            study_case_1()
+            T1_P1.study_case_1()
             print('\nFin del estudio de caso 1\n')
             print('=========================')
             print('Viaje del vendedor (TSP) caso 2')
             print('=========================')
-            study_case_2()
+            T1_P1.study_case_2()
             print('\nFin del estudio de caso 2\n')
             print('=========================')
         elif study_case == '2':
             print('\n=========================')
             print('Acertijo del granjero y el bote')
             print('=========================')
-            granjero_main()
+            T1_P2.main()
             print('\nFin del estudio de caso 2\n')
         elif study_case == '3':
             print('\n=========================')
             print('Torres de Hanoi')
             print('=========================')
-            torres_main()
+            T1_P3.main()
             print('\nFin del estudio de caso 3\n')
             print('=========================')
         else :
@@ -47,48 +51,37 @@ def taller_1():
     print('Saliendo del taller 1')
 
 def taller_2():
-    options = ['Laberinto', 'Colonia de Hormigas', 'Otro', 'Salir']
+    options = ['Laberinto', 'Colonia de Hormigas', 'Otro']
     header = 'Bienvenido al taller 2 de Inteligencia Artificial'
     print_options(options, header)
     study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
-    while study_case != '4':
+    while study_case != '0':
         if study_case == '1':
             print('\n=========================')
             print('Llamado al laberinto ')
             print('=========================')
-            p1_study_case_1()
+            T2_P1.study_case_1()
             print('\nFin del estudio de caso 1\n')
-            print('=========================')
-            print('Llamado al laberinto caso 2')
-            print('=========================')
-            p1_study_case_2()
-            print('\nFin del estudio de caso 2\n')
             print('=========================')
             print('Llamado al laberinto caso 3')
             print('=========================')
-            p1_study_case_3()
+            T2_P1.study_case_3()
             print('\nFin del estudio de caso 3\n')
-            print('=========================')
-            print('Llamado al laberinto caso 4')
-            print('=========================')
-            p1_study_case_4()
-            print('\nFin del estudio de caso 4\n')
-            print('=========================')
         elif study_case == '2':
             print('\n=========================')
             print('Colonia de Hormigas')
             print('=========================')
-            aco_study_case_1()
+            T2_P2.study_case_1()
             print('\nFin del estudio de caso 1\n')
             print('=========================')
             print('Colonia de Hormigas caso 2')
             print('=========================')
-            aco_study_case_2()
+            T2_P2.study_case_2()
             print('\nFin del estudio de caso 2\n')
             print('=========================')
             print('Colonia de Hormigas caso de optimización')
             print('=========================')
-            study_case_optimized()
+            T2_P2.study_case_optimized()
             print('\nFin del estudio de optimización 2\n')
         else :
             print('No hay el texto')
@@ -96,19 +89,118 @@ def taller_2():
         study_case = input('Ingrese el estudio de caso que desea ejecutar: ')
     print('Saliendo del taller 2')
 
+def taller_3():
+    options = ['Data de edificios', 'TSP', 'Algoritmos Genéticos']
+    header = 'Bienvenido al taller 3 de Inteligencia Artificial'
+    print_options(options, header)
+    exercise = input('Ingrese el ejercicio que desea ejecutar: ').strip()
+    while exercise != '0':
+        if exercise == '1':
+            print('\n=========================')
+            print('Dataset de edificios')
+            print('=========================')
+            print_options(['Plotear las variables', 'Patrones y Anomalías univariable', 'Patrones y Anomalías multivariable'])
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
+            if study_case == '1':
+                print('\n=========================')
+                print('Plotear las variables')
+                print('=========================')
+                T3_P1.start_a()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '2':
+                print('\n=========================')
+                print('Patrones y Anomalías univariable')
+                print('=========================')
+                T3_P1.start_b_y_c()
+                print('\nFin del ejercicio 1\n')
+            elif study_case == '3':
+                print('\n=========================')
+                print('Patrones y Anomalías multivariable')
+                print('=========================')
+                T3_P1.start_d_y_e()
+                print('\nFin del ejercicio 1\n')
+        elif exercise == '2':
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
+            if study_case == '1':
+                 print('\n=========================')
+                 print('Resolución del TSP sin heurísticas')
+                 print('=========================')
+                 T3_P2.study_case_1()
+                 print('\nFin del estudio de caso 1\n')
+            elif study_case == '2':
+                print('\n=========================')
+                print('Resolución del TSP con heurísticas (limitar_funcion_objetivo)')
+                print('=========================')
+                T3_P2.study_case_2()
+                print('\nFin del estudio de caso 2\n')
+            elif study_case == '3':
+                print('\n=========================')
+                print('Resolución del TSP con heurísticas (vecino más cercano)')
+                print('=========================')
+                T3_P2.study_case_3()
+                print('\nFin del estudio de caso 3\n')
+            if exercise == '3':
+                print('Pendiente por implementar en run.py')
+        elif exercise == '3':
+            objective = "GA Workshop! USFQ"
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ').strip()
+            # ...existing code...
+            try:
+                if study_case == '1':
+                    print('\n=========================')
+                    print('Algoritmo Genético default')
+                    print('=========================')
+                    T3_P3.case_study_1(objective)
+                    print('\nFin del estudio de caso 1\n')
+                elif study_case == '2':
+                    print('\n=========================')
+                    print('Algoritmo Genético con distancias')
+                    print('=========================')
+                    T3_P3.case_study_2(objective)
+                    print('\nFin del estudio de caso 2\n')
+                elif study_case == '3':
+                    print('\n=========================')
+                    print('Algoritmo Genético con gridsearch de mutation_rate')
+                    print('=========================')
+                    T3_P3.case_study_3(objective)
+                    print('\nFin del estudio de caso 3\n')
+                elif study_case == '4':
+                    print('\n=========================')
+                    print('Algoritmo Genético: efecto del tamaño de población')
+                    print('=========================')
+                    T3_P3.case_study_4(objective)
+                    print('\nFin del estudio de caso 4\n')
+                elif study_case == '5':
+                    print('\n=========================')
+                    print('Algoritmo Genético: caso de estudio definitivo')
+                    print('=========================')
+                    T3_P3.case_study_5(objective)
+                    print('\nFin del estudio de caso 5\n')
+                else:
+                    print('No hay el texto')
+            except Exception as e:
+                print(f"[ERROR] Excepción al ejecutar el caso de estudio: {e}")
+        else :
+            print('No hay el texto')
+        print_options(options)
+        exercise = input('Ingrese el ejercicio que desea ejecutar: ').strip()
+    print('Saliendo del taller 3')
+
 def main():
-    options = ['Taller 1', 'Taller 2', 'Salir']
+    options = ['Taller 1', 'Taller 2', 'Taller 3']
     print_options(options, 'Bienvenido al taller de Inteligencia Artificial')
-    option = input('Ingrese el taller que desea ejecutar: ')
-    while option != '3':
+    option = input('Ingrese el taller que desea ejecutar: ').strip()
+    while option != '0':
         if option == '1':
             taller_1()
         elif option == '2':
             taller_2()
+        elif option == '3':
+            taller_3()
         else:
             print('No hay el texto')
         print_options(options)
-        option = input('Ingrese el taller que desea ejecutar: ')
+        option = input('Ingrese el taller que desea ejecutar: ').strip()
     print('Fin del programa')
 
 if __name__ == "__main__":

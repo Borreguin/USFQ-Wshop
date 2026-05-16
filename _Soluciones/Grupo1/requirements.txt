@@ -1,2 +1,5 @@
 matplotlib
 tqdm
+pandas
+scikit-learn
+pyomo
