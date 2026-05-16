@@ -93,4 +93,33 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
 
     if _type == NewGenerationType.NEW:
         print("implement here the new generation")
-        return None
+
+
+def case_study_4(_objetive):
+    """
+    Caso de estudio 4: Analiza el efecto del tamaño de la población en la convergencia.
+    Ejecuta el algoritmo genético con diferentes tamaños de población y reporta los resultados.
+    """
+    population_sizes = [50, 100, 200, 500]
+    mutation_rate = 0.01
+    n_iterations = 1000
+    n_runs = 5
+    for pop_size in population_sizes:
+        generations_when_found = []
+        print('\n========================================')
+        print(f'Ejecutando con tamaño de población: {pop_size}')
+        for _ in range(n_runs):
+            random.seed(MY_SEED)
+            population = generate_population(pop_size, len(_objetive))
+            ga = GA(population, _objetive, mutation_rate, n_iterations)
+            ga.set_evaluation_type(AptitudeType.BY_DISTANCE)
+            ga.set_best_individual_selection_type(BestIndividualSelectionType.MIN_DISTANCE)
+            ga.set_new_generation_type(NewGenerationType.TOURNAMENT_ELITISM)
+            success, _, generations_to_goal = ga.run(verbose=False, return_history=True)
+            if success and generations_to_goal is not None:
+                generations_when_found.append(generations_to_goal)
+        if generations_when_found:
+            avg_generations = sum(generations_when_found) / len(generations_when_found)
+            print(f'Promedio de generaciones para alcanzar el objetivo: {avg_generations:.1f} ({len(generations_when_found)}/{n_runs} runs exitosos)')
+        else:
+            print('No se alcanzó el objetivo en ningún run.')

@@ -1,4 +1,8 @@
 from Taller3.P3_GA.generalSteps import *
+import random
+from Taller3.P3_GA.operation import MY_SEED
+import random
+from Taller3.P3_GA.operation import MY_SEED
 
 
 class GA:
