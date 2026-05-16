@@ -3,6 +3,9 @@ from random import choice
 from Taller3.P3_GA.operation import *
 from Taller3.P3_GA.util import word_distance
 
+from Taller3.P3_GA.GA import GA
+from Taller3.P3_GA.constants import MY_SEED
+
 
 # Generar población
 def generate_population(population_size, string_length, seed=MY_SEED):
@@ -96,10 +99,7 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
 
 
 def case_study_4(_objetive):
-    """
-    Caso de estudio 4: Analiza el efecto del tamaño de la población en la convergencia.
-    Ejecuta el algoritmo genético con diferentes tamaños de población y reporta los resultados.
-    """
+
     population_sizes = [50, 100, 200, 500]
     mutation_rate = 0.01
     n_iterations = 1000

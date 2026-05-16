@@ -162,6 +162,12 @@ def taller_3():
                 print('=========================')
                 T3_P3.case_study_3(objective)
                 print('\nFin del estudio de caso 3\n')
+            elif study_case == '4':
+                print('\n=========================')
+                print('Algoritmo Genético: efecto del tamaño de población')
+                print('=========================')
+                T3_P3.case_study_4(objective)
+                print('\nFin del estudio de caso 4\n')
         else :
             print('No hay el texto')
         print_options(options)
@@ -187,3 +193,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Ejecución directa del caso de estudio 4 de Algoritmos Genéticos
+    from Taller3.P3_GA import GA as T3_P3
+    objective = "GA Workshop! USFQ"
+    print("\nEjecución directa: Algoritmo Genético - efecto del tamaño de población (case_study_4)\n")
+    T3_P3.case_study_4(objective)
