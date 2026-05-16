@@ -248,9 +248,37 @@ Una posible razón es que el TSP es un problema NP-Hard y pequeñas variaciones 
 
 
 ### D. Aplicar heurística de vecinos cercanos
-<!-- Javi -->
 
-<!-- Agregar gráficos y hallazgos, responder ¿Cuál es la diferencia entre los dos casos? y ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón? -->
+1. ¿Cuál es la diferencia entre los dos casos?
+Caso a) Sin heurística de vecinos cercanos:
+•	Distancia total recorrida: 1811.79
+•	El modelo resuelve el TSP para 100 ciudades usando solo el enfoque exacto (programación entera mixta con Pyomo y GLPK), sin restricciones adicionales que guíen la búsqueda.
+•	Gráfica: LP_sin_heuristica_100.png
+
+Caso b) Con heurística de vecinos cercanos:
+•	Distancia total recorrida: 1785.44
+•	Se añade la heurística de vecinos cercanos como restricción adicional, guiando al modelo para que priorice trayectorias más cortas entre ciudades cercanas.
+Diferencia observada:
+•	La heurística de vecinos cercanos permitió encontrar una ruta más corta (1785.44 vs 1811.79), es decir, mejoró la calidad de la solución.
+•	Además, la heurística ayuda a reducir el espacio de búsqueda, lo que puede traducirse en menor tiempo de cómputo o en encontrar mejores soluciones dentro del mismo límite de tiempo.
+•	Gráfica: LP_con_vecino_cercano_100.png
+
+2. ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón?
+No, la heurística de vecinos cercanos no garantiza siempre la mejor solución ni es óptima para todos los casos.
+Razones:
+•	Dependencia de la distribución: Si las ciudades están distribuidas de forma irregular (por ejemplo, agrupadas en clústeres o con grandes distancias entre algunas), la heurística puede llevar a soluciones subóptimas, ya que siempre elige el vecino más cercano en cada paso, sin considerar el impacto global.
+•	Soluciones locales: La heurística puede quedarse atrapada en mínimos locales, es decir, rutas que parecen buenas en cada paso pero no son óptimas en el recorrido total.
+•	Ventaja: Sin embargo, en instancias grandes, ayuda a guiar el modelo y a obtener soluciones razonables en menos tiempo, especialmente cuando el solver exacto no puede explorar todo el espacio de soluciones por limitaciones de tiempo.
+
+Valores obtenidos
+•	Distancia mínima entre nodos: 0.64
+•	Distancia máxima entre nodos: 245.61
+•	Distancia promedio entre nodos: 100.94
+•	Distancia total mínima posible (estimada): 1269.76
+•	Distancia total máxima posible (estimada): 3047.43
+Resultados:
+•	Sin heurística: 1811.79
+•	Con heurística: 1785.44
 
 ### E. Conclusiones
 <!-- Todos -->
@@ -258,6 +286,13 @@ Una posible razón es que el TSP es un problema NP-Hard y pequeñas variaciones 
 <!-- Agregar hallazgos -->
 
 <!----------------------------------------------------------------------------------->
+
+literal D:
+
+- La heurística de vecinos cercanos mejoró la solución encontrada por el modelo, reduciendo la distancia total recorrida en aproximadamente 26.35 unidades.
+- Esto demuestra que, para este caso, la heurística es útil para guiar el solver hacia soluciones más eficientes, especialmente en problemas grandes donde el solver exacto puede no alcanzar la óptima en el tiempo disponible.
+- Sin embargo, la heurística no garantiza la mejor solución en todos los casos y su efectividad depende de la distribución de las ciudades. Es recomendable usarla como apoyo, pero siempre validar los resultados y, si es posible, comparar con otros métodos o heurísticas.
+
 
 ## 3. ALGORTIMOS GENÉTICOS
 

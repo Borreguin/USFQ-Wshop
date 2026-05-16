@@ -1,3 +1,4 @@
+print("[DEBUG] Ejecutando TSP.py desde:", __file__)
 import pyomo.environ as pyo
 import re
 import sys, os
@@ -112,6 +113,7 @@ class TSP:
         # _model.subtour_constraint = pyo.ConstraintList()
 
 
+
         # Resolver el modelo
         solver = pyo.SolverFactory('glpk')
         solver.options['mipgap'] = mipgap
@@ -125,6 +127,8 @@ class TSP:
         # Mostrar resultados
         if results.solver.termination_condition == pyo.TerminationCondition.optimal:
             print("Ruta óptima encontrada:")
+        elif results.solver.termination_condition == pyo.TerminationCondition.maxTimeLimit:
+            print("\n[INFO] El solver alcanzó el límite de tiempo. Se muestra la mejor solución encontrada hasta el momento.")
         else:
             print("No se encontró una solución óptima, la siguiente es la mejor solución encontrada:")
 
@@ -149,18 +153,19 @@ class TSP:
 
 
 
+
     def plotear_resultado(
         self,
         ruta: List[str],
         mostrar_anotaciones: bool = True,
         titulo: str = "",
-        guardar: bool = False,
+        guardar: bool = True,
         nombre_archivo: str = ""
     ):
-
         import matplotlib.pyplot as plt
         import os
 
+        print(f"[DEBUG] Entrando a plotear_resultado con nombre_archivo={nombre_archivo}")
         plt.figure(figsize=(8, 6))
 
         # Coordenadas de todas las ciudades
@@ -197,13 +202,13 @@ class TSP:
         plt.grid(True)
         plt.legend()
 
-        # Guardar imagen
-        if guardar:
-            carpeta = os.path.join(current_dir, "images_P2")
-            os.makedirs(carpeta, exist_ok=True)
-
-            ruta_guardado = os.path.join(carpeta, nombre_archivo)
-            plt.savefig(ruta_guardado, dpi=300, bbox_inches="tight")
+        # Guardar imagen SIEMPRE
+        carpeta = os.path.join(current_dir, "images_P2")
+        os.makedirs(carpeta, exist_ok=True)
+        ruta_guardado = os.path.join(carpeta, nombre_archivo)
+        print(f"[DEBUG] Guardando imagen en: {ruta_guardado}")
+        plt.savefig(ruta_guardado, dpi=300, bbox_inches="tight")
+        print(f"[DEBUG] Imagen guardada correctamente en: {ruta_guardado}")
 
         plt.show()
         plt.close()
@@ -338,25 +343,35 @@ def general_study_case(n_cities, heuristics, mipgap, time_limit, tee):
 def study_case_3_literal_D():
     n_cities = 100
     ciudades, distancias = generar_ciudades_con_distancias(n_cities)
+
     mipgap = 0.05
-    time_limit = 60
+    time_limit = 180  # límite de tiempo 3 minutos
     tee = True
+
+    print("\n[PARTE D] INICIO: Comparación del modelo con y sin la heurística de vecinos cercanos para 100 ciudades\n")
+    print(f"Directorio actual de ejecución: {os.getcwd()}")
+    print(f"Directorio esperado para imágenes: {os.path.join(current_dir, 'images_P2')}")
 
     print("\nCaso 3: Sin heurística de vecinos cercanos\n")
     heuristics_sin = []
+
     tsp_sin = TSP(ciudades, distancias, heuristics_sin)
     ruta_sin = tsp_sin.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
     distancia_sin = calculate_path_distance(distancias, ruta_sin)
+    print("[DEBUG] Llamando a plotear_resultado para LP sin heurística...")
     tsp_sin.plotear_resultado(ruta_sin, False, titulo="LP sin heurística - 100 ciudades", guardar=True, nombre_archivo="LP_sin_heuristica_100.png")
+    print("[DEBUG] Imagen sin heurística generada.")
 
     print("\nCaso 3: Con heurística de vecinos cercanos\n")
     heuristics_con = ['vecino_cercano']
     tsp_con = TSP(ciudades, distancias, heuristics_con)
     ruta_con = tsp_con.encontrar_la_ruta_mas_corta(mipgap, time_limit, tee)
     distancia_con = calculate_path_distance(distancias, ruta_con)
+    print("[DEBUG] Llamando a plotear_resultado para LP con heurística vecino cercano...")
     tsp_con.plotear_resultado(ruta_con, False, titulo="LP con heurística vecino cercano - 100 ciudades", guardar=True, nombre_archivo="LP_con_vecino_cercano_100.png")
+    print("[DEBUG] Imagen con heurística generada.")
 
-    print("\n\n")
+    print("\n[PARTE D] FIN: Resultados de la comparación\n")
     print("Comparación de resultados:")
     print(f"Sin heurística: Distancia = {distancia_sin}")
     print(f"Con heurística vecino cercano: Distancia = {distancia_con}")
