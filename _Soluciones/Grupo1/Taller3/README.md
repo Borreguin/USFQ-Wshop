@@ -44,9 +44,48 @@ Acciones recomendadas: verificar las fechas/días listados como anómalos contra
 
 ### C. Encontrar anomalías – análisis univariable
 
+Para cada variable (ejemplo: CO2 Ventilation NE):
+•	Se analizaron 1081 días de datos.
+•	El mejor número de clusters para los perfiles diarios fue 2 (según el coeficiente Silhouette).
+•	Se muestra la consistencia entre KMeans y Agglomerative (ARI: 0.782), lo que indica que ambos métodos encuentran patrones similares.
+•	Se imprime la distribución de días en cada cluster para ambos métodos.
+•	Se detectaron anomalías: días cuyos perfiles diarios se alejan significativamente de los patrones típicos (más allá de 2 desviaciones estándar de su cluster).
+•	Se imprime una tabla detallada con los días anómalos, su cluster, la distancia al centroide y el umbral.
 
+Ejemplo de salida para CO2 Ventilation NE:
 
+Variable: CO2 Ventilation NE
+Días analizados: 1081
+Mejor número de clusters: 2
+Silhouette por KMeans: {2: 0.4577, ...}
+Consistencia KMeans vs Agglomerative (ARI): 0.782
+Distribución KMeans: {1: 399, 2: 682}
+Distribución Agglomerative: {1: 728, 2: 353}
 
+Anomalías detectadas:
+day                cluster  distance   threshold     is_anomaly
+543 2013-12-18        2      1.907070   0.974915        True
+...
+
+Esto se repite para cada variable analizada.
+
+2. Imágenes exportadas
+
+Por cada variable analizada, se genera una imagen con las anomalías resaltadas en rojo sobre los patrones diarios. Los nombres de las imágenes exportadas son:
+
+(P1_UML/images_P1/anomalies_V005_vent01_CO2.png)
+(P1_UML/images_P1/anomalies_V022_vent02_CO2.png)
+(P1_UML/images_P1/anomalies_V006_vent01_temp_out.png)
+(P1_UML/images_P1/anomalies_V023_vent02_temp_out.png)
+
+Estas imágenes se encuentran en la carpeta images_P1 y muestran claramente los días anómalos respecto al comportamiento típico.
+
+3. Conclusión
+
+•	El análisis univariable permitió identificar días atípicos en las mediciones de CO2 y temperatura, que no siguen los patrones diarios más comunes.
+•	Estos días anómalos pueden deberse a eventos inusuales, fallos en el sistema, cambios ambientales extremos o errores de medición.
+•	La visualización gráfica facilita la interpretación y validación de las anomalías detectadas.
+•	El método es robusto porque compara cada día con el patrón de su propio cluster, no con la media global.
 
 ### D. Encontrar patrones – análisis multivariable
 
@@ -124,6 +163,13 @@ Además, se observó que la zona Norte Este presenta una mayor variabilidad y di
 <!-- Agregar hallazgos -->
 
 <!----------------------------------------------------------------------------------->
+
+Conlusiones Literal C:
+
+•	El análisis univariable permitió identificar días atípicos en las mediciones de CO2 y temperatura, que no siguen los patrones diarios más comunes.
+•	Estos días anómalos pueden deberse a eventos inusuales, fallos en el sistema, cambios ambientales extremos o errores de medición.
+•	La visualización gráfica facilita la interpretación y validación de las anomalías detectadas.
+•	El método es robusto porque compara cada día con el patrón de su propio cluster, no con la media global.
 
 ## 2. INVESTIGACIÓN OPERATIVA: TRAVELLING SALEMAN PROBLEM (TSP)
 
