@@ -412,8 +412,6 @@ def plot_multivariable_anomalies(original_profiles, anomaly_df, variables, zone_
     save_plot(f"multivariable_anomalies_{zone_name.replace(' ', '_')}")
     plt.show()
 
-
-
 def analyze_multivariable_patterns(
         _df: pd.DataFrame,
         variables,
