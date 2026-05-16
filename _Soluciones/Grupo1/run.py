@@ -177,7 +177,7 @@ def taller_3():
                     T3_P3.case_study_5(objective)
                     print('\nFin del estudio de caso 5\n')
                 else:
-                    # ...existing code...
+                    print('No hay el texto')
             except Exception as e:
                 print(f"[ERROR] Excepción al ejecutar el caso de estudio: {e}")
         else :
@@ -205,8 +205,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # Ejecución directa del caso de estudio 4 de Algoritmos Genéticos
-    from Taller3.P3_GA import GA as T3_P3
-    objective = "GA Workshop! USFQ"
-    print("\nEjecución directa: Algoritmo Genético - efecto del tamaño de población (case_study_4)\n")
-    T3_P3.case_study_4(objective)

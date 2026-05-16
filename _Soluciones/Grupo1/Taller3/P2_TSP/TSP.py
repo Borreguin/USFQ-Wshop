@@ -1,4 +1,3 @@
-print("[DEBUG] Ejecutando TSP.py desde:", __file__)
 import pyomo.environ as pyo
 import re
 import sys, os
