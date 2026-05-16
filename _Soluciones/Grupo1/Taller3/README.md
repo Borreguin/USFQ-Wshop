@@ -45,14 +45,14 @@ Asimismo, se recomienda aplicar un proceso de depuración sobre los registros de
 ### C. Encontrar anomalías – análisis univariable
 
 Para cada variable (ejemplo: CO2 Ventilation NE):
-•	Se analizaron 1081 días de datos.
-•	El mejor número de clusters para los perfiles diarios fue 2 (según el coeficiente Silhouette).
-•	Se muestra la consistencia entre KMeans y Agglomerative (ARI: 0.782), lo que indica que ambos métodos encuentran patrones similares.
-•	Se imprime la distribución de días en cada cluster para ambos métodos.
-•	Se detectaron anomalías: días cuyos perfiles diarios se alejan significativamente de los patrones típicos (más allá de 2 desviaciones estándar de su cluster).
-•	Se imprime una tabla detallada con los días anómalos, su cluster, la distancia al centroide y el umbral.
+-	Se analizaron 1081 días de datos.
+-	El mejor número de clusters para los perfiles diarios fue 2 (según el coeficiente Silhouette).
+-	Se muestra la consistencia entre KMeans y Agglomerative (ARI: 0.782), lo que indica que ambos métodos encuentran patrones similares.
+-	Se imprime la distribución de días en cada cluster para ambos métodos.
+-	Se detectaron anomalías: días cuyos perfiles diarios se alejan significativamente de los patrones típicos (más allá de 2 desviaciones estándar de su cluster).
+-	Se imprime una tabla detallada con los días anómalos, su cluster, la distancia al centroide y el umbral.
 
-Ejemplo de salida para CO2 Ventilation NE:
+**Ejemplo de salida para CO2 Ventilation NE:**
 
 Variable: CO2 Ventilation NE
 Días analizados: 1081
@@ -62,30 +62,29 @@ Consistencia KMeans vs Agglomerative (ARI): 0.782
 Distribución KMeans: {1: 399, 2: 682}
 Distribución Agglomerative: {1: 728, 2: 353}
 
-Anomalías detectadas:
+**Anomalías detectadas:**
 day                cluster  distance   threshold     is_anomaly
 543 2013-12-18        2      1.907070   0.974915        True
-...
 
 Esto se repite para cada variable analizada.
 
-2. Imágenes exportadas
+#### Imágenes exportadas
 
 Por cada variable analizada, se genera una imagen con las anomalías resaltadas en rojo sobre los patrones diarios. Los nombres de las imágenes exportadas son:
 
-(P1_UML/images_P1/anomalies_V005_vent01_CO2.png)
-(P1_UML/images_P1/anomalies_V022_vent02_CO2.png)
-(P1_UML/images_P1/anomalies_V006_vent01_temp_out.png)
-(P1_UML/images_P1/anomalies_V023_vent02_temp_out.png)
+![](P1_UML/images_P1/anomalies_V005_vent01_CO2.png)
+![](P1_UML/images_P1/anomalies_V022_vent02_CO2.png)
+![](P1_UML/images_P1/anomalies_V006_vent01_temp_out.png)
+![](P1_UML/images_P1/anomalies_V023_vent02_temp_out.png)
 
 Estas imágenes se encuentran en la carpeta images_P1 y muestran claramente los días anómalos respecto al comportamiento típico.
 
-3. Conclusión
+#### Conclusión
 
-•	El análisis univariable permitió identificar días atípicos en las mediciones de CO2 y temperatura, que no siguen los patrones diarios más comunes.
-•	Estos días anómalos pueden deberse a eventos inusuales, fallos en el sistema, cambios ambientales extremos o errores de medición.
-•	La visualización gráfica facilita la interpretación y validación de las anomalías detectadas.
-•	El método es robusto porque compara cada día con el patrón de su propio cluster, no con la media global.
+-	El análisis univariable permitió identificar días atípicos en las mediciones de CO2 y temperatura, que no siguen los patrones diarios más comunes.
+-	Estos días anómalos pueden deberse a eventos inusuales, fallos en el sistema, cambios ambientales extremos o errores de medición.
+-	La visualización gráfica facilita la interpretación y validación de las anomalías detectadas.
+-	El método es robusto porque compara cada día con el patrón de su propio cluster, no con la media global.
 
 ### D. Encontrar patrones – análisis multivariable
 
@@ -354,36 +353,39 @@ Una posible razón es que el TSP es un problema NP-Hard y pequeñas variaciones 
 
 ### D. Aplicar heurística de vecinos cercanos
 
-1. ¿Cuál es la diferencia entre los dos casos?
+#### 1. ¿Cuál es la diferencia entre los dos casos?
 Caso a) Sin heurística de vecinos cercanos:
-•	Distancia total recorrida: 1811.79
-•	El modelo resuelve el TSP para 100 ciudades usando solo el enfoque exacto (programación entera mixta con Pyomo y GLPK), sin restricciones adicionales que guíen la búsqueda.
-•	Gráfica: LP_sin_heuristica_100.png
+-	Distancia total recorrida: 1811.79
+-	El modelo resuelve el TSP para 100 ciudades usando solo el enfoque exacto (programación entera mixta con Pyomo y GLPK), sin restricciones adicionales que guíen la búsqueda.
+-	Gráfica: LP_sin_heuristica_100.png
 
 Caso b) Con heurística de vecinos cercanos:
-•	Distancia total recorrida: 1785.44
-•	Se añade la heurística de vecinos cercanos como restricción adicional, guiando al modelo para que priorice trayectorias más cortas entre ciudades cercanas.
+-	Distancia total recorrida: 1785.44
+-	Se añade la heurística de vecinos cercanos como restricción adicional, guiando al modelo para que priorice trayectorias más cortas entre ciudades cercanas.
 Diferencia observada:
-•	La heurística de vecinos cercanos permitió encontrar una ruta más corta (1785.44 vs 1811.79), es decir, mejoró la calidad de la solución.
-•	Además, la heurística ayuda a reducir el espacio de búsqueda, lo que puede traducirse en menor tiempo de cómputo o en encontrar mejores soluciones dentro del mismo límite de tiempo.
-•	Gráfica: LP_con_vecino_cercano_100.png
+-	La heurística de vecinos cercanos permitió encontrar una ruta más corta (1785.44 vs 1811.79), es decir, mejoró la calidad de la solución.
+-	Además, la heurística ayuda a reducir el espacio de búsqueda, lo que puede traducirse en menor tiempo de cómputo o en encontrar mejores soluciones dentro del mismo límite de tiempo.
+-	Gráfica: LP_con_vecino_cercano_100.png
 
-2. ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón?
+#### 2. ¿Sirve esta heurística para cualquier caso? ¿Cuál pudiera ser una razón?
+
 No, la heurística de vecinos cercanos no garantiza siempre la mejor solución ni es óptima para todos los casos.
-Razones:
-•	Dependencia de la distribución: Si las ciudades están distribuidas de forma irregular (por ejemplo, agrupadas en clústeres o con grandes distancias entre algunas), la heurística puede llevar a soluciones subóptimas, ya que siempre elige el vecino más cercano en cada paso, sin considerar el impacto global.
-•	Soluciones locales: La heurística puede quedarse atrapada en mínimos locales, es decir, rutas que parecen buenas en cada paso pero no son óptimas en el recorrido total.
-•	Ventaja: Sin embargo, en instancias grandes, ayuda a guiar el modelo y a obtener soluciones razonables en menos tiempo, especialmente cuando el solver exacto no puede explorar todo el espacio de soluciones por limitaciones de tiempo.
 
-Valores obtenidos
-•	Distancia mínima entre nodos: 0.64
-•	Distancia máxima entre nodos: 245.61
-•	Distancia promedio entre nodos: 100.94
-•	Distancia total mínima posible (estimada): 1269.76
-•	Distancia total máxima posible (estimada): 3047.43
-Resultados:
-•	Sin heurística: 1811.79
-•	Con heurística: 1785.44
+**Razones:**
+-	Dependencia de la distribución: Si las ciudades están distribuidas de forma irregular (por ejemplo, agrupadas en clústeres o con grandes distancias entre algunas), la heurística puede llevar a soluciones subóptimas, ya que siempre elige el vecino más cercano en cada paso, sin considerar el impacto global.
+-	Soluciones locales: La heurística puede quedarse atrapada en mínimos locales, es decir, rutas que parecen buenas en cada paso pero no son óptimas en el recorrido total.
+-	Ventaja: Sin embargo, en instancias grandes, ayuda a guiar el modelo y a obtener soluciones razonables en menos tiempo, especialmente cuando el solver exacto no puede explorar todo el espacio de soluciones por limitaciones de tiempo.
+
+**Valores obtenidos:**
+-	Distancia mínima entre nodos: 0.64
+-	Distancia máxima entre nodos: 245.61
+-	Distancia promedio entre nodos: 100.94
+-	Distancia total mínima posible (estimada): 1269.76
+-	Distancia total máxima posible (estimada): 3047.43
+
+**Resultados:**
+-	Sin heurística: 1811.79
+-	Con heurística: 1785.44
 
 ### E. Conclusiones
 <!-- Todos -->
@@ -443,11 +445,13 @@ Se ejecutó el Algoritmo Genético variando el tamaño de la población en los v
 
 Resultados obtenidos:
 
-Tamaño de población	Promedio de generaciones	Runs exitosos/Total
-50	826.0	5/5
-100	674.0	5/5
-200	158.0	5/5
-500	68.0	5/5
+| Tamaño de población | Promedio de generaciones | Runs exitosos/Total |
+|-------------------|------------------------|-------------------|
+| 50                | 826.0                  | 5/5               |
+| 100               | 674.0                  | 5/5               |
+| 200               | 158.0                  | 5/5               |
+| 500               | 68.0                   | 5/5               |
+
 Análisis:
 
 Al aumentar el tamaño de la población, el número promedio de generaciones necesarias para alcanzar el objetivo disminuye drásticamente.
