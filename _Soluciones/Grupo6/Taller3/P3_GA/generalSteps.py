@@ -1,37 +1,28 @@
+import random
 from random import choice
 
 from Taller3.P3_GA.operation import *
 from Taller3.P3_GA.util import word_distance
 
 
-# Generar población
 def generate_population(population_size, string_length, seed=MY_SEED):
     random.seed(seed)
-    population = []
-    for _ in range(population_size):
-        # crear un individuo aleatorio de tamaño string_length
-        individual = ''.join(choice(all_possible_gens) for _ in range(string_length))
-        population.append(individual)
-    return population
+    return [
+        ''.join(choice(all_possible_gens) for _ in range(string_length))
+        for _ in range(population_size)
+    ]
 
 
-# Función de evaluación de aptitud
-def evaluate_aptitude(evaluation_type, individual, objetive):
+def evaluate_aptitude(evaluation_type, individual, objective):
     if evaluation_type == AptitudeType.DEFAULT:
-        aptitude = 0
-        for i in range(len(individual)):
-            if individual[i] == objetive[i]:
-                aptitude += 1
-        return aptitude
+        return sum(a == b for a, b in zip(individual, objective))
 
     if evaluation_type == AptitudeType.BY_DISTANCE:
-        return word_distance(individual, objetive)
+        return word_distance(individual, objective)
 
-    if evaluation_type == AptitudeType.NEW:
-        print("implement here the new evaluation")
-        return 0
+    raise ValueError(f"AptitudeType desconocido: {evaluation_type}")
 
-# Selección del mejor individuo
+
 def select_best_individual(_type: BestIndividualSelectionType, population, aptitudes):
     if _type == BestIndividualSelectionType.DEFAULT:
         best_aptitude = max(aptitudes)
@@ -41,32 +32,54 @@ def select_best_individual(_type: BestIndividualSelectionType, population, aptit
         best_aptitude = min(aptitudes)
         return population[aptitudes.index(best_aptitude)], best_aptitude
 
-    if _type == BestIndividualSelectionType.NEW:
-        print("implement here the new best individual selection")
-        return None, None
+    raise ValueError(f"BestIndividualSelectionType desconocido: {_type}")
+
 
 def generate_new_population(_type: NewGenerationType, population, aptitudes, mutation_rate):
+
     if _type == NewGenerationType.DEFAULT:
         new_population = []
-        # se generara 2 hijos con cada par de padres, se interactúa con la mitad de poplación para mantener el mismo
-        # numero de individuos en la siguiente generación
         for _ in range(len(population) // 2):
-            parent1, parent2 = parent_selection(ParentSelectionType.DEFAULT, population, aptitudes)
-            child1, child2 = crossover(CrossoverType.DEFAULT, parent1, parent2)
-            child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
-            child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
-            new_population.extend([child1, child2])
-        return new_population
-    if _type == NewGenerationType.MIN_DISTANCE:
-        new_population = []
-        for _ in range(len(population)//2):
-            parent1, parent2 = parent_selection(ParentSelectionType.MIN_DISTANCE, population, aptitudes)
-            child1, child2 = crossover(CrossoverType.DEFAULT, parent1, parent2)
-            child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
-            child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
-            new_population.extend([child1, child2])
+            p1, p2 = parent_selection(ParentSelectionType.DEFAULT, population, aptitudes)
+            c1, c2 = crossover(CrossoverType.DEFAULT, p1, p2)
+            new_population.extend([
+                mutate(MutationType.DEFAULT, c1, mutation_rate),
+                mutate(MutationType.DEFAULT, c2, mutation_rate),
+            ])
         return new_population
 
-    if _type == NewGenerationType.NEW:
-        print("implement here the new generation")
-        return None
+    if _type == NewGenerationType.MIN_DISTANCE:
+        new_population = []
+        for _ in range(len(population) // 2):
+            p1, p2 = parent_selection(ParentSelectionType.MIN_DISTANCE, population, aptitudes)
+            c1, c2 = crossover(CrossoverType.DEFAULT, p1, p2)
+            new_population.extend([
+                mutate(MutationType.DEFAULT, c1, mutation_rate),
+                mutate(MutationType.DEFAULT, c2, mutation_rate),
+            ])
+        return new_population
+
+    if _type == NewGenerationType.IMPROVED:
+        n_elite = max(2, len(population) // 10)
+        ranked = sorted(zip(aptitudes, population), reverse=True)
+        elite = [ind for _, ind in ranked[:n_elite]]
+
+        new_population = list(elite)
+        n_children = len(population) - n_elite
+
+        for _ in range(n_children // 2):
+            p1, p2 = parent_selection(ParentSelectionType.TOURNAMENT, population, aptitudes)
+            c1, c2 = crossover(CrossoverType.TWO_POINT, p1, p2)
+            new_population.extend([
+                mutate(MutationType.DEFAULT, c1, mutation_rate),
+                mutate(MutationType.DEFAULT, c2, mutation_rate),
+            ])
+
+        while len(new_population) < len(population):
+            p1, p2 = parent_selection(ParentSelectionType.TOURNAMENT, population, aptitudes)
+            c1, _ = crossover(CrossoverType.TWO_POINT, p1, p2)
+            new_population.append(mutate(MutationType.DEFAULT, c1, mutation_rate))
+
+        return new_population[:len(population)]
+
+    raise ValueError(f"NewGenerationType desconocido: {_type}")
