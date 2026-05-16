@@ -3,7 +3,7 @@ from random import choice
 from Taller3.P3_GA.operation import *
 from Taller3.P3_GA.util import word_distance
 
-from Taller3.P3_GA.GA import GA
+## from Taller3.P3_GA.GA import GA  # Eliminado para evitar importación circular
 from Taller3.P3_GA.constants import MY_SEED
 
 
@@ -99,16 +99,21 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
 
 
 def case_study_4(_objetive):
+    from Taller3.P3_GA.GA import GA  # Importación local para evitar ciclo
 
     population_sizes = [50, 100, 200, 500]
     mutation_rate = 0.01
     n_iterations = 1000
     n_runs = 5
+    resumen = []
+    output_lines = []
     for pop_size in population_sizes:
         generations_when_found = []
+        output_lines.append('\n========================================')
+        output_lines.append(f'Ejecutando con tamaño de población: {pop_size}')
         print('\n========================================')
         print(f'Ejecutando con tamaño de población: {pop_size}')
-        for _ in range(n_runs):
+        for run in range(n_runs):
             random.seed(MY_SEED)
             population = generate_population(pop_size, len(_objetive))
             ga = GA(population, _objetive, mutation_rate, n_iterations)
@@ -118,8 +123,106 @@ def case_study_4(_objetive):
             success, _, generations_to_goal = ga.run(verbose=False, return_history=True)
             if success and generations_to_goal is not None:
                 generations_when_found.append(generations_to_goal)
+                msg = f"  Run {run+1}: Objetivo alcanzado en {generations_to_goal} generaciones."
+            else:
+                msg = f"  Run {run+1}: Objetivo NO alcanzado."
+            print(msg)
+            output_lines.append(msg)
         if generations_when_found:
             avg_generations = sum(generations_when_found) / len(generations_when_found)
-            print(f'Promedio de generaciones para alcanzar el objetivo: {avg_generations:.1f} ({len(generations_when_found)}/{n_runs} runs exitosos)')
+            resumen.append((pop_size, avg_generations, len(generations_when_found), n_runs))
+            msg = f'Promedio de generaciones para alcanzar el objetivo: {avg_generations:.1f} ({len(generations_when_found)}/{n_runs} runs exitosos)'
+            print(msg)
+            output_lines.append(msg)
         else:
-            print('No se alcanzó el objetivo en ningún run.')
+            resumen.append((pop_size, None, 0, n_runs))
+            msg = 'No se alcanzó el objetivo en ningún run.'
+            print(msg)
+            output_lines.append(msg)
+    output_lines.append("\nResumen de resultados por tamaño de población:")
+    output_lines.append("Tamaño\tPromedio Generaciones\tRuns Exitosos/Total")
+    print("\nResumen de resultados por tamaño de población:")
+    print("Tamaño\tPromedio Generaciones\tRuns Exitosos/Total")
+    for pop_size, avg_gen, n_success, n_total in resumen:
+        if avg_gen is not None:
+            line = f"{pop_size}\t{avg_gen:.1f}\t\t{n_success}/{n_total}"
+        else:
+            line = f"{pop_size}\tNo alcanzado\t{n_success}/{n_total}"
+        print(line)
+        output_lines.append(line)
+    # Guardar resultados en archivo
+    with open("case_study_4_resultados.txt", "w", encoding="utf-8") as f:
+        for line in output_lines:
+            f.write(line + "\n")
+
+            
+def case_study_5(_objetive):
+    """
+    Caso de estudio definitivo: combina lo mejor de los casos anteriores.
+    - Prueba varios tamaños de población y tasas de mutación.
+    - Usa selección por torneo con elitismo.
+    - Evalúa por distancia.
+    - Guarda resultados detallados y resumen.
+    """
+    print('========== INICIO caso de estudio 5 =========')
+    from Taller3.P3_GA.GA import GA  # Importación local para evitar ciclo
+
+    population_sizes = [50, 100, 200, 500]
+    mutation_rates = [0.01, 0.05, 0.1]
+    n_iterations = 1000
+    n_runs = 5
+    resumen = []
+    output_lines = []
+    output_lines.append("Caso de estudio 5: Combinación de lo mejor de los casos anteriores\n")
+    for pop_size in population_sizes:
+        for mutation_rate in mutation_rates:
+            generations_when_found = []
+            output_lines.append('\n========================================')
+            output_lines.append(f'Población: {pop_size} | Mutación: {mutation_rate}')
+            print('\n========================================')
+            print(f'Población: {pop_size} | Mutación: {mutation_rate}')
+            for run in range(n_runs):
+                random.seed(MY_SEED)
+                population = generate_population(pop_size, len(_objetive))
+                ga = GA(population, _objetive, mutation_rate, n_iterations)
+                ga.set_evaluation_type(AptitudeType.BY_DISTANCE)
+                ga.set_best_individual_selection_type(BestIndividualSelectionType.MIN_DISTANCE)
+                ga.set_new_generation_type(NewGenerationType.TOURNAMENT_ELITISM)
+                success, _, generations_to_goal = ga.run(verbose=True, return_history=True)
+                if success and generations_to_goal is not None:
+                    generations_when_found.append(generations_to_goal)
+                    msg = f"  Run {run+1}: Objetivo alcanzado en {generations_to_goal} generaciones."
+                else:
+                    msg = f"  Run {run+1}: Objetivo NO alcanzado."
+                print(msg)
+                output_lines.append(msg)
+            if generations_when_found:
+                avg_generations = sum(generations_when_found) / len(generations_when_found)
+                resumen.append((pop_size, mutation_rate, avg_generations, len(generations_when_found), n_runs))
+                msg = f'Promedio de generaciones para alcanzar el objetivo: {avg_generations:.1f} ({len(generations_when_found)}/{n_runs} runs exitosos)'
+                print(msg)
+                output_lines.append(msg)
+            else:
+                resumen.append((pop_size, mutation_rate, None, 0, n_runs))
+                msg = 'No se alcanzó el objetivo en ningún run.'
+                print(msg)
+                output_lines.append(msg)
+    output_lines.append("\nResumen de resultados por tamaño de población y tasa de mutación:")
+    output_lines.append("Población\tMutación\tPromedio Generaciones\tRuns Exitosos/Total")
+    print("\nResumen de resultados por tamaño de población y tasa de mutación:")
+    print("Población\tMutación\tPromedio Generaciones\tRuns Exitosos/Total")
+    for pop_size, mutation_rate, avg_gen, n_success, n_total in resumen:
+        if avg_gen is not None:
+            line = f"{pop_size}\t{mutation_rate}\t{avg_gen:.1f}\t\t{n_success}/{n_total}"
+        else:
+            line = f"{pop_size}\t{mutation_rate}\tNo alcanzado\t{n_success}/{n_total}"
+        print(line)
+        output_lines.append(line)
+    # Guardar resultados en archivo
+    with open("case_study_5_resultados.txt", "w", encoding="utf-8") as f:
+        for line in output_lines:
+            f.write(line + "\n")
+    print('========== FIN caso de estudio 5 =========')
+    print('Resultados guardados en case_study_5_resultados.txt')
+
+            

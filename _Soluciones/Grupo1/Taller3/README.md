@@ -370,7 +370,40 @@ En conclusión, el parámetro `mutation_rate` tiene un impacto directo sobre el 
 
 ### 6. Cree un nuevo caso de estudio 4. Altere el tamaño de la población, ¿es beneficioso o no aumentar la población?
 
-<!-- Completar -->
+Sí, aumentar el tamaño de la población en el Algoritmo Genético es claramente beneficioso, ya que reduce de manera significativa el número de generaciones necesarias para alcanzar el objetivo, haciendo el proceso más eficiente y rápido.
+
+Se ejecutó el Algoritmo Genético variando el tamaño de la población en los valores: 50, 100, 200 y 500. Para cada tamaño, se realizaron 5 ejecuciones y se midió el número de generaciones necesarias para alcanzar el objetivo.
+
+Resultados obtenidos:
+
+Tamaño de población	Promedio de generaciones	Runs exitosos/Total
+50	826.0	5/5
+100	674.0	5/5
+200	158.0	5/5
+500	68.0	5/5
+Análisis:
+
+Al aumentar el tamaño de la población, el número promedio de generaciones necesarias para alcanzar el objetivo disminuye drásticamente.
+Con una población de 50, se requieren en promedio 826 generaciones, mientras que con una población de 500 solo se requieren 68 generaciones.
+En todos los casos, las 5 ejecuciones fueron exitosas, mostrando robustez y consistencia en el algoritmo.
+
+Conclusiones:
+
+Aumentar la población es altamente beneficioso:
+Se observa una mejora significativa en la eficiencia del algoritmo. Por ejemplo, al pasar de una población de 50 a 500, el número de generaciones disminuye en un 91.8% (de 826 a 68 generaciones).
+
+Relación inversa clara:
+El incremento en el tamaño de la población reduce el número de generaciones necesarias para alcanzar el objetivo:
+
+De 50 a 100: 826 → 674 generaciones (↓18.4%)
+De 100 a 200: 674 → 158 generaciones (↓76.6%)
+De 200 a 500: 158 → 68 generaciones (↓56.9%)
+
+Consistencia:
+En todos los tamaños de población, el algoritmo alcanzó el objetivo en las 5 ejecuciones, lo que indica que el aumento de población no afecta la estabilidad, sino que mejora la velocidad de convergencia.
+
+Recomendación:
+Se recomienda aumentar el tamaño de la población para problemas donde se requiera una convergencia más rápida, siempre considerando el costo computacional adicional por generación.
 
 ### 7. De todo lo aprendido, cree el caso de estudio definitivo (caso de estudio 5) el cual tiene lo mejor de los ítems 4, 5, 6.
 

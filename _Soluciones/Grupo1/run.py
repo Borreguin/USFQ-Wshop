@@ -93,7 +93,7 @@ def taller_3():
     options = ['Data de edificios', 'TSP', 'Algoritmos Genéticos']
     header = 'Bienvenido al taller 3 de Inteligencia Artificial'
     print_options(options, header)
-    exercise = input('Ingrese el ejercicio que desea ejecutar: ')
+    exercise = input('Ingrese el ejercicio que desea ejecutar: ').strip()
     while exercise != '0':
         if exercise == '1':
             print('\n=========================')
@@ -143,41 +143,53 @@ def taller_3():
                 print('Pendiente por implementar en run.py')
         elif exercise == '3':
             objective = "GA Workshop! USFQ"
-            study_case = input('Ingrese el caso de estudio que desea ejecutar: ')
-            if study_case == '1':
-                print('\n=========================')
-                print('Algoritmo Genético default')
-                print('=========================')
-                T3_P3.case_study_1(objective)
-                print('\nFin del estudio de caso 1\n')
-            elif study_case == '2':
-                print('\n=========================')
-                print('Algoritmo Genético con distancias')
-                print('=========================')
-                T3_P3.case_study_2(objective)
-                print('\nFin del estudio de caso 2\n')
-            elif study_case == '3':
-                print('\n=========================')
-                print('Algoritmo Genético con gridsearch de mutation_rate')
-                print('=========================')
-                T3_P3.case_study_3(objective)
-                print('\nFin del estudio de caso 3\n')
-            elif study_case == '4':
-                print('\n=========================')
-                print('Algoritmo Genético: efecto del tamaño de población')
-                print('=========================')
-                T3_P3.case_study_4(objective)
-                print('\nFin del estudio de caso 4\n')
+            study_case = input('Ingrese el caso de estudio que desea ejecutar: ').strip()
+            print(f"[DEBUG] Valor recibido en study_case: '{study_case}' (type: {type(study_case)})")
+            try:
+                if study_case == '1':
+                    print('\n=========================')
+                    print('Algoritmo Genético default')
+                    print('=========================')
+                    T3_P3.case_study_1(objective)
+                    print('\nFin del estudio de caso 1\n')
+                elif study_case == '2':
+                    print('\n=========================')
+                    print('Algoritmo Genético con distancias')
+                    print('=========================')
+                    T3_P3.case_study_2(objective)
+                    print('\nFin del estudio de caso 2\n')
+                elif study_case == '3':
+                    print('\n=========================')
+                    print('Algoritmo Genético con gridsearch de mutation_rate')
+                    print('=========================')
+                    T3_P3.case_study_3(objective)
+                    print('\nFin del estudio de caso 3\n')
+                elif study_case == '4':
+                    print('\n=========================')
+                    print('Algoritmo Genético: efecto del tamaño de población')
+                    print('=========================')
+                    T3_P3.case_study_4(objective)
+                    print('\nFin del estudio de caso 4\n')
+                elif study_case == '5':
+                    print('\n=========================')
+                    print('Algoritmo Genético: caso de estudio definitivo')
+                    print('=========================')
+                    T3_P3.case_study_5(objective)
+                    print('\nFin del estudio de caso 5\n')
+                else:
+                    print(f"[DEBUG] Opción no reconocida: '{study_case}'")
+            except Exception as e:
+                print(f"[ERROR] Excepción al ejecutar el caso de estudio: {e}")
         else :
             print('No hay el texto')
         print_options(options)
-        exercise = input('Ingrese el ejercicio que desea ejecutar: ')
+        exercise = input('Ingrese el ejercicio que desea ejecutar: ').strip()
     print('Saliendo del taller 3')
 
 def main():
     options = ['Taller 1', 'Taller 2', 'Taller 3']
     print_options(options, 'Bienvenido al taller de Inteligencia Artificial')
-    option = input('Ingrese el taller que desea ejecutar: ')
+    option = input('Ingrese el taller que desea ejecutar: ').strip()
     while option != '0':
         if option == '1':
             taller_1()
@@ -188,7 +200,7 @@ def main():
         else:
             print('No hay el texto')
         print_options(options)
-        option = input('Ingrese el taller que desea ejecutar: ')
+        option = input('Ingrese el taller que desea ejecutar: ').strip()
     print('Fin del programa')
 
 if __name__ == "__main__":

@@ -1,0 +1,43 @@
+
+========================================
+Ejecutando con tamaño de población: 50
+  Run 1: Objetivo alcanzado en 826 generaciones.
+  Run 2: Objetivo alcanzado en 826 generaciones.
+  Run 3: Objetivo alcanzado en 826 generaciones.
+  Run 4: Objetivo alcanzado en 826 generaciones.
+  Run 5: Objetivo alcanzado en 826 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 826.0 (5/5 runs exitosos)
+
+========================================
+Ejecutando con tamaño de población: 100
+  Run 1: Objetivo alcanzado en 674 generaciones.
+  Run 2: Objetivo alcanzado en 674 generaciones.
+  Run 3: Objetivo alcanzado en 674 generaciones.
+  Run 4: Objetivo alcanzado en 674 generaciones.
+  Run 5: Objetivo alcanzado en 674 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 674.0 (5/5 runs exitosos)
+
+========================================
+Ejecutando con tamaño de población: 200
+  Run 1: Objetivo alcanzado en 158 generaciones.
+  Run 2: Objetivo alcanzado en 158 generaciones.
+  Run 3: Objetivo alcanzado en 158 generaciones.
+  Run 4: Objetivo alcanzado en 158 generaciones.
+  Run 5: Objetivo alcanzado en 158 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 158.0 (5/5 runs exitosos)
+
+========================================
+Ejecutando con tamaño de población: 500
+  Run 1: Objetivo alcanzado en 68 generaciones.
+  Run 2: Objetivo alcanzado en 68 generaciones.
+  Run 3: Objetivo alcanzado en 68 generaciones.
+  Run 4: Objetivo alcanzado en 68 generaciones.
+  Run 5: Objetivo alcanzado en 68 generaciones.
+Promedio de generaciones para alcanzar el objetivo: 68.0 (5/5 runs exitosos)
+
+Resumen de resultados por tamaño de población:
+Tamaño	Promedio Generaciones	Runs Exitosos/Total
+50	826.0		5/5
+100	674.0		5/5
+200	158.0		5/5
+500	68.0		5/5

@@ -378,5 +378,10 @@ def study_case_3_literal_D():
     print("\nExplicación:")
     print("La heurística de vecinos cercanos ayuda a guiar el modelo hacia soluciones más eficientes, reduciendo el espacio de búsqueda y, en muchos casos, obteniendo recorridos más cortos en menor tiempo. Sin embargo, su efectividad puede depender de la distribución de las ciudades y no garantiza siempre la mejor solución para todos los casos.")
 
-study_case_3_literal_D()
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1].lower() in ["literal_d", "parte_d", "d"]:
+        study_case_3_literal_D()
+    else:
+        print("[INFO] Para ejecutar solo el Literal D, ejecuta: python TSP.py literal_d")
 
