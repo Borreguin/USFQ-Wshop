@@ -478,28 +478,34 @@ Se recomienda aumentar el tamaño de la población para problemas donde se requi
 
 ### 7. De todo lo aprendido, cree el caso de estudio definitivo (caso de estudio 5) el cual tiene lo mejor de los ítems 4, 5, 6.
 
-En el caso de estudio 5 se evaluaron distintas combinaciones de tamaño de población y tasa de mutación (mutation_rate) para encontrar la configuración óptima que permita una convergencia rápida y eficiente del algoritmo genético. A continuación, se presentan los resultados y el análisis comparativo:
+En el caso de estudio 5 se evaluaron distintas combinaciones de tamaño de población y tasa de mutación (`mutation_rate`) para encontrar la configuración óptima que permita una convergencia rápida y eficiente del algoritmo genético. A continuación, se presentan los resultados y el análisis comparativo:
 
-1. Efecto del Tamaño de Población
-Población	Mutación 0.01	Mutación 0.05	Mutación 0.1
-50	826	172	306
-100	674	113	313
-200	158	65	173
-500	68	66	171
-Observación:
+#### 1. Efecto del Tamaño de Población
+| Población | Mutación 0.01 | Mutación 0.05 | Mutación 0.1 |
+|-----------|---------------|---------------|---------------|
+| 50        | 826           | 172           | 306           |
+| 100       | 674           | 113           | 313           |
+| 200       | 158           | 65            | 173           |
+| 500       | 68            | 66            | 171           |
+
+**Observación:**
 Al aumentar el tamaño de la población, el número promedio de generaciones necesarias para alcanzar el objetivo disminuye drásticamente. Por ejemplo, con población 50 y mutación 0.01 se requieren 826 generaciones, mientras que con población 500 y la misma mutación solo 68 generaciones.
-Conclusión:
+
+**Conclusión:**
 Una mayor población incrementa la diversidad genética, lo que facilita una búsqueda más eficiente y rápida de la solución óptima.
 
-2. Efecto de la Tasa de Mutación (mutation_rate)
-Baja mutación (0.01):
-Resulta en convergencia más lenta, especialmente con poblaciones pequeñas.
-Mutación media (0.05):
-Es el valor que logra la convergencia más rápida en la mayoría de los casos. Por ejemplo, con población 100 y mutación 0.05 se requieren solo 113 generaciones, comparado con 674 generaciones usando 0.01.
-Alta mutación (0.1):
-Puede acelerar la convergencia en algunos casos, pero si es demasiado alta puede introducir ruido y dificultar la explotación de buenas soluciones.
+#### 2. Efecto de la Tasa de Mutación (mutation_rate)
 
-3. Combinación Óptima
+Baja mutación (0.01):
+- Resulta en convergencia más lenta, especialmente con poblaciones pequeñas.
+
+Mutación media (0.05):
+- Es el valor que logra la convergencia más rápida en la mayoría de los casos. Por ejemplo, con población 100 y mutación 0.05 se requieren solo 113 generaciones, comparado con 674 generaciones usando 0.01.
+
+Alta mutación (0.1):
+- Puede acelerar la convergencia en algunos casos, pero si es demasiado alta puede introducir ruido y dificultar la explotación de buenas soluciones.
+
+#### 3. Combinación Óptima
 La mejor combinación encontrada:
 Población: 200 o 500
 Mutación: 0.05
@@ -508,9 +514,9 @@ Comparación:
 Usar una población pequeña (50) y baja mutación (0.01) requiere 826 generaciones.
 Usar una población grande (500) y mutación media (0.05) requiere solo 66 generaciones.
 
-4. Conclusiones
-Aumentar la población mejora significativamente la velocidad de convergencia.
-Ajustar la tasa de mutación a un valor medio (0.05) permite un buen balance entre exploración y explotación.
-El caso de estudio 5 integra las mejores prácticas de selección de padres, tamaño de población y tasa de mutación, logrando la convergencia más rápida y eficiente.
+#### 4. Conclusiones
+- Aumentar la población mejora significativamente la velocidad de convergencia.
+- Ajustar la tasa de mutación a un valor medio (0.05) permite un buen balance entre exploración y explotación.
+- El caso de estudio 5 integra las mejores prácticas de selección de padres, tamaño de población y tasa de mutación, logrando la convergencia más rápida y eficiente.
 
 El análisis comparativo muestra que la combinación de una población grande y una tasa de mutación media es la más efectiva para resolver el problema con un algoritmo genético, logrando reducir el número de generaciones necesarias para alcanzar la solución óptima de manera consistente.
