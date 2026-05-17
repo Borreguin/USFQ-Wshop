@@ -68,5 +68,32 @@ def generate_new_population(_type: NewGenerationType, population, aptitudes, mut
         return new_population
 
     if _type == NewGenerationType.NEW:
-        print("implement here the new generation")
-        return None
+        # Elitismo: conservar el top 10% directamente, luego rellenar con torneo + cruce uniforme
+        elite_count = max(1, len(population) // 10)
+        sorted_indices = sorted(range(len(aptitudes)), key=lambda i: aptitudes[i], reverse=True)
+        new_population = [population[i] for i in sorted_indices[:elite_count]]
+        while len(new_population) < len(population):
+            parent1, parent2 = parent_selection(ParentSelectionType.NEW, population, aptitudes)
+            child1, child2 = crossover(CrossoverType.NEW, parent1, parent2)
+            child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
+            child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
+            new_population.extend([child1, child2])
+        return new_population[:len(population)]
+
+    if _type == NewGenerationType.DEFINITIVE:
+        # Elitismo 20% + torneo k=10 + cruce uniforme
+        elite_count = max(1, len(population) // 5)
+        sorted_indices = sorted(range(len(aptitudes)), key=lambda i: aptitudes[i], reverse=True)
+        new_population = [population[i] for i in sorted_indices[:elite_count]]
+        indices = list(range(len(population)))
+        k = 10
+        while len(new_population) < len(population):
+            c1 = random.sample(indices, k)
+            c2 = random.sample(indices, k)
+            parent1 = population[max(c1, key=lambda i: aptitudes[i])]
+            parent2 = population[max(c2, key=lambda i: aptitudes[i])]
+            child1, child2 = crossover(CrossoverType.NEW, parent1, parent2)
+            child1 = mutate(MutationType.DEFAULT, child1, mutation_rate)
+            child2 = mutate(MutationType.DEFAULT, child2, mutation_rate)
+            new_population.extend([child1, child2])
+        return new_population[:len(population)]

@@ -64,7 +64,28 @@ def case_study_2(_objetive):
     ga.run()
 
 
+def case_study_3(_objetive):
+    population = generate_population(100, len(_objetive))
+    mutation_rate = 0.01
+    n_iterations = 1000
+    ga = GA(population, _objetive, mutation_rate, n_iterations)
+    ga.set_new_generation_type(NewGenerationType.NEW)
+    ga.run()
+
+
+def case_study_5(_objetive):
+    population = generate_population(1000, len(_objetive))
+    mutation_rate = 0.01
+    n_iterations = 1000
+    ga = GA(population, _objetive, mutation_rate, n_iterations)
+    ga.set_new_generation_type(NewGenerationType.DEFINITIVE)
+    ga.run()
+
+
 if __name__ == "__main__":
     objective = "GA Workshop! USFQ"
-    case_study_1(objective)
-    # case_study_2(objetive)
+    # case_study_1(objective)
+    # case_study_2(objective)
+    # case_study_3(objective)
+    # case_study_4(objective)
+    case_study_5(objective)
